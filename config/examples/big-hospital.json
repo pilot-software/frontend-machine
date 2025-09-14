@@ -1,0 +1,57 @@
+{
+  "features": {
+    "patientManagement": true,
+    "appointmentSystem": true,
+    "clinicalInterface": true,
+    "prescriptionSystem": true,
+    "financialManagement": true,
+    "labResults": true,
+    "vitalsTracking": true,
+    "wardManagement": true,
+    "insuranceManagement": true,
+    "billingSystem": true,
+    "securityLogs": true,
+    "analytics": true,
+    "reports": true,
+    "roles": {
+      "admin": true,
+      "doctor": true,
+      "nurse": true,
+      "patient": true,
+      "finance": true
+    },
+    "notifications": true,
+    "twoFactorAuth": true,
+    "darkMode": true,
+    "mobileApp": true
+  },
+  "text": {
+    "systemName": "Metro General Hospital",
+    "systemDescription": "Enterprise Healthcare Management",
+    "roles": {
+      "admin": "System Administrator",
+      "doctor": "Attending Physician",
+      "nurse": "Registered Nurse",
+      "patient": "Patient",
+      "finance": "Financial Services"
+    },
+    "navigation": {
+      "dashboard": "Executive Dashboard",
+      "patients": "Patient Registry",
+      "appointments": "Scheduling Center",
+      "records": "Electronic Health Records",
+      "prescriptions": "Medication Management",
+      "security": "Security & Compliance",
+      "analytics": "Business Intelligence",
+      "reports": "Clinical Reports",
+      "billing": "Revenue Cycle",
+      "settings": "System Configuration"
+    },
+    "buttons": {
+      "login": "Secure Login",
+      "logout": "Secure Logout",
+      "save": "Save Changes",
+      "cancel": "Cancel Operation"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "features": {
+    "patientManagement": true,
+    "appointmentSystem": true,
+    "clinicalInterface": true,
+    "prescriptionSystem": true,
+    "financialManagement": false,
+    "labResults": false,
+    "vitalsTracking": true,
+    "wardManagement": false,
+    "insuranceManagement": false,
+    "billingSystem": false,
+    "securityLogs": false,
+    "analytics": false,
+    "reports": false,
+    "roles": {
+      "admin": true,
+      "doctor": true,
+      "nurse": false,
+      "patient": true,
+      "finance": false
+    },
+    "notifications": false,
+    "twoFactorAuth": false,
+    "darkMode": false,
+    "mobileApp": false
+  },
+  "text": {
+    "systemName": "Family Clinic",
+    "systemDescription": "Simple Patient Care",
+    "roles": {
+      "admin": "Clinic Manager",
+      "doctor": "Doctor",
+      "nurse": "Nurse",
+      "patient": "Patient",
+      "finance": "Billing"
+    },
+    "navigation": {
+      "dashboard": "Home",
+      "patients": "Patients",
+      "appointments": "Appointments",
+      "records": "Records",
+      "prescriptions": "Medications",
+      "security": "Activity",
+      "analytics": "Reports",
+      "reports": "Reports",
+      "billing": "Billing",
+      "settings": "Settings"
+    },
+    "buttons": {
+      "login": "Login",
+      "logout": "Logout",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  }
+}

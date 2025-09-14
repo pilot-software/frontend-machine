@@ -1,0 +1,485 @@
+Enum user_role {
+  admin
+  doctor
+  nurse
+  patient
+  finance
+}
+
+Enum user_status {
+  active
+  inactive
+  suspended
+}
+
+Enum gender_type {
+  male
+  female
+  other
+  prefer_not_to_say
+}
+
+Enum blood_type {
+  "A+"
+  "A-"
+  "B+"
+  "B-"
+  "AB+"
+  "AB-"
+  "O+"
+  "O-"
+}
+
+Enum patient_status {
+  active
+  inactive
+  deceased
+}
+
+Enum appointment_type {
+  consultation
+  follow_up
+  emergency
+  surgery
+  diagnostic
+}
+
+Enum appointment_priority {
+  low
+  medium
+  high
+  urgent
+}
+
+Enum appointment_status {
+  scheduled
+  confirmed
+  in_progress
+  completed
+  cancelled
+  no_show
+}
+
+Enum visit_type {
+  routine
+  emergency
+  follow_up
+  consultation
+  surgery
+}
+
+Enum visit_status {
+  in_progress
+  completed
+  cancelled
+}
+
+Enum condition_severity {
+  mild
+  moderate
+  severe
+  critical
+}
+
+Enum condition_status {
+  active
+  resolved
+  chronic
+  in_remission
+}
+
+Enum prescription_status {
+  active
+  completed
+  cancelled
+  expired
+}
+
+Enum temperature_unit {
+  F
+  C
+}
+
+Enum weight_unit {
+  lbs
+  kg
+}
+
+Enum test_category {
+  blood
+  urine
+  imaging
+  pathology
+  microbiology
+  other
+}
+
+Enum result_status {
+  ordered
+  in_progress
+  completed
+  cancelled
+}
+
+Enum abnormal_flag {
+  normal
+  low
+  high
+  critical
+}
+
+Enum payment_status {
+  pending
+  partial
+  paid
+  overdue
+  written_off
+}
+
+Enum payment_method {
+  cash
+  check
+  credit_card
+  insurance
+  other
+}
+
+Enum insurance_relationship {
+  self
+  spouse
+  child
+  parent
+  other
+}
+
+Enum insurance_coverage {
+  primary
+  secondary
+  tertiary
+}
+
+Enum insurance_status {
+  active
+  inactive
+  expired
+}
+
+// Tables
+
+Table users {
+  id varchar(36) [pk]
+  email varchar(255) [unique, not null]
+  password_hash varchar(255) [not null]
+  name varchar(255) [not null]
+  role user_role [not null]
+  avatar varchar(500)
+  department varchar(100)
+  specialization varchar(100)
+  phone varchar(20)
+  status user_status [default: 'active']
+  last_login timestamp
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  updated_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  indexes {
+    email
+    role
+    status
+  }
+}
+
+Table patients {
+  id varchar(36) [pk]
+  user_id varchar(36) [ref: > users.id]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  date_of_birth date [not null]
+  gender gender_type [not null]
+  phone varchar(20)
+  email varchar(255)
+  address text
+  city varchar(100)
+  state varchar(50)
+  zip_code varchar(10)
+  country varchar(50) [default: 'USA']
+  emergency_contact_name varchar(255)
+  emergency_contact_phone varchar(20)
+  emergency_contact_relationship varchar(50)
+  blood_type blood_type
+  allergies text
+  chronic_conditions text
+  current_medications text
+  primary_doctor_id varchar(36) [ref: > users.id]
+  status patient_status [default: 'active']
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  updated_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  indexes {
+    (last_name, first_name)
+    primary_doctor_id
+    status
+  }
+}
+
+Table appointments {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  doctor_id varchar(36) [ref: > users.id, not null]
+  appointment_date date [not null]
+  appointment_time time [not null]
+  duration_minutes int [default: 30]
+  appointment_type appointment_type [not null]
+  priority appointment_priority [default: 'medium']
+  status appointment_status [default: 'scheduled']
+  chief_complaint text
+  notes text
+  room_number varchar(20)
+  created_by varchar(36) [ref: > users.id, not null]
+  cancelled_by varchar(36) [ref: > users.id]
+  cancellation_reason text
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  updated_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  indexes {
+    (appointment_date, appointment_time)
+    patient_id
+    doctor_id
+    status
+    priority
+  }
+}
+
+Table visits {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  doctor_id varchar(36) [ref: > users.id, not null]
+  appointment_id varchar(36) [ref: > appointments.id]
+  visit_date date [not null]
+  visit_time time [not null]
+  visit_type visit_type [not null]
+  chief_complaint text
+  history_present_illness text
+  physical_examination text
+  assessment text
+  plan text
+  notes text
+  discharge_instructions text
+  follow_up_instructions text
+  status visit_status [default: 'in_progress']
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  updated_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  indexes {
+    patient_id
+    doctor_id
+    visit_date
+    status
+  }
+}
+
+Table medical_conditions {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  visit_id varchar(36) [ref: > visits.id]
+  condition_name varchar(255) [not null]
+  icd_10_code varchar(20)
+  diagnosis_date date [not null]
+  severity condition_severity [default: 'moderate']
+  status condition_status [default: 'active']
+  notes text
+  diagnosed_by varchar(36) [ref: > users.id, not null]
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  updated_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  indexes {
+    patient_id
+    condition_name
+    status
+    icd_10_code
+  }
+}
+
+Table prescriptions {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  doctor_id varchar(36) [ref: > users.id, not null]
+  visit_id varchar(36) [ref: > visits.id]
+  medication_name varchar(255) [not null]
+  dosage varchar(100) [not null]
+  frequency varchar(100) [not null]
+  duration varchar(100)
+  quantity_prescribed int
+  refills_remaining int [default: 0]
+  instructions text
+  indication varchar(255)
+  status prescription_status [default: 'active']
+  prescribed_date date [not null]
+  start_date date
+  end_date date
+  pharmacy_notes text
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  updated_at timestamp [default: 'CURRENT_TIMESTAMP']
+
+  indexes {
+    patient_id
+    doctor_id
+    medication_name
+    status
+    prescribed_date
+  }
+}
+
+Table vitals {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  visit_id varchar(36) [ref: > visits.id]
+  recorded_by varchar(36) [ref: > users.id, not null]
+  recorded_at timestamp [default: 'CURRENT_TIMESTAMP']
+  systolic_bp int
+  diastolic_bp int
+  heart_rate int
+  respiratory_rate int
+  temperature decimal(4,1)
+  temperature_unit temperature_unit [default: 'F']
+  oxygen_saturation int
+  weight decimal(5,2)
+  weight_unit weight_unit [default: 'lbs']
+  height_feet int
+  height_inches int
+  height_cm int
+  bmi decimal(4,1)
+  pain_scale int
+  notes text
+
+  indexes {
+    patient_id
+    visit_id
+    recorded_at
+  }
+}
+
+Table lab_results {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  visit_id varchar(36) [ref: > visits.id]
+  ordered_by varchar(36) [ref: > users.id, not null]
+  test_name varchar(255) [not null]
+  test_code varchar(50)
+  test_category test_category [not null]
+  result_value varchar(255)
+  result_unit varchar(50)
+  reference_range varchar(100)
+  status result_status [default: 'ordered']
+  abnormal_flag abnormal_flag [default: 'normal']
+  ordered_date date [not null]
+  collection_date date
+  result_date date
+  lab_comments text
+  interpretation text
+
+  indexes {
+    patient_id
+    test_name
+    status
+    ordered_date
+    abnormal_flag
+  }
+}
+
+Table billing {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  visit_id varchar(36) [ref: > visits.id]
+  appointment_id varchar(36) [ref: > appointments.id]
+  invoice_number varchar(100) [unique, not null]
+  service_date date [not null]
+  service_description text [not null]
+  procedure_codes text
+  diagnosis_codes text
+  amount_charged decimal(10,2) [not null]
+  amount_paid decimal(10,2) [default: 0.00]
+  amount_due decimal(10,2)
+  payment_status payment_status [default: 'pending']
+  billing_date date [not null]
+  due_date date [not null]
+  payment_date date
+  payment_method payment_method
+  notes text
+  created_by varchar(36) [ref: > users.id, not null]
+
+  indexes {
+    patient_id
+    invoice_number
+    payment_status
+    due_date
+    service_date
+  }
+}
+
+Table insurance {
+  id varchar(36) [pk]
+  patient_id varchar(36) [ref: > patients.id, not null]
+  insurance_company varchar(255) [not null]
+  policy_number varchar(100) [not null]
+  group_number varchar(100)
+  policy_holder_name varchar(255) [not null]
+  relationship_to_patient insurance_relationship [not null]
+  coverage_type insurance_coverage [not null]
+  effective_date date [not null]
+  expiration_date date
+  copay_amount decimal(6,2)
+  deductible_amount decimal(8,2)
+  deductible_met decimal(8,2) [default: 0.00]
+  status insurance_status [default: 'active']
+  pre_auth_required boolean [default: false]
+  notes text
+
+  indexes {
+    patient_id
+    policy_number
+    coverage_type
+    status
+    (patient_id, coverage_type) [unique]
+  }
+}
+
+Table security_logs {
+  id varchar(36) [pk]
+  user_id varchar(36) [ref: > users.id]
+  action varchar(100) [not null]
+  resource_type varchar(50)
+  resource_id varchar(36)
+  ip_address varchar(45)
+  user_agent text
+  timestamp timestamp [default: 'CURRENT_TIMESTAMP']
+  success boolean [not null]
+  failure_reason text
+  additional_data text
+
+  indexes {
+    user_id
+    action
+    timestamp
+    success
+    (resource_type, resource_id)
+  }
+}
+
+Table user_sessions {
+  id varchar(36) [pk]
+  user_id varchar(36) [ref: > users.id, not null]
+  session_token varchar(255) [unique, not null]
+  ip_address varchar(45)
+  user_agent text
+  created_at timestamp [default: 'CURRENT_TIMESTAMP']
+  expires_at timestamp [not null]
+  last_activity timestamp [default: 'CURRENT_TIMESTAMP']
+  is_active boolean [default: true]
+
+  indexes {
+    user_id
+    session_token
+    expires_at
+    is_active
+  }
+}

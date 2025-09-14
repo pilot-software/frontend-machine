@@ -1,0 +1,14 @@
+{
+  "availableConfigurations": {
+    "clinic": {
+      "enabled": true,
+      "name": "Small Clinic",
+      "description": "Basic healthcare management for small clinics"
+    },
+    "hospital": {
+      "enabled": true,
+      "name": "Hospital",
+      "description": "Full-featured healthcare management system"
+    }
+  }
+}
