@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useBranch } from '@/components/BranchContext';
 import { apiClient } from '@/lib/api';
+
+// Request cache to prevent duplicates
+const requestCache = new Map<string, Promise<any>>();
 
 export function useBranchData<T>(
   fetchFn: (branchId?: string) => Promise<T>,
@@ -12,25 +15,60 @@ export function useBranchData<T>(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { selectedBranch, hasBranches } = useBranch();
+  const abortController = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      // Cancel previous request
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+      abortController.current = new AbortController();
+      
       setIsLoading(true);
       setError(null);
       
       try {
-        // For orgs without branches, don't pass branchId
         const branchId = hasBranches ? (selectedBranch === 'all' ? undefined : selectedBranch) : undefined;
-        const result = await fetchFn(branchId);
-        setData(result);
+        const cacheKey = `${fetchFn.name}-${branchId || 'all'}`;
+        
+        // Check cache first
+        if (requestCache.has(cacheKey)) {
+          const result = await requestCache.get(cacheKey);
+          if (!abortController.current?.signal.aborted) {
+            setData(result);
+          }
+        } else {
+          // Create new request and cache it
+          const request = fetchFn(branchId);
+          requestCache.set(cacheKey, request);
+          
+          const result = await request;
+          if (!abortController.current?.signal.aborted) {
+            setData(result);
+          }
+          
+          // Clear cache after 30 seconds
+          setTimeout(() => requestCache.delete(cacheKey), 30000);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        if (!abortController.current?.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'An error occurred');
+        }
       } finally {
-        setIsLoading(false);
+        if (!abortController.current?.signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchData();
+    
+    return () => {
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+    };
   }, [selectedBranch, hasBranches, ...deps]);
 
   return { data, isLoading, error, refetch: () => fetchData() };
