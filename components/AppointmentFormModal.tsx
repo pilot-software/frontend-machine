@@ -101,8 +101,16 @@ export function AppointmentFormModal({
     const handleDateSelect = (date: Date | undefined) => {
         setSelectedDate(date);
         if (date) {
-            const dateString = date.toISOString().split('T')[0];
-            setAppointmentData(prev => ({...prev, appointmentDate: dateString}));
+            try {
+                // Ensure we have a valid date and format it properly
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateString = `${year}-${month}-${day}`;
+                setAppointmentData(prev => ({...prev, appointmentDate: dateString}));
+            } catch (error) {
+                console.error('Date formatting error:', error);
+            }
         }
     };
 
@@ -115,13 +123,27 @@ export function AppointmentFormModal({
                 return;
             }
 
+            // Validate date format
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(appointmentData.appointmentDate)) {
+                alert('Invalid date format. Please select a valid date.');
+                return;
+            }
+
+            // Validate time format
+            const timeRegex = /^\d{2}:\d{2}$/;
+            if (!timeRegex.test(appointmentData.appointmentTime)) {
+                alert('Invalid time format. Please select a valid time.');
+                return;
+            }
+
             const apiData = {
                 patientId: appointmentData.patientId,
                 doctorId: appointmentData.doctorId,
                 appointmentDate: appointmentData.appointmentDate,
                 appointmentTime: appointmentData.appointmentTime,
                 durationMinutes: appointmentData.durationMinutes || 30,
-                status: 'SCHEDULED',
+                status: 'SCHEDULED' as const,
                 chiefComplaint: appointmentData.chiefComplaint || undefined,
                 notes: appointmentData.notes || undefined,
                 roomNumber: appointmentData.roomNumber || undefined,
@@ -140,7 +162,13 @@ export function AppointmentFormModal({
         } catch (error) {
             console.error('Failed to save appointment:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-            alert(`Failed to save appointment: ${errorMessage}`);
+            
+            // Check for specific time-related errors
+            if (errorMessage.includes('Invalid time') || errorMessage.includes('time value')) {
+                alert('Invalid date or time format. Please check your selections and try again.');
+            } else {
+                alert(`Failed to save appointment: ${errorMessage}`);
+            }
         } finally {
             setIsSubmitting(false);
         }

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { calculateAge, safeDateToString } from '@/lib/utils/dateUtils';
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -315,12 +316,10 @@ export function PatientManagement() {
       return {
         id: patient.id,
         name: `${patient.firstName} ${patient.lastName}`,
-        age:
-          new Date().getFullYear() -
-          new Date(patient.dateOfBirth).getFullYear(),
+        age: calculateAge(patient.dateOfBirth),
         caseNumber: patient.id.substring(0, 8).toUpperCase(),
         status: "Active",
-        lastVisit: new Date(patient.updatedAt).toISOString().split("T")[0],
+        lastVisit: safeDateToString(patient.updatedAt, new Date().toISOString().split("T")[0]),
         doctor: "Dr. Assigned",
         condition: patient.chronicConditions || "General Care",
         department: "Cardiology", // Default department

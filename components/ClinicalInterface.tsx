@@ -374,7 +374,7 @@ export function ClinicalInterface() {
                                     </div>
                                     <div>
                                         <Label>Recorded At</Label>
-                                        <p className="text-lg font-medium">{new Date(medicalData.vitals[0].recordedAt).toLocaleDateString()}</p>
+                                        <p className="text-lg font-medium">{medicalData.vitals[0].recordedAt ? new Date(medicalData.vitals[0].recordedAt).toLocaleDateString() : 'Not available'}</p>
                                     </div>
                                 </div>
                             )}
