@@ -15,163 +15,27 @@ import {
 } from "./ui/dropdown-menu";
 import {
   Activity,
-  BarChart3,
-  BedDouble,
-  Calendar,
-  ClipboardList,
-  FileText,
-  Heart,
-  Lock,
   LogOut,
   Menu,
   Moon,
-  PillBottle,
   Settings,
   Shield,
-  Stethoscope,
   Sun,
   User,
-  Users,
 } from "lucide-react";
-import { FeatureConfig, TextConfig } from "@/config";
 import { useRouter, usePathname } from "next/navigation";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { useTheme } from "./ThemeProvider";
 import { BranchSelector } from "./BranchSelector";
 import { useIsMobile } from "./ui/use-mobile";
+import { RoleStrategyFactory } from "../lib/strategies/role.strategy";
+import { getRoleColor } from "../lib/constants/status";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-const getRoleConfig = (features: FeatureConfig, text: TextConfig) => ({
-  admin: {
-    color: "bg-red-100 text-red-800",
-    icon: Shield,
-    menuItems: [
-      { icon: Users, label: "User Management", path: "/users" },
-      ...(features.analytics
-        ? [
-            {
-              icon: BarChart3,
-              label: text.navigation.analytics,
-              path: "/analytics",
-            },
-          ]
-        : []),
-      ...(features.securityLogs
-        ? [{ icon: Lock, label: text.navigation.security, path: "/security" }]
-        : []),
 
-      ...(features.reports
-        ? [{ icon: FileText, label: text.navigation.reports, path: "/reports" }]
-        : []),
-    ],
-  },
-  doctor: {
-    color: "bg-blue-100 text-blue-800",
-    icon: Stethoscope,
-    menuItems: [
-      ...(features.patientManagement
-        ? [{ icon: Users, label: text.navigation.patients, path: "/patients" }]
-        : []),
-      ...(features.appointmentSystem
-        ? [
-            {
-              icon: Calendar,
-              label: text.navigation.appointments,
-              path: "/appointments",
-            },
-          ]
-        : []),
-      ...(features.clinicalInterface
-        ? [
-            {
-              icon: ClipboardList,
-              label: text.navigation.records,
-              path: "/clinical",
-            },
-          ]
-        : []),
-      ...(features.prescriptionSystem
-        ? [
-            {
-              icon: PillBottle,
-              label: text.navigation.prescriptions,
-              path: "/prescriptions",
-            },
-          ]
-        : []),
-      ...(features.securityLogs
-        ? [{ icon: Lock, label: text.navigation.security, path: "/security" }]
-        : []),
-    ],
-  },
-  nurse: {
-    color: "bg-green-100 text-green-800",
-    icon: Heart,
-    menuItems: [
-      ...(features.patientManagement
-        ? [{ icon: Users, label: "Patient Care", path: "/patients" }]
-        : []),
-      ...(features.vitalsTracking
-        ? [{ icon: Activity, label: "Vital Signs", path: "/clinical" }]
-        : []),
-      ...(features.wardManagement
-        ? [{ icon: BedDouble, label: "Ward Management", path: "/wards" }]
-        : []),
-      { icon: Calendar, label: "Shift Schedule", path: "/schedule" },
-    ],
-  },
-  patient: {
-    color: "bg-purple-100 text-purple-800",
-    icon: User,
-    menuItems: [
-      ...(features.appointmentSystem
-        ? [{ icon: Calendar, label: "My Appointments", path: "/appointments" }]
-        : []),
-      ...(features.clinicalInterface
-        ? [{ icon: FileText, label: "Medical Records", path: "/clinical" }]
-        : []),
-      ...(features.prescriptionSystem
-        ? [
-            {
-              icon: PillBottle,
-              label: text.navigation.prescriptions,
-              path: "/prescriptions",
-            },
-          ]
-        : []),
-      { icon: User, label: "Profile", path: "/profile" },
-    ],
-  },
-  finance: {
-    color: "bg-yellow-100 text-yellow-800",
-    icon: BarChart3,
-    menuItems: [
-      ...(features.analytics
-        ? [
-            {
-              icon: BarChart3,
-              label: "Financial Reports",
-              path: "/financial",
-            },
-          ]
-        : []),
-      ...(features.billingSystem
-        ? [
-            {
-              icon: FileText,
-              label: text.navigation.billing,
-              path: "/financial",
-            },
-          ]
-        : []),
-      { icon: Users, label: "Patient Accounts", path: "/financial" },
-
-    ],
-  },
-});
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
@@ -189,8 +53,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
   if (!features.roles[user.role]) return null;
 
-  const roleConfig = getRoleConfig(features, text);
-  const config = roleConfig[user.role];
+  const roleStrategy = RoleStrategyFactory.getStrategy(user.role);
+  const config = roleStrategy.getConfig(features, text);
   const RoleIcon = config.icon;
 
   const getInitials = (name: string) => {
@@ -328,7 +192,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <p className="text-sm font-medium text-foreground transition-colors duration-200 group-hover:text-primary">
                       {user.name}
                     </p>
-                    <Badge variant="secondary" className={`${config.color} transition-all duration-200 group-hover:scale-105 text-xs`}>
+                    <Badge variant="secondary" className={`${getRoleColor(user.role)} transition-all duration-200 group-hover:scale-105 text-xs`}>
                       <RoleIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:rotate-12" />
                       {text.roles[user.role]}
                     </Badge>

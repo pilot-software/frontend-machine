@@ -1,12 +1,15 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from './ui/card';
-import {Button} from './ui/button';
-import {Input} from './ui/input';
-import {AppointmentFormModal} from './AppointmentFormModal';
-import {Badge} from './ui/badge';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs';
+import React, { useEffect, useRef } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { LoadingState } from './ui/loading-state';
+import { StatusBadge } from './ui/status-badge';
+import { AppointmentFormModal } from './AppointmentFormModal';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { appointmentService, ApiAppointment } from '../lib/services/appointment';
 import { useApi } from '../lib/hooks/useApi';
+import { useModal } from '../lib/hooks/useModal';
+import { transformAppointmentToDisplay, AppointmentDisplay } from '../lib/utils/data-transformers';
 import {
     AlertCircle,
     Calendar as CalendarIcon,
@@ -21,25 +24,9 @@ import {
     XCircle
 } from 'lucide-react';
 
-interface AppointmentDisplay {
-    id: string;
-    patientName: string;
-    doctorName: string;
-    date: string;
-    time: string;
-    type: string;
-    status: string;
-    department: string;
-    reason: string;
-    duration: number;
-    notes?: string;
-}
-
 export function AppointmentSystem() {
-    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState<'schedule' | 'reschedule' | 'view'>('schedule');
-    const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | undefined>();
-    const [searchTerm, setSearchTerm] = useState('');
+    const { isOpen, mode, selectedId, openModal, closeModal } = useModal<string>('schedule');
+    const [searchTerm, setSearchTerm] = React.useState('');
     
     const { execute: fetchAppointments, loading: appointmentsLoading, data: appointments, statusCode } = useApi<(ApiAppointment & { patientName: string })[]>();
     const hasFetched = useRef(false);
@@ -51,21 +38,9 @@ export function AppointmentSystem() {
         }
     }, [fetchAppointments, statusCode]);
 
-    // Transform API appointments to display format
-    const appointmentsList = appointments?.data || appointments || [];
-    const mockAppointments: AppointmentDisplay[] = (Array.isArray(appointmentsList) ? appointmentsList : []).map((appointment: any) => ({
-        id: appointment.id,
-        patientName: appointment.patientName || 'Unknown Patient',
-        doctorName: 'Doctor Name', // TODO: Get from user service
-        date: appointment.appointmentDate,
-        time: appointment.appointmentTime,
-        type: 'routine',
-        status: appointment.status.toLowerCase(),
-        department: 'General',
-        reason: appointment.chiefComplaint || 'General consultation',
-        duration: appointment.durationMinutes,
-        notes: appointment.notes
-    }));
+    const appointmentsList = appointments || [];
+    const displayAppointments: AppointmentDisplay[] = (Array.isArray(appointmentsList) ? appointmentsList : [])
+        .map(transformAppointmentToDisplay);
 
     const todayStats = [
         {label: 'Total Appointments', value: '24', icon: CalendarIcon, color: 'text-blue-600'},
@@ -74,22 +49,7 @@ export function AppointmentSystem() {
         {label: 'Video Calls', value: '2', icon: Video, color: 'text-orange-600'}
     ];
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'scheduled':
-                return 'bg-blue-100 text-blue-800';
-            case 'confirmed':
-                return 'bg-green-100 text-green-800';
-            case 'completed':
-                return 'bg-emerald-100 text-emerald-800';
-            case 'cancelled':
-                return 'bg-red-100 text-red-800';
-            case 'no-show':
-                return 'bg-gray-100 text-gray-800';
-            default:
-                return 'bg-slate-100 text-slate-800';
-        }
-    };
+
 
     const getTypeIcon = (type: string) => {
         switch (type) {
@@ -137,12 +97,7 @@ export function AppointmentSystem() {
                     <p className="text-muted-foreground mt-1">Schedule and manage patient appointments - Direct, Phone &amp;
                         Video</p>
                 </div>
-                <Button
-                    onClick={() => {
-                        setModalMode('schedule');
-                        setSelectedAppointmentId(undefined);
-                        setIsAppointmentModalOpen(true);
-                    }}
+                <Button onClick={() => openModal('schedule')}
                 >
                     <Plus className="h-4 w-4 mr-2"/>
                     Schedule Appointment
@@ -225,12 +180,10 @@ export function AppointmentSystem() {
                         </CardHeader>
                         <CardContent>
                             {appointmentsLoading ? (
-                                <div className="flex items-center justify-center py-8">
-                                    <div className="text-sm text-muted-foreground">Loading appointments...</div>
-                                </div>
+                                <LoadingState message="Loading appointments..." />
                             ) : (
                             <div className="space-y-4">
-                                {mockAppointments.map((appointment) => {
+                                {displayAppointments.map((appointment) => {
                                     const TypeIcon = getTypeIcon(appointment.type);
                                     const StatusIcon = getStatusIcon(appointment.status);
 
@@ -250,9 +203,7 @@ export function AppointmentSystem() {
                                                 <div>
                                                     <div className="flex items-center space-x-2">
                                                         <h3 className="font-medium">{appointment.patientName}</h3>
-                                                        <Badge className={getStatusColor(appointment.status)}>
-                                                            {appointment.status}
-                                                        </Badge>
+                                                        <StatusBadge status={appointment.status} />
                                                     </div>
                                                     <p className="text-sm text-muted-foreground">
                                                         {appointment.doctorName} • {appointment.department}
@@ -288,10 +239,8 @@ export function AppointmentSystem() {
                                         </div>
                                     );
                                 })}
-                                {mockAppointments.length === 0 && !appointmentsLoading && (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        No appointments found
-                                    </div>
+                                {displayAppointments.length === 0 && !appointmentsLoading && (
+                                    <LoadingState message="No appointments found" className="text-center" />
                                 )}
                             </div>
                             )}
@@ -344,10 +293,10 @@ export function AppointmentSystem() {
 
             {/* Appointment Form Modal */}
             <AppointmentFormModal
-                isOpen={isAppointmentModalOpen}
-                onClose={() => setIsAppointmentModalOpen(false)}
-                appointmentId={selectedAppointmentId}
-                mode={modalMode}
+                isOpen={isOpen}
+                onClose={closeModal}
+                appointmentId={selectedId}
+                mode={mode as any}
             />
         </div>
     );

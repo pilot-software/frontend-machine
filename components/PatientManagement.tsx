@@ -1,25 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { calculateAge, safeDateToString } from '@/lib/utils/dateUtils';
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { PatientFormModal } from "./PatientFormModal";
 import { Badge } from "./ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
   Dialog,
@@ -29,23 +13,18 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { useAppData } from "../lib/hooks/useAppData";
-import { FilterDropdown } from "./FilterDropdown";
+import { useModal } from "../lib/hooks/useModal";
+import { transformPatientToDisplay } from "../lib/utils/data-transformers";
+import { PatientStats } from "./patient/PatientStats";
+import { PatientSearch } from "./patient/PatientSearch";
+import { PatientList } from "./patient/PatientList";
 import {
   Activity,
-  AlertTriangle,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  Edit,
-  Eye,
-  FileText,
   Plus,
-  Search,
   Stethoscope,
   Thermometer,
-  UserPlus,
 } from "lucide-react";
-import { Doctor, Patient } from "@/lib/types";
+import { Patient } from "@/lib/types";
 
 interface Visit {
   id: string;
@@ -258,11 +237,7 @@ function VisitDetailsModal({ isOpen, onClose, visit }: VisitDetailsModalProps) {
 }
 
 export function PatientManagement() {
-  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"add" | "edit" | "view">("add");
-  const [selectedPatientId, setSelectedPatientId] = useState<
-    string | undefined
-  >();
+  const { isOpen, mode, selectedId, openModal, closeModal } = useModal();
   const [searchTerm, setSearchTerm] = useState("");
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
@@ -270,63 +245,14 @@ export function PatientManagement() {
 
   const { patients, stats, loading } = useAppData();
 
-  const quickStats = [
-    {
-      label: "Total Patients",
-      value: stats?.totalPatients?.toString() || "0",
-      change: "+12%",
-      icon: UserPlus,
-      color: "text-blue-600",
-    },
-    {
-      label: "New This Month",
-      value: stats?.newPatientsThisMonth?.toString() || "0",
-      change: "+23%",
-      icon: Plus,
-      color: "text-green-600",
-    },
-    {
-      label: "Critical Cases",
-      value: stats?.criticalCases?.toString() || "0",
-      change: "-8%",
-      icon: AlertTriangle,
-      color: "text-red-600",
-    },
-    {
-      label: "Discharged Today",
-      value: stats?.dischargedToday?.toString() || "0",
-      change: "+2%",
-      icon: CheckCircle2,
-      color: "text-emerald-600",
-    },
-  ];
-
   const handleSearch = async (term: string) => {
     // Search functionality can be implemented with Redux actions if needed
     console.log("Search term:", term);
   };
 
-  // Transform API patients to display format
   const patientsList = patients || [];
-  const allPatients = (Array.isArray(patientsList) ? patientsList : []).map(
-    (patient: Patient) => {
-      //   const assignedDoctorDetails = [].find(
-      //     (doctor: Doctor) => doctor.id === patient.assignedDoctor
-      //   );
-      return {
-        id: patient.id,
-        name: `${patient.firstName} ${patient.lastName}`,
-        age: calculateAge(patient.dateOfBirth),
-        caseNumber: patient.id.substring(0, 8).toUpperCase(),
-        status: "Active",
-        lastVisit: safeDateToString(patient.updatedAt, new Date().toISOString().split("T")[0]),
-        doctor: "Dr. Assigned",
-        condition: patient.chronicConditions || "General Care",
-        department: "Cardiology", // Default department
-        avatar: `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`,
-      };
-    }
-  );
+  const allPatients = (Array.isArray(patientsList) ? patientsList : [])
+    .map((patient: Patient) => transformPatientToDisplay(patient));
 
   // Apply filters and search
   const recentPatients = allPatients.filter((patient) => {
@@ -501,40 +427,28 @@ export function PatientManagement() {
     return patientVisits[patientId as keyof typeof patientVisits] || [];
   };
 
-  const getRecentVisits = (patientId: string) => {
-    const visits = getPatientVisits(patientId);
-    return visits.filter((visit) => {
-      const visitDate = new Date(visit.date);
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-      return visitDate >= threeMonthsAgo;
-    });
-  };
+  // Visit helper functions (currently unused but kept for future features)
+  // const getRecentVisits = (patientId: string) => {
+  //   const visits = getPatientVisits(patientId);
+  //   return visits.filter((visit) => {
+  //     const visitDate = new Date(visit.date);
+  //     const threeMonthsAgo = new Date();
+  //     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  //     return visitDate >= threeMonthsAgo;
+  //   });
+  // };
 
-  const getPastVisits = (patientId: string) => {
-    const visits = getPatientVisits(patientId);
-    return visits.filter((visit) => {
-      const visitDate = new Date(visit.date);
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-      return visitDate < threeMonthsAgo;
-    });
-  };
+  // const getPastVisits = (patientId: string) => {
+  //   const visits = getPatientVisits(patientId);
+  //   return visits.filter((visit) => {
+  //     const visitDate = new Date(visit.date);
+  //     const threeMonthsAgo = new Date();
+  //     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  //     return visitDate < threeMonthsAgo;
+  //   });
+  // };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "critical":
-        return "bg-red-100 text-red-800";
-      case "recovering":
-        return "bg-yellow-100 text-yellow-800";
-      case "discharged":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+
 
   return (
     <div className="space-y-6">
@@ -548,50 +462,14 @@ export function PatientManagement() {
             Comprehensive patient care and record management
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setModalMode("add");
-            setSelectedPatientId(undefined);
-            setIsPatientModalOpen(true);
-          }}
+        <Button onClick={() => openModal('add')}
         >
           <Plus className="h-4 w-4 mr-2" />
           Add New Patient
         </Button>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-        {quickStats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index}>
-              <CardContent className="p-3 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground">
-                      {stat.label}
-                    </p>
-                    <p className="text-lg md:text-2xl font-semibold text-foreground mt-1">
-                      {stat.value}
-                    </p>
-                    <p
-                      className={`text-sm mt-1 ${
-                        stat.change.startsWith("+")
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {stat.change} from last month
-                    </p>
-                  </div>
-                  <Icon className={`h-6 w-6 md:h-8 md:w-8 ${stat.color}`} />
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <PatientStats stats={stats || {}} />
 
       {/* Patient Management Tabs */}
       <Tabs defaultValue="overview" className="w-full">
@@ -603,240 +481,23 @@ export function PatientManagement() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Search and Filters */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex flex-col space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search patients by name, case number, or condition..."
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      handleSearch(e.target.value);
-                    }}
-                    className="pl-10"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <FilterDropdown
-                    filters={[
-                      {
-                        key: 'status',
-                        label: 'Status',
-                        options: [
-                          { value: 'Active', label: 'Active' },
-                          { value: 'Critical', label: 'Critical' },
-                          { value: 'Recovering', label: 'Recovering' },
-                          { value: 'Discharged', label: 'Discharged' },
-                        ]
-                      },
-                      {
-                        key: 'department',
-                        label: 'Department',
-                        options: [
-                          { value: 'Cardiology', label: 'Cardiology' },
-                          { value: 'Emergency', label: 'Emergency' },
-                          { value: 'Orthopedics', label: 'Orthopedics' },
-                          { value: 'Pediatrics', label: 'Pediatrics' },
-                        ]
-                      }
-                    ]}
-                    activeFilters={activeFilters}
-                    onFilterChange={setActiveFilters}
-                    onClearFilters={() => setActiveFilters({})}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <PatientSearch
+            searchTerm={searchTerm}
+            onSearchChange={(term) => {
+              setSearchTerm(term);
+              handleSearch(term);
+            }}
+            activeFilters={activeFilters}
+            onFilterChange={setActiveFilters}
+            onClearFilters={() => setActiveFilters({})}
+          />
 
-          {/* Recent Patients */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Patients</CardTitle>
-              <CardDescription>
-                Latest patient admissions and updates
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {loading.patients || loading.stats ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="text-sm text-muted-foreground">
-                    Loading patients...
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {recentPatients.map((patient) => (
-                    <div key={patient.id} className="space-y-4">
-                      <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                        <div className="flex items-center space-x-4">
-                          <Avatar className="h-12 w-12">
-                            <AvatarImage
-                              src={patient.avatar}
-                              alt={patient.name}
-                            />
-                            <AvatarFallback>
-                              {patient.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="flex items-center space-x-2">
-                              <h3 className="font-medium">{patient.name}</h3>
-                              <Badge className={getStatusColor(patient.status)}>
-                                {patient.status}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              Case: {patient.caseNumber} • Age: {patient.age} •{" "}
-                              {patient.condition}
-                            </p>
-                            <p className="text-sm text-muted-foreground opacity-70">
-                              Dr. {patient.doctor} • Last visit:{" "}
-                              {patient.lastVisit}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setModalMode("view");
-                              setSelectedPatientId(patient.id);
-                              setIsPatientModalOpen(true);
-                            }}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setModalMode("edit");
-                              setSelectedPatientId(patient.id);
-                              setIsPatientModalOpen(true);
-                            }}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <FileText className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Visit History */}
-                      <div className="ml-16">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Recent Visits */}
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
-                              <Clock className="h-4 w-4 mr-1" />
-                              Recent Visits (
-                              {getRecentVisits(patient.id).length})
-                            </h4>
-                            <div className="space-y-2">
-                              {getRecentVisits(patient.id)
-                                .slice(0, 2)
-                                .map((visit) => (
-                                  <div
-                                    key={visit.id}
-                                    className="bg-gray-50 p-2 rounded cursor-pointer hover:bg-gray-100 transition-colors"
-                                    onClick={() => {
-                                      setSelectedVisit(visit);
-                                      setIsVisitModalOpen(true);
-                                    }}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs font-medium">
-                                        {visit.date}
-                                      </span>
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs"
-                                      >
-                                        {visit.type}
-                                      </Badge>
-                                    </div>
-                                    <p className="text-xs text-gray-600 mt-1">
-                                      {visit.chiefComplaint}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                      {visit.doctor}
-                                    </p>
-                                  </div>
-                                ))}
-                              {getRecentVisits(patient.id).length === 0 && (
-                                <p className="text-xs text-gray-500">
-                                  No recent visits
-                                </p>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Past Visits */}
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              Past Visits ({getPastVisits(patient.id).length})
-                            </h4>
-                            <div className="space-y-2">
-                              {getPastVisits(patient.id)
-                                .slice(0, 2)
-                                .map((visit) => (
-                                  <div
-                                    key={visit.id}
-                                    className="bg-gray-50 p-2 rounded cursor-pointer hover:bg-gray-100 transition-colors"
-                                    onClick={() => {
-                                      setSelectedVisit(visit);
-                                      setIsVisitModalOpen(true);
-                                    }}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs font-medium">
-                                        {visit.date}
-                                      </span>
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs"
-                                      >
-                                        {visit.type}
-                                      </Badge>
-                                    </div>
-                                    <p className="text-xs text-gray-600 mt-1">
-                                      {visit.chiefComplaint}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                      {visit.doctor}
-                                    </p>
-                                  </div>
-                                ))}
-                              {getPastVisits(patient.id).length === 0 && (
-                                <p className="text-xs text-gray-500">
-                                  No past visits
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {recentPatients.length === 0 && !loading.patients && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No patients found
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <PatientList
+            patients={recentPatients}
+            loading={loading.patients || loading.stats}
+            onViewPatient={(id) => openModal('view', id)}
+            onEditPatient={(id) => openModal('edit', id)}
+          />
         </TabsContent>
 
         <TabsContent value="admissions">
@@ -888,12 +549,11 @@ export function PatientManagement() {
         </TabsContent>
       </Tabs>
 
-      {/* Patient Form Modal */}
       <PatientFormModal
-        isOpen={isPatientModalOpen}
-        onClose={() => setIsPatientModalOpen(false)}
-        patientId={selectedPatientId}
-        mode={modalMode}
+        isOpen={isOpen}
+        onClose={closeModal}
+        patientId={selectedId}
+        mode={mode as any}
       />
 
       {/* Visit Details Modal */}
