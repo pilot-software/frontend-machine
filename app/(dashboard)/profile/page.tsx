@@ -112,7 +112,7 @@ export default function ProfilePage() {
                             <Label htmlFor="joined">Member Since</Label>
                             <div className="flex items-center space-x-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <Input id="joined" value={new Date(user.createdAt).toLocaleDateString()} readOnly />
+                                <Input id="joined" value={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Not available'} readOnly />
                             </div>
                         </div>
                     </div>

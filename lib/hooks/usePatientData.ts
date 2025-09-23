@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppData } from './useAppData';
 import { Doctor, Patient } from '@/lib/types';
+import { safeDateToString } from '@/lib/utils/dateUtils';
 
 export function usePatientData() {
   const { doctors: doctorsData, patients: patientsData } = useAppData();
@@ -24,7 +25,7 @@ export function usePatientData() {
         gender: patient.gender?.toLowerCase() || "other",
         address: patient.address || "N/A",
         emergencyContact: patient.emergencyContactPhone || "N/A",
-        lastVisit: new Date(patient.updatedAt).toISOString().split("T")[0],
+        lastVisit: safeDateToString(patient.updatedAt, new Date().toISOString().split("T")[0]),
         status: "active",
         assignedDoctor: assignedDoctorDetails?.name,
         assignedDoctorId: assignedDoctorDetails?.id,

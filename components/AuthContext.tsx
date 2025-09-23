@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "../lib/types";
+import { storageService } from "../lib/services/storage.service";
 
 interface AuthContextType {
   user: User | null;
@@ -21,26 +22,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on mount
-    try {
-      const savedUser = localStorage.getItem("healthcare_user");
-      const savedToken = localStorage.getItem("auth_token");
-      
-      if (savedUser && savedToken) {
-        setUser(JSON.parse(savedUser));
-        setToken(savedToken);
-        // Initialize API client with saved token
-        import('../lib/api').then(({ apiClient }) => {
-          apiClient.setToken(savedToken);
-          console.log('API client initialized with saved token');
-        });
+    const initializeAuth = async () => {
+      try {
+        const savedUser = storageService.getItem("healthcare_user");
+        const savedToken = storageService.getItem("auth_token");
+        
+        if (savedUser && savedToken) {
+          setUser(JSON.parse(savedUser));
+          setToken(savedToken);
+          
+          const { apiClient: newApiClient } = await import('../lib/api/client');
+          const { apiClient: originalApiClient } = await import('../lib/api');
+          newApiClient.setToken(savedToken);
+          originalApiClient.setToken(savedToken);
+        }
+      } catch (error) {
+        console.error("Failed to load user session:", error);
+        storageService.removeItem("healthcare_user");
+        storageService.removeItem("auth_token");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to load user from localStorage:", error);
-      localStorage.removeItem("healthcare_user");
-      localStorage.removeItem("auth_token");
-    }
-    setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   if (isLoading) {
@@ -74,24 +79,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.token) {
         console.log('Login successful, token received:', response.token.substring(0, 20) + '...');
         
-        // Immediately set token in API client
-        const { apiClient } = await import('../lib/api');
-        apiClient.setToken(response.token);
+        const { apiClient: newApiClient } = await import('../lib/api/client');
+        const { apiClient: originalApiClient } = await import('../lib/api');
+        newApiClient.setToken(response.token);
+        originalApiClient.setToken(response.token);
         
-        const apiUser: User = {
-          id: response.id,
-          email: response.email,
-          name: response.email.split('@')[0],
-          role: response.role.toLowerCase() as any,
-          status: 'active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
+        const apiUser = createUserFromResponse(response);
         
         setUser(apiUser);
         setToken(response.token);
-        localStorage.setItem('healthcare_user', JSON.stringify(apiUser));
-        localStorage.setItem('auth_token', response.token);
+        saveUserSession(apiUser, response.token);
         setIsLoading(false);
         return true;
       } else {
@@ -117,31 +114,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     setUser(null);
     setToken(null);
-    localStorage.removeItem("healthcare_user");
-    localStorage.removeItem("auth_token");
+    clearUserSession();
     if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
   };
 
+  const createUserFromResponse = (response: any): User => ({
+    id: response.id,
+    email: response.email,
+    name: response.email.split('@')[0],
+    role: response.role.toLowerCase() as any,
+    status: 'active',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
+  const saveUserSession = (user: User, token: string) => {
+    storageService.setItem('healthcare_user', JSON.stringify(user));
+    storageService.setItem('auth_token', token);
+  };
+
+  const clearUserSession = () => {
+    storageService.removeItem('healthcare_user');
+    storageService.removeItem('auth_token');
+  };
+
   const resetPassword = async (_email: string): Promise<boolean> => {
-    try {
-      // TODO: Implement password reset API call
-      return false;
-    } catch (error) {
-      console.error('Password reset error:', error);
-      return false;
-    }
+    // TODO: Implement password reset API call
+    return false;
   };
 
   const verifyTwoFactor = async (_code: string): Promise<boolean> => {
-    try {
-      // TODO: Implement 2FA verification API call
-      return false;
-    } catch (error) {
-      console.error('2FA verification error:', error);
-      return false;
-    }
+    // TODO: Implement 2FA verification API call
+    return false;
   };
 
   return (
