@@ -48,7 +48,7 @@ export function AppointmentFormModal({
 
     const [appointmentData, setAppointmentData] = useState<AppointmentFormData>({
         patientId: preSelectedPatientId || '',
-        doctorId: user?.role === 'DOCTOR' ? user.id : '',
+        doctorId: user?.role === 'doctor' ? user.id : '',
         appointmentDate: '',
         appointmentTime: '',
         durationMinutes: 30,
@@ -67,7 +67,7 @@ export function AppointmentFormModal({
                 try {
                     const [patientsData, doctorsData] = await Promise.all([
                         patientService.getPatients(),
-                        userService.getUsersByRole('DOCTOR')
+                        userService.getUsersByRole('doctor')
                     ]);
                     setPatients(patientsData);
                     setDoctors(doctorsData);
@@ -231,7 +231,7 @@ export function AppointmentFormModal({
                                             <Select
                                                 value={appointmentData.doctorId}
                                                 onValueChange={(value) => handleInputChange('doctorId', value)}
-                                                disabled={isReadOnly || user?.role === 'DOCTOR'}
+                                                disabled={isReadOnly || user?.role === 'doctor'}
                                             >
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select doctor"/>

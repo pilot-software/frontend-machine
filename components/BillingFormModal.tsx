@@ -91,10 +91,10 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
         setIsSubmitting(true);
         try {
             if (mode === 'billing') {
-                const { default: api } = await import('../lib/api');
+                const { api } = await import('../lib/api');
                 await api.post('/financial', billingData);
             } else {
-                const { default: api } = await import('../lib/api');
+                const { api } = await import('../lib/api');
                 await api.post('/financial/payments', paymentData);
             }
             onClose();

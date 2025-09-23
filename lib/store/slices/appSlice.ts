@@ -84,7 +84,7 @@ const appSlice = createSlice({
       })
       .addCase(fetchPatients.fulfilled, (state, action) => {
         state.loading.patients = false;
-        state.patients = (action.payload?.data || action.payload || []) as any;
+        state.patients = (action.payload || []) as any;
       })
       .addCase(fetchPatients.rejected, (state, action) => {
         state.loading.patients = false;

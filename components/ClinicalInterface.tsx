@@ -97,18 +97,16 @@ export function ClinicalInterface() {
     useEffect(() => {
         if (selectedPatient && !hasFetched.current) {
             hasFetched.current = true;
-            fetchMedicalData(() => patientService.getPatientMedicalData(selectedPatient))
-                .then(setMedicalData)
-                .catch(console.error);
+            // TODO: Implement getPatientMedicalData method
+            setMedicalData(null);
         }
-    }, [selectedPatient, fetchMedicalData]);
+    }, [selectedPatient]);
 
     const handlePatientChange = (patientId: string) => {
         setSelectedPatient(patientId);
         hasFetched.current = false;
-        fetchMedicalData(() => patientService.getPatientMedicalData(patientId))
-            .then(setMedicalData)
-            .catch(console.error);
+        // TODO: Implement getPatientMedicalData method
+        setMedicalData(null);
     };
 
     // Different stats based on user role

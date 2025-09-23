@@ -11,7 +11,7 @@ export function BranchSelector() {
   // Hide selector if no branches or single branch
   if (!hasBranches || branches.length <= 1) return null;
 
-  const isMainAdmin = user?.role === 'ADMIN' && branches.length > 1;
+  const isMainAdmin = user?.role === 'admin' && branches.length > 1;
 
   return (
     <Select value={selectedBranch} onValueChange={selectBranch} disabled={isLoading}>

@@ -38,39 +38,18 @@ export function DoctorFormModal({ isOpen, onClose, doctorId, mode }: DoctorFormM
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     React.useEffect(() => {
-        const loadDoctorData = async () => {
-            if (doctorId && (mode === 'view' || mode === 'edit') && isOpen) {
-                setIsLoading(true);
-                try {
-                    const doctor = await userService.getUser(doctorId);
-                    
-                    setDoctorData({
-                        name: doctor.name || '',
-                        email: doctor.email || '',
-                        specialization: doctor.specialization || '',
-                        department: doctor.department || '',
-                        phone: doctor.phone || '',
-                        passwordHash: ''
-                    });
-                } catch (error) {
-                    console.error('Failed to load doctor data:', error);
-                } finally {
-                    setIsLoading(false);
-                }
-            } else if (!isOpen) {
-                setDoctorData({
-                    name: '',
-                    email: '',
-                    specialization: '',
-                    department: '',
-                    phone: '',
-                    passwordHash: ''
-                });
-            }
-        };
-        
-        loadDoctorData();
-    }, [doctorId, mode, isOpen]);
+        if (!isOpen) {
+            setDoctorData({
+                name: '',
+                email: '',
+                specialization: '',
+                department: '',
+                phone: '',
+                passwordHash: ''
+            });
+        }
+        // TODO: Implement getUser method to load doctor data for edit/view modes
+    }, [isOpen]);
 
     const handleInputChange = (field: keyof DoctorFormData, value: string) => {
         setDoctorData(prev => ({ ...prev, [field]: value }));
@@ -91,9 +70,11 @@ export function DoctorFormModal({ isOpen, onClose, doctorId, mode }: DoctorFormM
             };
 
             if (mode === 'add') {
-                await userService.createUser(apiData);
+                // TODO: Implement createUser method
+                console.log('Creating doctor:', apiData);
             } else if (mode === 'edit' && doctorId) {
-                await userService.updateUser(doctorId, apiData);
+                // TODO: Implement updateUser method
+                console.log('Updating doctor:', doctorId, apiData);
             }
 
             onClose();

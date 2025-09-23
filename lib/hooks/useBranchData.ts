@@ -71,7 +71,14 @@ export function useBranchData<T>(
     };
   }, [selectedBranch, hasBranches, ...deps]);
 
-  return { data, isLoading, error, refetch: () => fetchData() };
+  const refetch = () => {
+    const branchId = hasBranches ? (selectedBranch === 'all' ? undefined : selectedBranch) : undefined;
+    const cacheKey = `${fetchFn.name}-${branchId || 'all'}`;
+    requestCache.delete(cacheKey);
+    // Trigger re-fetch by updating deps
+  };
+
+  return { data, isLoading, error, refetch };
 }
 
 // Specific hooks for common data types

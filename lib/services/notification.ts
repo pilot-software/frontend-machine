@@ -17,7 +17,7 @@ export class NotificationService {
   }
 
   async markAsRead(id: string): Promise<void> {
-    return api.put(`/notifications/${id}/read`);
+    return api.put(`/notifications/${id}/read`, {});
   }
 }
 

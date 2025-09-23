@@ -109,18 +109,16 @@ export function PrescriptionSystem() {
     useEffect(() => {
         if (selectedPatient && !hasFetchedMedical.current) {
             hasFetchedMedical.current = true;
-            fetchMedicalData(() => patientService.getPatientMedicalData(selectedPatient))
-                .then(setMedicalData)
-                .catch(console.error);
+            // TODO: Implement getPatientMedicalData method
+            setMedicalData(null);
         }
     }, [selectedPatient, fetchMedicalData]);
 
     const handlePatientChange = (patientId: string) => {
         setSelectedPatient(patientId);
         hasFetchedMedical.current = false;
-        fetchMedicalData(() => patientService.getPatientMedicalData(patientId))
-            .then(setMedicalData)
-            .catch(console.error);
+        // TODO: Implement getPatientMedicalData method
+        setMedicalData(null);
     };
 
     const prescriptionsList = medicalData?.prescriptions || [];

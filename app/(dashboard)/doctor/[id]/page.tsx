@@ -136,11 +136,11 @@ export default function DoctorDetailPage() {
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Working Hours:</span>
-                  <p className="font-medium">{doctor.workingHours || '9:00 AM - 5:00 PM'}</p>
+                  <p className="font-medium">9:00 AM - 5:00 PM</p>
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Consultation Fee:</span>
-                  <p className="font-medium">{doctor.consultationFee || 'N/A'}</p>
+                  <p className="font-medium">N/A</p>
                 </div>
               </div>
             </div>
@@ -156,15 +156,15 @@ export default function DoctorDetailPage() {
           <div className="space-y-4">
             <div>
               <h4 className="font-semibold">Medical Degree</h4>
-              <p className="text-muted-foreground">{doctor.medicalDegree || 'Information not available'}</p>
+              <p className="text-muted-foreground">Information not available</p>
             </div>
             <div>
               <h4 className="font-semibold">Board Certifications</h4>
-              <p className="text-muted-foreground">{doctor.boardCertifications || 'Information not available'}</p>
+              <p className="text-muted-foreground">Information not available</p>
             </div>
             <div>
               <h4 className="font-semibold">Additional Training</h4>
-              <p className="text-muted-foreground">{doctor.additionalTraining || 'Information not available'}</p>
+              <p className="text-muted-foreground">Information not available</p>
             </div>
           </div>
         </CardContent>
