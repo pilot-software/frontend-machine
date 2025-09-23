@@ -1,11 +1,12 @@
 import { IApiClient } from '../abstractions/service.interface';
+import { getApiBaseUrl } from '../config/api.config';
 
 export class ApiClient implements IApiClient {
   private baseUrl: string;
   private token: string | null = null;
 
-  constructor(baseUrl: string = 'https://springboot-api.azurewebsites.net/api') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    this.baseUrl = baseUrl || getApiBaseUrl();
   }
 
   setToken(token: string): void {
