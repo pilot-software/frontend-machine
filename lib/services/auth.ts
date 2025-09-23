@@ -12,8 +12,14 @@ export interface LoginResponse {
 }
 
 export class AuthService {
+  private getBaseUrl() {
+    return process.env.NODE_ENV === 'production' 
+      ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace('/api', '') || 'https://springboot-api.azurewebsites.net'
+      : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
+  }
+
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch('https://springboot-api.azurewebsites.net/api/auth/login', {
+    const response = await fetch(`${this.getBaseUrl()}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials)
@@ -22,7 +28,7 @@ export class AuthService {
   }
 
   async logout(): Promise<{ message: string }> {
-    const response = await fetch('https://springboot-api.azurewebsites.net/api/auth/logout', { method: 'POST' });
+    const response = await fetch(`${this.getBaseUrl()}/api/auth/logout`, { method: 'POST' });
     return response.json();
   }
 }

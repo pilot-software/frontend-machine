@@ -14,6 +14,12 @@ export interface ApiUser {
 }
 
 export class UserService {
+  private getBaseUrl() {
+    return process.env.NODE_ENV === 'production' 
+      ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace('/api', '') || 'https://springboot-api.azurewebsites.net'
+      : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
+  }
+
   private getHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -23,14 +29,14 @@ export class UserService {
   }
 
   async getUsers(): Promise<ApiUser[]> {
-    const response = await fetch('https://springboot-api.azurewebsites.net/api/users', {
+    const response = await fetch(`${this.getBaseUrl()}/api/users`, {
       headers: this.getHeaders()
     });
     return response.json();
   }
 
   async getUsersByRole(role: string): Promise<ApiUser[]> {
-    const response = await fetch(`https://springboot-api.azurewebsites.net/api/users/role/${role}`, {
+    const response = await fetch(`${this.getBaseUrl()}/api/users/role/${role}`, {
       headers: this.getHeaders()
     });
     return response.json();

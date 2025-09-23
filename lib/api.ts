@@ -14,8 +14,10 @@ export class ApiClient {
   private async request(endpoint: string, options: ApiOptions = {}) {
     const { method = 'GET', body, branchId } = options;
     
-    // Use backend API URL
-    const baseUrl = 'https://springboot-api.azurewebsites.net';
+    // Use environment-based API URL
+    const baseUrl = process.env.NODE_ENV === 'production' 
+      ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace('/api', '') || 'https://springboot-api.azurewebsites.net'
+      : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
     // Single API call handles both cases
     const url = baseUrl + endpoint + (branchId && branchId !== 'all' ? `?branchId=${branchId}` : '');
 
@@ -119,11 +121,18 @@ export class ApiClient {
 
 export const apiClient = new ApiClient();
 
+// Get base URL based on environment
+const getBaseUrl = () => {
+  return process.env.NODE_ENV === 'production' 
+    ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace('/api', '') || 'https://springboot-api.azurewebsites.net'
+    : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
+};
+
 // Simple API wrapper for services
 export const api = {
   async get(endpoint: string) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://springboot-api.azurewebsites.net${endpoint}`, {
+    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` })
@@ -134,7 +143,7 @@ export const api = {
 
   async post(endpoint: string, data: any) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://springboot-api.azurewebsites.net${endpoint}`, {
+    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,7 +156,7 @@ export const api = {
 
   async put(endpoint: string, data: any) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://springboot-api.azurewebsites.net${endpoint}`, {
+    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -160,7 +169,7 @@ export const api = {
 
   async delete(endpoint: string) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`https://springboot-api.azurewebsites.net${endpoint}`, {
+    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
