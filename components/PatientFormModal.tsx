@@ -10,11 +10,12 @@ import {Badge} from './ui/badge';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs';
 import {Separator} from './ui/separator';
 import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
-import {Calendar, Heart, Mail, MapPin, Phone, PillBottle, Plus, Save, User, X} from 'lucide-react';
+import {Activity, Calendar, Heart, Mail, MapPin, Phone, PillBottle, Plus, Save, Thermometer, User, X} from 'lucide-react';
 import {useAuth} from './AuthContext';
 import { GenderType, BloodType, ConditionSeverity, ConditionStatus, PrescriptionStatus } from '../lib/types';
 import { patientService } from '../lib/services/patient';
 import { userService } from '../lib/services/user';
+import { medicalService, MedicalData } from '../lib/services/medical';
 import { useAppData } from '../lib/hooks/useAppData';
 import { useAppSelector, useAppDispatch } from '../lib/store';
 import { fetchPatientById, clearSelectedPatient, updatePatient } from '../lib/store/slices/patientSlice';
@@ -43,26 +44,7 @@ interface PatientFormData {
     insurancePolicyNumber: string;
 }
 
-interface MedicalConditionForm {
-    id: string;
-    conditionName: string;
-    severity: ConditionSeverity;
-    diagnosisDate: string;
-    status: ConditionStatus;
-    notes: string;
-}
 
-interface PrescriptionForm {
-    id: string;
-    medicationName: string;
-    dosage: string;
-    frequency: string;
-    startDate: string;
-    endDate?: string;
-    prescribedBy: string;
-    instructions: string;
-    status: PrescriptionStatus;
-}
 
 interface PatientFormModalProps {
     isOpen: boolean;
@@ -104,6 +86,8 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
     });
 
     const [doctors, setDoctors] = useState<any[]>([]);
+    const [medicalData, setMedicalData] = useState<MedicalData | null>(null);
+    const [loadingMedical, setLoadingMedical] = useState(false);
 
     // Load doctors and patient data when modal opens
     React.useEffect(() => {
@@ -119,6 +103,17 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
                 // Fetch patient data by ID if in edit or view mode
                 if (patientId && (mode === 'edit' || mode === 'view')) {
                     dispatch(fetchPatientById(patientId));
+                    
+                    // Fetch medical data
+                    setLoadingMedical(true);
+                    try {
+                        const medical = await medicalService.getMedicalData(patientId);
+                        setMedicalData(medical);
+                    } catch (error) {
+                        console.error('Failed to load medical data:', error);
+                    } finally {
+                        setLoadingMedical(false);
+                    }
                 }
             }
         };
@@ -158,6 +153,7 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
     React.useEffect(() => {
         if (!isOpen) {
             dispatch(clearSelectedPatient());
+            setMedicalData(null);
             setPatientData({
                 firstName: '',
                 lastName: '',
@@ -184,10 +180,7 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
         }
     }, [isOpen, dispatch]);
 
-    const [conditions, setConditions] = useState<MedicalConditionForm[]>([]);
-    const [prescriptions, setPrescriptions] = useState<PrescriptionForm[]>([]);
-    const [newCondition, setNewCondition] = useState<Partial<MedicalConditionForm>>({});
-    const [newPrescription, setNewPrescription] = useState<Partial<PrescriptionForm>>({});
+
 
 
 
@@ -214,46 +207,7 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
         setPatientData(prev => ({...prev, [field]: value}));
     };
 
-    const handleAddCondition = () => {
-        if (newCondition.conditionName && newCondition.severity && newCondition.diagnosisDate) {
-            const condition: MedicalConditionForm = {
-                id: Date.now().toString(),
-                conditionName: newCondition.conditionName,
-                severity: newCondition.severity,
-                diagnosisDate: newCondition.diagnosisDate,
-                status: newCondition.status || 'active',
-                notes: newCondition.notes || ''
-            };
-            setConditions(prev => [...prev, condition]);
-            setNewCondition({});
-        }
-    };
 
-    const handleAddPrescription = () => {
-        if (newPrescription.medicationName && newPrescription.dosage && newPrescription.frequency) {
-            const prescription: PrescriptionForm = {
-                id: Date.now().toString(),
-                medicationName: newPrescription.medicationName,
-                dosage: newPrescription.dosage,
-                frequency: newPrescription.frequency,
-                startDate: newPrescription.startDate || new Date().toISOString().split('T')[0],
-                endDate: newPrescription.endDate,
-                prescribedBy: user?.name || 'Unknown',
-                instructions: newPrescription.instructions || '',
-                status: 'active'
-            };
-            setPrescriptions(prev => [...prev, prescription]);
-            setNewPrescription({});
-        }
-    };
-
-    const handleRemoveCondition = (id: string) => {
-        setConditions(prev => prev.filter(c => c.id !== id));
-    };
-
-    const handleRemovePrescription = (id: string) => {
-        setPrescriptions(prev => prev.filter(p => p.id !== id));
-    };
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
@@ -308,12 +262,13 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
     };
 
     const getSeverityColor = (severity: string) => {
-        switch (severity) {
+        switch (severity.toLowerCase()) {
             case 'mild':
                 return 'bg-green-100 text-green-800';
             case 'moderate':
                 return 'bg-yellow-100 text-yellow-800';
             case 'severe':
+            case 'critical':
                 return 'bg-red-100 text-red-800';
             default:
                 return 'bg-muted text-muted-foreground';
@@ -321,15 +276,18 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
     };
 
     const getStatusColor = (status: string) => {
-        switch (status) {
+        switch (status.toLowerCase()) {
             case 'active':
+            case 'pending':
+            case 'in_progress':
                 return 'bg-blue-100 text-blue-800';
             case 'resolved':
-                return 'bg-green-100 text-green-800';
-            case 'chronic':
-                return 'bg-purple-100 text-purple-800';
             case 'completed':
                 return 'bg-green-100 text-green-800';
+            case 'chronic':
+            case 'in_remission':
+                return 'bg-purple-100 text-purple-800';
+            case 'cancelled':
             case 'discontinued':
                 return 'bg-red-100 text-red-800';
             default:
@@ -388,7 +346,7 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
                                             </div>
                                             <div className="flex items-center space-x-1">
                                                 <User className="h-4 w-4" />
-                                                <span>ID: {patientId?.substring(0, 8).toUpperCase() || 'NEW'}</span>
+                                                <span>ID: {patientId|| 'NEW'}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -398,18 +356,26 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
                     )}
 
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-                        <TabsList className="grid w-full grid-cols-3">
+                        <TabsList className="grid w-full grid-cols-5">
                             <TabsTrigger value="basic" className="flex items-center space-x-2">
                                 <User className="h-4 w-4" />
                                 <span>Basic Info</span>
                             </TabsTrigger>
                             <TabsTrigger value="conditions" className="flex items-center space-x-2">
                                 <Heart className="h-4 w-4" />
-                                <span>Medical</span>
+                                <span>Conditions</span>
                             </TabsTrigger>
                             <TabsTrigger value="prescriptions" className="flex items-center space-x-2">
                                 <PillBottle className="h-4 w-4" />
                                 <span>Prescriptions</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="vitals" className="flex items-center space-x-2">
+                                <Thermometer className="h-4 w-4" />
+                                <span>Vitals</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="labs" className="flex items-center space-x-2">
+                                <Activity className="h-4 w-4" />
+                                <span>Lab Results</span>
                             </TabsTrigger>
                         </TabsList>
 
@@ -696,320 +662,227 @@ export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientForm
                                 </TabsContent>
 
                                 <TabsContent value="conditions" className="space-y-4">
-                                    {!isReadOnly && (
+                                    {loadingMedical ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                            <span className="ml-2">Loading medical data...</span>
+                                        </div>
+                                    ) : (
                                         <Card>
                                             <CardHeader>
-                                                <CardTitle>Add Medical Condition</CardTitle>
-                                                <CardDescription>Add a new medical condition to the patient&apos;s
-                                                    record</CardDescription>
+                                                <CardTitle>Medical Conditions</CardTitle>
+                                                <CardDescription>Current and past medical conditions</CardDescription>
                                             </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <Label>Condition *</Label>
-                                                        <Input
-                                                            value={newCondition.conditionName || ''}
-                                                            onChange={(e) => setNewCondition(prev => ({
-                                                                ...prev,
-                                                                conditionName: e.target.value
-                                                            }))}
-                                                            placeholder="e.g., Hypertension, Diabetes Type 2"
-                                                        />
+                                            <CardContent>
+                                                {!medicalData?.conditions?.length ? (
+                                                    <div className="text-center py-8 text-gray-500">
+                                                        <Heart className="h-12 w-12 mx-auto mb-4 text-gray-300"/>
+                                                        <p>No medical conditions recorded</p>
                                                     </div>
-                                                    <div>
-                                                        <Label>Severity *</Label>
-                                                        <Select
-                                                            value={newCondition.severity || ''}
-                                                            onValueChange={(value) => setNewCondition(prev => ({
-                                                                ...prev,
-                                                                severity: value as ConditionSeverity
-                                                            }))}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select severity"/>
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="mild">Mild</SelectItem>
-                                                                <SelectItem value="moderate">Moderate</SelectItem>
-                                                                <SelectItem value="severe">Severe</SelectItem>
-                                                                <SelectItem value="critical">Critical</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <Label>Diagnosed Date *</Label>
-                                                        <Input
-                                                            type="date"
-                                                            value={newCondition.diagnosisDate || ''}
-                                                            onChange={(e) => setNewCondition(prev => ({
-                                                                ...prev,
-                                                                diagnosisDate: e.target.value
-                                                            }))}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label>Status</Label>
-                                                        <Select
-                                                            value={newCondition.status || 'active'}
-                                                            onValueChange={(value) => setNewCondition(prev => ({
-                                                                ...prev,
-                                                                status: value as ConditionStatus
-                                                            }))}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue/>
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="active">Active</SelectItem>
-                                                                <SelectItem value="chronic">Chronic</SelectItem>
-                                                                <SelectItem value="resolved">Resolved</SelectItem>
-                                                                <SelectItem value="in_remission">In Remission</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <Label>Notes</Label>
-                                                    <Textarea
-                                                        value={newCondition.notes || ''}
-                                                        onChange={(e) => setNewCondition(prev => ({
-                                                            ...prev,
-                                                            notes: e.target.value
-                                                        }))}
-                                                        placeholder="Additional notes about the condition"
-                                                    />
-                                                </div>
-
-                                                <Button onClick={handleAddCondition} className="w-full">
-                                                    <Plus className="h-4 w-4 mr-2"/>
-                                                    Add Condition
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    )}
-
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Medical Conditions</CardTitle>
-                                            <CardDescription>Current and past medical conditions</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            {conditions.length === 0 ? (
-                                                <div className="text-center py-8 text-gray-500">
-                                                    <Heart className="h-12 w-12 mx-auto mb-4 text-gray-300"/>
-                                                    <p>No medical conditions recorded</p>
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-4">
-                                                    {conditions.map((condition) => (
-                                                        <div key={condition.id}
-                                                             className="border border-gray-200 rounded-lg p-4">
-                                                            <div className="flex items-start justify-between">
-                                                                <div className="flex-1">
-                                                                    <h4 className="font-medium">{condition.conditionName}</h4>
-                                                                    <div className="flex items-center space-x-2 mt-2">
-                                                                        <Badge className={getSeverityColor(condition.severity)}>
-                                                                            {condition.severity}
-                                                                        </Badge>
-                                                                        <Badge className={getStatusColor(condition.status)}>
-                                                                            {condition.status}
-                                                                        </Badge>
-                                                                        <span className="text-sm text-gray-500">
-                                          Diagnosed: {condition.diagnosisDate}
-                                        </span>
-                                                                    </div>
-                                                                    {condition.notes && (
-                                                                        <p className="text-sm text-gray-600 mt-2">{condition.notes}</p>
-                                                                    )}
-                                                                </div>
-                                                                {!isReadOnly && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        onClick={() => handleRemoveCondition(condition.id)}
-                                                                        className="text-red-600 hover:text-red-800"
-                                                                    >
-                                                                        <X className="h-4 w-4"/>
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-
-                                <TabsContent value="prescriptions" className="space-y-4">
-                                    {!isReadOnly && (
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle>Add Prescription</CardTitle>
-                                                <CardDescription>Prescribe new medication for the patient</CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <Label>Medication *</Label>
-                                                        <Input
-                                                            value={newPrescription.medicationName || ''}
-                                                            onChange={(e) => setNewPrescription(prev => ({
-                                                                ...prev,
-                                                                medicationName: e.target.value
-                                                            }))}
-                                                            placeholder="e.g., Lisinopril, Metformin"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label>Dosage *</Label>
-                                                        <Input
-                                                            value={newPrescription.dosage || ''}
-                                                            onChange={(e) => setNewPrescription(prev => ({
-                                                                ...prev,
-                                                                dosage: e.target.value
-                                                            }))}
-                                                            placeholder="e.g., 10mg, 500mg"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <Label>Frequency *</Label>
-                                                    <Select
-                                                        value={newPrescription.frequency || ''}
-                                                        onValueChange={(value) => setNewPrescription(prev => ({
-                                                            ...prev,
-                                                            frequency: value
-                                                        }))}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select frequency"/>
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="once-daily">Once daily</SelectItem>
-                                                            <SelectItem value="twice-daily">Twice daily</SelectItem>
-                                                            <SelectItem value="three-times-daily">Three times
-                                                                daily</SelectItem>
-                                                            <SelectItem value="four-times-daily">Four times
-                                                                daily</SelectItem>
-                                                            <SelectItem value="as-needed">As needed</SelectItem>
-                                                            <SelectItem value="weekly">Weekly</SelectItem>
-                                                            <SelectItem value="monthly">Monthly</SelectItem>
-                                                            <SelectItem value="every-other-day">Every Other Day</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <Label>Start Date</Label>
-                                                        <Input
-                                                            type="date"
-                                                            value={newPrescription.startDate || new Date().toISOString().split('T')[0]}
-                                                            onChange={(e) => setNewPrescription(prev => ({
-                                                                ...prev,
-                                                                startDate: e.target.value
-                                                            }))}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label>End Date (Optional)</Label>
-                                                        <Input
-                                                            type="date"
-                                                            value={newPrescription.endDate || ''}
-                                                            onChange={(e) => setNewPrescription(prev => ({
-                                                                ...prev,
-                                                                endDate: e.target.value
-                                                            }))}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <Label>Instructions</Label>
-                                                    <Textarea
-                                                        value={newPrescription.instructions || ''}
-                                                        onChange={(e) => setNewPrescription(prev => ({
-                                                            ...prev,
-                                                            instructions: e.target.value
-                                                        }))}
-                                                        placeholder="Special instructions for the patient"
-                                                    />
-                                                </div>
-
-                                                <Button onClick={handleAddPrescription} className="w-full">
-                                                    <Plus className="h-4 w-4 mr-2"/>
-                                                    Add Prescription
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    )}
-
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Current Prescriptions</CardTitle>
-                                            <CardDescription>Active and recent prescriptions</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            {prescriptions.length === 0 ? (
-                                                <div className="text-center py-8 text-gray-500">
-                                                    <PillBottle className="h-12 w-12 mx-auto mb-4 text-gray-300"/>
-                                                    <p>No prescriptions recorded</p>
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-4">
-                                                    {prescriptions.map((prescription) => (
-                                                        <div key={prescription.id}
-                                                             className="border border-gray-200 rounded-lg p-4">
-                                                            <div className="flex items-start justify-between">
-                                                                <div className="flex-1">
-                                                                    <div className="flex items-center space-x-2">
-                                                                        <h4 className="font-medium">{prescription.medicationName}</h4>
-                                                                        <Badge className={getStatusColor(prescription.status)}>
-                                                                            {prescription.status}
-                                                                        </Badge>
-                                                                    </div>
-                                                                    <div className="mt-2 space-y-1">
-                                                                        <p className="text-sm text-gray-600">
-                                                                            <strong>Dosage:</strong> {prescription.dosage} - {prescription.frequency}
-                                                                        </p>
-                                                                        <p className="text-sm text-gray-600">
-                                                                            <strong>Duration:</strong> {prescription.startDate}
-                                                                            {prescription.endDate && ` to ${prescription.endDate}`}
-                                                                        </p>
-                                                                        <p className="text-sm text-gray-600">
-                                                                            <strong>Prescribed
-                                                                                by:</strong> {prescription.prescribedBy}
-                                                                        </p>
-                                                                        {prescription.instructions && (
-                                                                            <p className="text-sm text-gray-600">
-                                                                                <strong>Instructions:</strong> {prescription.instructions}
-                                                                            </p>
+                                                ) : (
+                                                    <div className="space-y-4">
+                                                        {medicalData.conditions.map((condition) => (
+                                                            <div key={condition.id} className="border border-gray-200 rounded-lg p-4">
+                                                                <div className="flex items-start justify-between">
+                                                                    <div className="flex-1">
+                                                                        <h4 className="font-medium">{condition.conditionName}</h4>
+                                                                        <p className="text-sm text-gray-600 mt-1">{condition.description}</p>
+                                                                        <div className="flex items-center space-x-2 mt-2">
+                                                                            <Badge className={getSeverityColor(condition.severity.toLowerCase())}>
+                                                                                {condition.severity}
+                                                                            </Badge>
+                                                                            <Badge className={getStatusColor(condition.status.toLowerCase())}>
+                                                                                {condition.status}
+                                                                            </Badge>
+                                                                            <span className="text-sm text-gray-500">
+                                                                                Diagnosed: {condition.diagnosedDate}
+                                                                            </span>
+                                                                        </div>
+                                                                        {condition.notes && (
+                                                                            <p className="text-sm text-gray-600 mt-2">{condition.notes}</p>
                                                                         )}
                                                                     </div>
                                                                 </div>
-                                                                {!isReadOnly && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        onClick={() => handleRemovePrescription(prescription.id)}
-                                                                        className="text-red-600 hover:text-red-800"
-                                                                    >
-                                                                        <X className="h-4 w-4"/>
-                                                                    </Button>
-                                                                )}
                                                             </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </TabsContent>
+
+                                <TabsContent value="prescriptions" className="space-y-4">
+                                    {loadingMedical ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                            <span className="ml-2">Loading prescriptions...</span>
+                                        </div>
+                                    ) : (
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Current Prescriptions</CardTitle>
+                                                <CardDescription>Active and recent prescriptions</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                {!medicalData?.prescriptions?.length ? (
+                                                    <div className="text-center py-8 text-gray-500">
+                                                        <PillBottle className="h-12 w-12 mx-auto mb-4 text-gray-300"/>
+                                                        <p>No prescriptions recorded</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-4">
+                                                        {medicalData.prescriptions.map((prescription) => (
+                                                            <div key={prescription.id} className="border border-gray-200 rounded-lg p-4">
+                                                                <div className="flex items-start justify-between">
+                                                                    <div className="flex-1">
+                                                                        <div className="flex items-center space-x-2">
+                                                                            <h4 className="font-medium">{prescription.medicationName}</h4>
+                                                                            <Badge className={getStatusColor(prescription.status.toLowerCase())}>
+                                                                                {prescription.status}
+                                                                            </Badge>
+                                                                        </div>
+                                                                        <div className="mt-2 space-y-1">
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Dosage:</strong> {prescription.dosage} - {prescription.frequency}
+                                                                            </p>
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Duration:</strong> {prescription.duration}
+                                                                            </p>
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Refills Remaining:</strong> {prescription.refillsRemaining}
+                                                                            </p>
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Created:</strong> {new Date(prescription.createdAt).toLocaleDateString()}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </TabsContent>
+
+                                <TabsContent value="vitals" className="space-y-4">
+                                    {loadingMedical ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                            <span className="ml-2">Loading vitals...</span>
+                                        </div>
+                                    ) : (
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Vital Signs</CardTitle>
+                                                <CardDescription>Recent vital signs and measurements</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                {!medicalData?.vitals?.length ? (
+                                                    <div className="text-center py-8 text-gray-500">
+                                                        <Thermometer className="h-12 w-12 mx-auto mb-4 text-gray-300"/>
+                                                        <p>No vital signs recorded</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-4">
+                                                        {medicalData.vitals.map((vital) => (
+                                                            <div key={vital.id} className="border border-gray-200 rounded-lg p-4">
+                                                                <div className="flex items-center justify-between mb-3">
+                                                                    <h4 className="font-medium">Vital Signs</h4>
+                                                                    <span className="text-sm text-gray-500">
+                                                                        {new Date(vital.recordedAt).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="grid grid-cols-3 gap-4">
+                                                                    <div className="text-center p-3 bg-blue-50 rounded">
+                                                                        <p className="text-sm text-gray-600">Temperature</p>
+                                                                        <p className="font-semibold">{vital.temperature}°F</p>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-red-50 rounded">
+                                                                        <p className="text-sm text-gray-600">Blood Pressure</p>
+                                                                        <p className="font-semibold">{vital.bloodPressure}</p>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-green-50 rounded">
+                                                                        <p className="text-sm text-gray-600">Heart Rate</p>
+                                                                        <p className="font-semibold">{vital.heartRate} bpm</p>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-purple-50 rounded">
+                                                                        <p className="text-sm text-gray-600">Weight</p>
+                                                                        <p className="font-semibold">{vital.weight} kg</p>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-yellow-50 rounded">
+                                                                        <p className="text-sm text-gray-600">Height</p>
+                                                                        <p className="font-semibold">{vital.height} cm</p>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-indigo-50 rounded">
+                                                                        <p className="text-sm text-gray-600">O2 Saturation</p>
+                                                                        <p className="font-semibold">{vital.oxygenSaturation}%</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </TabsContent>
+
+                                <TabsContent value="labs" className="space-y-4">
+                                    {loadingMedical ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                            <span className="ml-2">Loading lab results...</span>
+                                        </div>
+                                    ) : (
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>Laboratory Results</CardTitle>
+                                                <CardDescription>Recent lab tests and results</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                {!medicalData?.labResults?.length ? (
+                                                    <div className="text-center py-8 text-gray-500">
+                                                        <Activity className="h-12 w-12 mx-auto mb-4 text-gray-300"/>
+                                                        <p>No lab results recorded</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-4">
+                                                        {medicalData.labResults.map((lab) => (
+                                                            <div key={lab.id} className="border border-gray-200 rounded-lg p-4">
+                                                                <div className="flex items-start justify-between">
+                                                                    <div className="flex-1">
+                                                                        <div className="flex items-center space-x-2">
+                                                                            <h4 className="font-medium">{lab.testName}</h4>
+                                                                            <Badge className={getStatusColor(lab.status.toLowerCase())}>
+                                                                                {lab.status}
+                                                                            </Badge>
+                                                                            <Badge className={lab.abnormalFlag === 'NORMAL' ? 'bg-green-100 text-green-800' : lab.abnormalFlag === 'ABNORMAL' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}>
+                                                                                {lab.abnormalFlag}
+                                                                            </Badge>
+                                                                        </div>
+                                                                        <div className="mt-2 space-y-1">
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Test Date:</strong> {lab.testDate}
+                                                                            </p>
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Results:</strong> {lab.testResults}
+                                                                            </p>
+                                                                            <p className="text-sm text-gray-600">
+                                                                                <strong>Created:</strong> {new Date(lab.createdAt).toLocaleDateString()}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
                                 </TabsContent>
                             </>
                         )}

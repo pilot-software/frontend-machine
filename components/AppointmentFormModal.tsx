@@ -219,7 +219,7 @@ export function AppointmentFormModal({
                                                 <SelectContent>
                                                     {Array.isArray(patients) && patients.map((patient) => (
                                                         <SelectItem key={patient.id} value={patient.id}>
-                                                            {patient.firstName} {patient.lastName} ({patient.id.substring(0, 8).toUpperCase()})
+                                                            {patient.firstName} {patient.lastName} ({patient.id})
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>

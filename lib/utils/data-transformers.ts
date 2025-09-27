@@ -35,7 +35,7 @@ export const transformPatientToDisplay = (patient: Patient, doctors: Doctor[] = 
     id: patient.id,
     name: `${patient.firstName} ${patient.lastName}`,
     age: calculateAge(patient.dateOfBirth),
-    caseNumber: patient.caseNumber || patient.id.substring(0, 8).toUpperCase(),
+    caseNumber: patient.caseNumber || patient.id,
     status: patient.status || 'Active',
     lastVisit: safeDateToString(patient.updatedAt, new Date().toISOString().split('T')[0]),
     doctor: assignedDoctor?.name || 'Dr. Assigned',
