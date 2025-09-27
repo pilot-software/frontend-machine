@@ -13,8 +13,8 @@ import {useAuth} from './AuthContext';
 import {cn} from './ui/utils';
 import {format} from 'date-fns';
 import { appointmentService } from '../lib/services/appointment';
-import { patientService } from '../lib/services/patient';
-import { userService } from '../lib/services/user';
+import { useAppDispatch, useAppSelector } from '../lib/store';
+import { fetchPatients, fetchDoctors } from '../lib/store/slices/appSlice';
 
 interface AppointmentFormData {
     patientId: string;
@@ -33,6 +33,7 @@ interface AppointmentFormModalProps {
     appointmentId?: string;
     mode: 'schedule' | 'reschedule' | 'view';
     preSelectedPatientId?: string;
+    onSuccess?: () => void;
 }
 
 export function AppointmentFormModal({
@@ -40,9 +41,15 @@ export function AppointmentFormModal({
                                          onClose,
                                          appointmentId,
                                          mode,
-                                         preSelectedPatientId
+                                         preSelectedPatientId,
+                                         onSuccess
                                      }: AppointmentFormModalProps) {
     const {user} = useAuth();
+    const dispatch = useAppDispatch();
+    const { patients, doctors, loading } = useAppSelector(state => state.app);
+    const patientsLoading = loading.patients;
+    const doctorsLoading = loading.doctors;
+    
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
@@ -57,27 +64,17 @@ export function AppointmentFormModal({
         roomNumber: ''
     });
 
-    const [patients, setPatients] = useState<any[]>([]);
-    const [doctors, setDoctors] = useState<any[]>([]);
+    const isLoadingData = patientsLoading || doctorsLoading;
 
     // Load patients and doctors when modal opens
     React.useEffect(() => {
-        const loadData = async () => {
-            if (isOpen) {
-                try {
-                    const [patientsData, doctorsData] = await Promise.all([
-                        patientService.getPatients(),
-                        userService.getUsersByRole('doctor')
-                    ]);
-                    setPatients(patientsData);
-                    setDoctors(doctorsData);
-                } catch (error) {
-                    console.error('Failed to load data:', error);
-                }
-            }
-        };
-        loadData();
-    }, [isOpen]);
+        if (isOpen && patients.length === 0) {
+            dispatch(fetchPatients());
+        }
+        if (isOpen && doctors.length === 0) {
+            dispatch(fetchDoctors());
+        }
+    }, [isOpen, dispatch, patients.length, doctors.length]);
 
     const timeSlots = [
         '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
@@ -158,6 +155,7 @@ export function AppointmentFormModal({
                 await appointmentService.updateAppointment(appointmentId, apiData);
             }
 
+            onSuccess?.();
             onClose();
         } catch (error) {
             console.error('Failed to save appointment:', error);
@@ -211,17 +209,23 @@ export function AppointmentFormModal({
                                             <Select
                                                 value={appointmentData.patientId}
                                                 onValueChange={(value) => handleInputChange('patientId', value)}
-                                                disabled={isReadOnly || !!preSelectedPatientId}
+                                                disabled={isReadOnly || !!preSelectedPatientId || isLoadingData}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select patient"/>
+                                                    <SelectValue placeholder={isLoadingData ? "Loading patients..." : "Select patient"}/>
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {Array.isArray(patients) && patients.map((patient) => (
-                                                        <SelectItem key={patient.id} value={patient.id}>
-                                                            {patient.firstName} {patient.lastName} ({patient.id})
-                                                        </SelectItem>
-                                                    ))}
+                                                    {isLoadingData ? (
+                                                        <SelectItem value="loading" disabled>Loading patients...</SelectItem>
+                                                    ) : patients.length === 0 ? (
+                                                        <SelectItem value="no-patients" disabled>No patients available</SelectItem>
+                                                    ) : (
+                                                        patients.map((patient) => (
+                                                            <SelectItem key={patient.id} value={patient.id}>
+                                                                {patient.firstName} {patient.lastName} ({patient.id})
+                                                            </SelectItem>
+                                                        ))
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -231,20 +235,26 @@ export function AppointmentFormModal({
                                             <Select
                                                 value={appointmentData.doctorId}
                                                 onValueChange={(value) => handleInputChange('doctorId', value)}
-                                                disabled={isReadOnly || user?.role === 'doctor'}
+                                                disabled={isReadOnly || user?.role === 'doctor' || isLoadingData}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select doctor"/>
+                                                    <SelectValue placeholder={isLoadingData ? "Loading doctors..." : "Select doctor"}/>
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {Array.isArray(doctors) && doctors.map((doctor) => (
-                                                        <SelectItem key={doctor.id} value={doctor.id}>
-                                                            <div>
-                                                                <p>{doctor.name}</p>
-                                                                <p className="text-xs text-muted-foreground">{doctor.specialization || doctor.department}</p>
-                                                            </div>
-                                                        </SelectItem>
-                                                    ))}
+                                                    {isLoadingData ? (
+                                                        <SelectItem value="loading" disabled>Loading doctors...</SelectItem>
+                                                    ) : doctors.length === 0 ? (
+                                                        <SelectItem value="no-doctors" disabled>No doctors available</SelectItem>
+                                                    ) : (
+                                                        doctors.map((doctor) => (
+                                                            <SelectItem key={doctor.id} value={doctor.id}>
+                                                                <div>
+                                                                    <p>{doctor.name}</p>
+                                                                    <p className="text-xs text-muted-foreground">{doctor.specialization || doctor.department}</p>
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                         </div>

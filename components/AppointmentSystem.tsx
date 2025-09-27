@@ -297,6 +297,7 @@ export function AppointmentSystem() {
                 onClose={closeModal}
                 appointmentId={selectedId}
                 mode={mode as any}
+                onSuccess={() => fetchAppointments(() => appointmentService.getAppointmentsWithPatientNames())}
             />
         </div>
     );
