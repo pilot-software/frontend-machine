@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { PatientFormModal } from "./PatientFormModal";
@@ -13,17 +19,13 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { useAppData } from "../lib/hooks/useAppData";
+import { useAuth } from "./AuthContext";
 import { useModal } from "../lib/hooks/useModal";
 import { transformPatientToDisplay } from "../lib/utils/data-transformers";
 import { PatientStats } from "./patient/PatientStats";
 import { PatientSearch } from "./patient/PatientSearch";
 import { PatientList } from "./patient/PatientList";
-import {
-  Activity,
-  Plus,
-  Stethoscope,
-  Thermometer,
-} from "lucide-react";
+import { Activity, Plus, Stethoscope, Thermometer } from "lucide-react";
 import { Patient } from "@/lib/types";
 
 interface Visit {
@@ -241,7 +243,9 @@ export function PatientManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
+    {}
+  );
 
   const { patients, stats, loading } = useAppData();
 
@@ -251,25 +255,53 @@ export function PatientManagement() {
   };
 
   const patientsList = patients || [];
-  const allPatients = (Array.isArray(patientsList) ? patientsList : [])
-    .map((patient: Patient) => transformPatientToDisplay(patient));
+  const { user } = useAuth();
+
+  // If current user is a doctor, only include patients assigned to them
+  const basePatients = (Array.isArray(patientsList) ? patientsList : []).filter(
+    (patient: Patient) => {
+      if (user?.role === "doctor") {
+        // patient.assignedDoctorId is canonical when available
+        if (
+          (patient as any).assignedDoctorId &&
+          (patient as any).assignedDoctorId === user.id
+        )
+          return true;
+        // patient.assignedDoctor might be an id string or an object { id }
+        const rawAssigned = (patient as any).assignedDoctor;
+        if (!rawAssigned) return false;
+        if (typeof rawAssigned === "string") return rawAssigned === user.id;
+        if (typeof rawAssigned === "object" && rawAssigned.id)
+          return rawAssigned.id === user.id;
+        return false;
+      }
+      return true;
+    }
+  );
+
+  const allPatients = basePatients.map((patient: Patient) =>
+    transformPatientToDisplay(patient)
+  );
 
   // Apply filters and search
   const recentPatients = allPatients.filter((patient) => {
-    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.condition.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesFilters = Object.entries(activeFilters).every(([key, value]) => {
-      switch (key) {
-        case 'status':
-          return patient.status === value;
-        case 'department':
-          return patient.department === value;
-        default:
-          return true;
+    const matchesSearch =
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.condition.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilters = Object.entries(activeFilters).every(
+      ([key, value]) => {
+        switch (key) {
+          case "status":
+            return patient.status === value;
+          case "department":
+            return patient.department === value;
+          default:
+            return true;
+        }
       }
-    });
+    );
 
     return matchesSearch && matchesFilters;
   });
@@ -448,8 +480,6 @@ export function PatientManagement() {
   //   });
   // };
 
-
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -462,8 +492,7 @@ export function PatientManagement() {
             Comprehensive patient care and record management
           </p>
         </div>
-        <Button onClick={() => openModal('add')}
-        >
+        <Button onClick={() => openModal("add")}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Patient
         </Button>
@@ -495,8 +524,8 @@ export function PatientManagement() {
           <PatientList
             patients={recentPatients}
             loading={loading.patients || loading.stats}
-            onViewPatient={(id) => openModal('view', id)}
-            onEditPatient={(id) => openModal('edit', id)}
+            onViewPatient={(id) => openModal("view", id)}
+            onEditPatient={(id) => openModal("edit", id)}
           />
         </TabsContent>
 
