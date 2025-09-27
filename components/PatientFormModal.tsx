@@ -55,11 +55,7 @@ import { userService } from "../lib/services/user";
 import { medicalService, MedicalData } from "../lib/services/medical";
 import { useAppData } from "../lib/hooks/useAppData";
 import { useAppSelector, useAppDispatch } from "../lib/store";
-import {
-  fetchPatientById,
-  clearSelectedPatient,
-  updatePatient,
-} from "../lib/store/slices/patientSlice";
+import { fetchPatients } from "../lib/store/slices/appSlice";
 
 interface PatientFormData {
   firstName: string;
@@ -110,9 +106,10 @@ export function PatientFormModal({
   const { user } = useAuth();
   const { refetch } = useAppData();
   const dispatch = useAppDispatch();
-  const { selectedPatient, loading, error } = useAppSelector(
-    (state) => state.patient
-  );
+  const { patients } = useAppSelector((state) => state.app);
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [loading, setLoading] = useState({ selectedPatient: false, updating: false });
+  const [error, setError] = useState({ selectedPatient: null });
   const [activeTab, setActiveTab] = useState("basic");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -162,7 +159,17 @@ export function PatientFormModal({
 
         // Fetch patient data by ID if in edit or view mode
         if (patientId && (mode === "edit" || mode === "view")) {
-          dispatch(fetchPatientById(patientId));
+          setLoading(prev => ({ ...prev, selectedPatient: true }));
+          try {
+            const patient = await patientService.getPatientById(patientId);
+            setSelectedPatient(patient);
+            setError(prev => ({ ...prev, selectedPatient: null }));
+          } catch (error) {
+            console.error("Failed to load patient:", error);
+            setError(prev => ({ ...prev, selectedPatient: error.message }));
+          } finally {
+            setLoading(prev => ({ ...prev, selectedPatient: false }));
+          }
 
           // Fetch medical data
           setLoadingMedical(true);
@@ -257,7 +264,7 @@ export function PatientFormModal({
   // Reset form when modal closes
   React.useEffect(() => {
     if (!isOpen) {
-      dispatch(clearSelectedPatient());
+      setSelectedPatient(null);
       setMedicalData(null);
       setPatientData({
         firstName: "",
@@ -283,7 +290,7 @@ export function PatientFormModal({
         insurancePolicyNumber: "",
       });
     }
-  }, [isOpen, dispatch]);
+  }, [isOpen]);
 
   const departmentOptions = [
     { value: "emergency", label: "Emergency" },
