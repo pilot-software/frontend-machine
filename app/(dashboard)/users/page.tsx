@@ -3,6 +3,30 @@
 import React, { useState } from "react";
 import { PatientFormModal } from "../../../components/PatientFormModal";
 import { useAppData } from "../../../lib/hooks/useAppData";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../../../components/ui/dialog";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../../../components/ui/card";
+import { Badge } from "../../../components/ui/badge";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "../../../components/ui/avatar";
+import { Mail, Phone, User as UserIcon, Eye } from "lucide-react";
 
 type RoleKey = "admin" | "doctor" | "reception" | "patient";
 
@@ -32,19 +56,20 @@ function GenericUserModal({ open, onClose, mode, user, role, onSave }: any) {
       }
   );
 
-  React.useEffect(
-    () =>
-      setForm(
-        user || {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          department: "",
-        }
-      ),
-    [user, open]
-  );
+  React.useEffect(() => {
+    setForm(
+      user || {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        department: "",
+      }
+    );
+  }, [user, open]);
+
+  const isView = mode === "view";
+  const isEdit = mode === "edit";
 
   const handleChange = (field: string, value: string) =>
     setForm((p: any) => ({ ...p, [field]: value }));
@@ -57,53 +82,119 @@ function GenericUserModal({ open, onClose, mode, user, role, onSave }: any) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
-      <div className="bg-white rounded p-4 w-96">
-        <h3 className="text-lg font-semibold mb-2">
-          {mode === "add"
-            ? `Add ${role}`
-            : mode === "edit"
-            ? `Edit ${role}`
-            : `View ${role}`}
-        </h3>
-        <div className="space-y-2">
-          <input
-            className="w-full border px-2 py-1"
-            value={form.firstName}
-            onChange={(e) => handleChange("firstName", e.target.value)}
-            placeholder="First name"
-            disabled={mode === "view"}
-          />
-          <input
-            className="w-full border px-2 py-1"
-            value={form.lastName}
-            onChange={(e) => handleChange("lastName", e.target.value)}
-            placeholder="Last name"
-            disabled={mode === "view"}
-          />
-          <input
-            className="w-full border px-2 py-1"
-            value={form.email}
-            onChange={(e) => handleChange("email", e.target.value)}
-            placeholder="Email"
-            disabled={mode === "view"}
-          />
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="w-[850px] max-w-[95vw]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user?.avatar || undefined} />
+              <AvatarFallback>
+                {user?.firstName?.[0] || user?.email?.[0] || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-lg font-semibold">
+                  {form.firstName} {form.lastName}
+                </h3>
+                <Badge variant="secondary" className="capitalize">
+                  {role}
+                </Badge>
+              </div>
+              <DialogDescription className="text-sm text-muted-foreground">
+                {user?.email}
+              </DialogDescription>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact</CardTitle>
+                <CardDescription>Primary contact details</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <div>{form.email || "—"}</div>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Phone className="h-4 w-4 text-gray-400" />
+                    <div>{form.phone || "—"}</div>
+                  </div>
+                  <div className="text-sm">
+                    <div className="text-xs text-muted-foreground">
+                      Department
+                    </div>
+                    <div>{form.department || "—"}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="md:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Details</CardTitle>
+                <CardDescription>Profile and permissions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label>First name</Label>
+                    <Input
+                      value={form.firstName}
+                      onChange={(e) =>
+                        handleChange("firstName", e.target.value)
+                      }
+                      disabled={isView}
+                    />
+                  </div>
+                  <div>
+                    <Label>Last name</Label>
+                    <Input
+                      value={form.lastName}
+                      onChange={(e) => handleChange("lastName", e.target.value)}
+                      disabled={isView}
+                    />
+                  </div>
+                  <div>
+                    <Label>Email</Label>
+                    <Input
+                      value={form.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      disabled={isView}
+                    />
+                  </div>
+                  <div>
+                    <Label>Phone</Label>
+                    <Input
+                      value={form.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      disabled={isView}
+                    />
+                  </div>
+                </div>
+                <div className="mt-4 flex justify-end space-x-2">
+                  <Button variant="outline" onClick={onClose}>
+                    Close
+                  </Button>
+                  {!isView && (
+                    <Button onClick={submit} className="bg-blue-600 text-white">
+                      {isEdit ? "Save changes" : "Create"}
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-        <div className="flex justify-end space-x-2 mt-3">
-          <button className="px-3 py-1 border" onClick={onClose}>
-            Close
-          </button>
-          {mode !== "view" && (
-            <button
-              className="px-3 py-1 bg-blue-600 text-white"
-              onClick={submit}
-            >
-              {mode === "add" ? "Create" : "Save"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
