@@ -63,8 +63,21 @@ export class PatientService {
     return apiClient.getPatients();
   }
 
+  async getPatientById(id: string): Promise<ApiPatient> {
+    const patients = await this.getPatients();
+    const patient = patients.find(p => p.id === id);
+    if (!patient) {
+      throw new Error(`Patient with ID ${id} not found`);
+    }
+    return patient;
+  }
+
   async createPatient(patient: CreatePatient): Promise<ApiPatient> {
     return apiClient.createPatient(patient);
+  }
+
+  async updatePatient(id: string, patient: Partial<CreatePatient>): Promise<ApiPatient> {
+    return apiClient.updatePatient(id, patient);
   }
 }
 

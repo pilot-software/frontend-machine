@@ -344,7 +344,6 @@ export function HealthcareDashboard() {
                 setModalOrigin(null);
               }}
               patientId={selectedPatientId}
-              patientData={selectedPatientData}
               mode={modalMode}
             />
           </div>

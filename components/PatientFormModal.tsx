@@ -16,6 +16,8 @@ import { GenderType, BloodType, ConditionSeverity, ConditionStatus, Prescription
 import { patientService } from '../lib/services/patient';
 import { userService } from '../lib/services/user';
 import { useAppData } from '../lib/hooks/useAppData';
+import { useAppSelector, useAppDispatch } from '../lib/store';
+import { fetchPatientById, clearSelectedPatient, updatePatient } from '../lib/store/slices/patientSlice';
 
 interface PatientFormData {
     firstName: string;
@@ -23,7 +25,7 @@ interface PatientFormData {
     email: string;
     phone: string;
     dateOfBirth: string;
-    gender: 'MALE' | 'FEMALE' | 'OTHER' | '';
+    gender: 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY' | '';
     address: string;
     city: string;
     state: string;
@@ -66,16 +68,16 @@ interface PatientFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     patientId?: string;
-    patientData?: any;
     mode: 'add' | 'edit' | 'view';
 }
 
-export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPatientData, mode}: PatientFormModalProps) {
+export function PatientFormModal({isOpen, onClose, patientId, mode}: PatientFormModalProps) {
     const {user} = useAuth();
     const { refetch } = useAppData();
+    const dispatch = useAppDispatch();
+    const { selectedPatient, loading, error } = useAppSelector(state => state.patient);
     const [activeTab, setActiveTab] = useState('basic');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     const [patientData, setPatientData] = useState<PatientFormData>({
         firstName: '',
@@ -114,39 +116,48 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
                     console.error('Failed to load doctors:', error);
                 }
 
-                if (apiPatientData) {
-                    setPatientData({
-                        firstName: apiPatientData.firstName || '',
-                        lastName: apiPatientData.lastName || '',
-                        email: apiPatientData.email || '',
-                        phone: apiPatientData.phone || '',
-                        dateOfBirth: apiPatientData.dateOfBirth || '',
-                        gender: apiPatientData.gender || '',
-                        address: apiPatientData.address || '',
-                        city: apiPatientData.city || '',
-                        state: apiPatientData.state || '',
-                        zipCode: apiPatientData.zipCode || '',
-                        country: apiPatientData.country || 'USA',
-                        emergencyContactName: apiPatientData.emergencyContactName || '',
-                        emergencyContactPhone: apiPatientData.emergencyContactPhone || '',
-                        emergencyContactRelationship: apiPatientData.emergencyContactRelationship || '',
-                        bloodType: apiPatientData.bloodType || '',
-                        allergies: apiPatientData.allergies || '',
-                        chronicConditions: apiPatientData.chronicConditions || '',
-                        currentMedications: apiPatientData.currentMedications || '',
-                        assignedDoctor: apiPatientData.assignedDoctor || '',
-                        insuranceProvider: apiPatientData.insuranceProvider || '',
-                        insurancePolicyNumber: apiPatientData.insurancePolicyNumber || ''
-                    });
+                // Fetch patient data by ID if in edit or view mode
+                if (patientId && (mode === 'edit' || mode === 'view')) {
+                    dispatch(fetchPatientById(patientId));
                 }
             }
         };
         loadData();
-    }, [apiPatientData, isOpen]);
+    }, [isOpen, patientId, mode, dispatch]);
+
+    // Update form data when selectedPatient changes
+    React.useEffect(() => {
+        if (selectedPatient) {
+            setPatientData({
+                firstName: selectedPatient.firstName || '',
+                lastName: selectedPatient.lastName || '',
+                email: selectedPatient.email || '',
+                phone: selectedPatient.phone || '',
+                dateOfBirth: selectedPatient.dateOfBirth || '',
+                gender: selectedPatient.gender || '',
+                address: selectedPatient.address || '',
+                city: selectedPatient.city || '',
+                state: selectedPatient.state || '',
+                zipCode: selectedPatient.zipCode || '',
+                country: selectedPatient.country || 'USA',
+                emergencyContactName: selectedPatient.emergencyContactName || '',
+                emergencyContactPhone: selectedPatient.emergencyContactPhone || '',
+                emergencyContactRelationship: selectedPatient.emergencyContactRelationship || '',
+                bloodType: selectedPatient.bloodType || '',
+                allergies: selectedPatient.allergies || '',
+                chronicConditions: selectedPatient.chronicConditions || '',
+                currentMedications: selectedPatient.currentMedications || '',
+                assignedDoctor: '',
+                insuranceProvider: selectedPatient.insuranceProvider || '',
+                insurancePolicyNumber: selectedPatient.insurancePolicyNumber || ''
+            });
+        }
+    }, [selectedPatient]);
 
     // Reset form when modal closes
     React.useEffect(() => {
         if (!isOpen) {
+            dispatch(clearSelectedPatient());
             setPatientData({
                 firstName: '',
                 lastName: '',
@@ -171,7 +182,7 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
                 insurancePolicyNumber: ''
             });
         }
-    }, [isOpen]);
+    }, [isOpen, dispatch]);
 
     const [conditions, setConditions] = useState<MedicalConditionForm[]>([]);
     const [prescriptions, setPrescriptions] = useState<PrescriptionForm[]>([]);
@@ -282,8 +293,8 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
                 await patientService.createPatient(apiData);
                 refetch.patients();
             } else if (mode === 'edit' && patientId) {
-                // TODO: Implement updatePatient method
-                console.log('Updating patient:', patientId, apiData);
+                await patientService.updatePatient(patientId, apiData);
+                refetch.patients();
             }
 
             onClose();
@@ -403,10 +414,14 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
                         </TabsList>
 
                         <div className="mt-4 space-y-4">
-                            {isLoading ? (
+                            {loading.selectedPatient ? (
                                 <div className="flex items-center justify-center py-8">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                                     <span className="ml-2">Loading patient data...</span>
+                                </div>
+                            ) : error.selectedPatient ? (
+                                <div className="flex items-center justify-center py-8 text-red-600">
+                                    <span>Error: {error.selectedPatient}</span>
                                 </div>
                             ) : (
                             <>
@@ -454,6 +469,7 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
                                                             <SelectItem value="MALE">Male</SelectItem>
                                                             <SelectItem value="FEMALE">Female</SelectItem>
                                                             <SelectItem value="OTHER">Other</SelectItem>
+                                                            <SelectItem value="PREFER_NOT_TO_SAY">Prefer not to say</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -1006,11 +1022,11 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
                         Cancel
                     </Button>
                     {!isReadOnly && (
-                        <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg">
-                            {isSubmitting ? (
+                        <Button onClick={handleSubmit} disabled={isSubmitting || loading.updating} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg">
+                            {(isSubmitting || loading.updating) ? (
                                 <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                                    Saving...
+                                    {isAdding ? 'Creating...' : 'Saving...'}
                                 </>
                             ) : (
                                 <>

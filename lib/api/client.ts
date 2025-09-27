@@ -82,6 +82,14 @@ export class ApiClient implements IApiClient {
     return this.get('/patients');
   }
 
+  async createPatient(data: any) {
+    return this.post('/patients', data);
+  }
+
+  async updatePatient(id: string, data: any) {
+    return this.put(`/patients/${id}`, data);
+  }
+
   async createAppointment(data: any) {
     return this.post('/appointments', data);
   }

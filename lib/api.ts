@@ -64,6 +64,17 @@ export class ApiClient {
     });
   }
 
+  async updatePatient(id: string, data: any, branchId?: string) {
+    const payload = { ...data };
+    if (branchId) {
+      payload.branchId = branchId;
+    }
+    return this.request(`/api/patients/${id}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
   // Appointment API
   async getAppointments(branchId?: string) {
     return this.request('/api/appointments', { branchId });
