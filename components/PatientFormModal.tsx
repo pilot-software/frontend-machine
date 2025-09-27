@@ -199,7 +199,40 @@ export function PatientFormModal({
         emergencyContactPhone: selectedPatient.emergencyContactPhone || "",
         emergencyContactRelationship:
           selectedPatient.emergencyContactRelationship || "",
-        bloodType: selectedPatient.bloodType || "",
+        bloodType: (() => {
+          const raw =
+            (selectedPatient as any).bloodType ??
+            (selectedPatient as any).blood_type ??
+            (selectedPatient as any).btype ??
+            "";
+          if (!raw) return "";
+          const mapShortToEnum: Record<string, string> = {
+            "O+": "O_POSITIVE",
+            "O-": "O_NEGATIVE",
+            "A+": "A_POSITIVE",
+            "A-": "A_NEGATIVE",
+            "B+": "B_POSITIVE",
+            "B-": "B_NEGATIVE",
+            "AB+": "AB_POSITIVE",
+            "AB-": "AB_NEGATIVE",
+          };
+          if (typeof raw === "string") {
+            // already in API enum (e.g. 'O_POSITIVE')
+            if (raw.includes("_")) return raw;
+            // short form like 'O+'
+            return mapShortToEnum[raw] ?? raw;
+          }
+          return "";
+        })() as
+          | "A_POSITIVE"
+          | "A_NEGATIVE"
+          | "B_POSITIVE"
+          | "B_NEGATIVE"
+          | "AB_POSITIVE"
+          | "AB_NEGATIVE"
+          | "O_POSITIVE"
+          | "O_NEGATIVE"
+          | "",
         allergies: selectedPatient.allergies || "",
         chronicConditions: selectedPatient.chronicConditions || "",
         currentMedications: selectedPatient.currentMedications || "",
