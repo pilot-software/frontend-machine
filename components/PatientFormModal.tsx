@@ -203,7 +203,18 @@ export function PatientFormModal({
         allergies: selectedPatient.allergies || "",
         chronicConditions: selectedPatient.chronicConditions || "",
         currentMedications: selectedPatient.currentMedications || "",
-        assignedDoctor: "",
+        // Populate assignedDoctor from whichever field the backend provides
+        // assignedDoctor may be an id string or an object { id, name }
+        assignedDoctor: (() => {
+          const raw =
+            (selectedPatient as any).assignedDoctor ??
+            (selectedPatient as any).assignedDoctorId ??
+            (selectedPatient as any).primaryDoctorId ??
+            (selectedPatient as any).doctorId;
+          if (!raw) return "";
+          if (typeof raw === "string") return raw;
+          return raw.id || "";
+        })(),
         insuranceProvider: selectedPatient.insuranceProvider || "",
         insurancePolicyNumber: selectedPatient.insurancePolicyNumber || "",
       });
