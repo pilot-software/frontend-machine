@@ -21,7 +21,7 @@ export class UserService {
   }
 
   private getHeaders() {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth_token");
     return {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),

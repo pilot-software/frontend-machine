@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PatientFormModal } from "../../../components/PatientFormModal";
 import { useAppData } from "../../../lib/hooks/useAppData";
+import { userService, ApiUser } from "../../../lib/services/user";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ import {
 import { Mail, Phone, User as UserIcon, Eye } from "lucide-react";
 
 type RoleKey = "admin" | "doctor" | "reception" | "patient";
+type ApiRoleKey = "ADMIN" | "DOCTOR" | "RECEPTIONIST" | "PATIENT";
 
 interface DemoUser {
   id: string;
@@ -39,6 +41,13 @@ interface DemoUser {
   department?: string;
   role: RoleKey;
 }
+
+const roleMapping: Record<RoleKey, ApiRoleKey> = {
+  admin: "ADMIN",
+  doctor: "DOCTOR",
+  reception: "RECEPTIONIST",
+  patient: "PATIENT"
+};
 
 function makeId(prefix = "") {
   return prefix + Math.random().toString(36).slice(2, 9);
@@ -206,56 +215,23 @@ export default function UsersPage() {
     patient: "",
   });
 
-  const [admins, setAdmins] = useState<DemoUser[]>([
-    {
-      id: "a1",
-      firstName: "Alice",
-      lastName: "Admin",
-      email: "alice@hospital.com",
-      phone: "555-0101",
-      role: "admin",
-    },
-    {
-      id: "a2",
-      firstName: "Aaron",
-      lastName: "Admin",
-      email: "aaron@hospital.com",
-      phone: "555-0102",
-      role: "admin",
-    },
-  ]);
+  const [apiUsers, setApiUsers] = useState<Record<RoleKey, ApiUser[]>>({
+    admin: [],
+    doctor: [],
+    reception: [],
+    patient: []
+  });
 
-  const [doctors, setDoctors] = useState<DemoUser[]>([
-    {
-      id: "d1",
-      firstName: "Dr. Sarah",
-      lastName: "Johnson",
-      email: "sarah.j@hospital.com",
-      phone: "555-0110",
-      department: "Cardiology",
-      role: "doctor",
-    },
-    {
-      id: "d2",
-      firstName: "Dr. Michael",
-      lastName: "Chen",
-      email: "michael.c@hospital.com",
-      phone: "555-0111",
-      department: "Emergency",
-      role: "doctor",
-    },
-  ]);
+  const [loading, setLoading] = useState<Record<RoleKey, boolean>>({
+    admin: false,
+    doctor: false,
+    reception: false,
+    patient: false
+  });
 
-  const [receptions, setReceptions] = useState<DemoUser[]>([
-    {
-      id: "r1",
-      firstName: "Rita",
-      lastName: "Reception",
-      email: "rita@hospital.com",
-      phone: "555-0120",
-      role: "reception",
-    },
-  ]);
+  const [admins, setAdmins] = useState<DemoUser[]>([]);
+  const [doctors, setDoctors] = useState<DemoUser[]>([]);
+  const [receptions, setReceptions] = useState<DemoUser[]>([]);
 
   const { patients: appPatients } = useAppData();
 
@@ -266,6 +242,26 @@ export default function UsersPage() {
     user?: DemoUser | null;
   }>({ open: false, role: "admin", mode: "view", user: null });
 
+  const fetchUsersByRole = async (role: RoleKey) => {
+    setLoading(prev => ({ ...prev, [role]: true }));
+    try {
+      const apiRole = roleMapping[role];
+      const users = await userService.getUsersByRole(apiRole);
+      setApiUsers(prev => ({ ...prev, [role]: users }));
+    } catch (error) {
+      console.error(`Failed to fetch ${role}s:`, error);
+    } finally {
+      setLoading(prev => ({ ...prev, [role]: false }));
+    }
+  };
+
+  useEffect(() => {
+    // Load all roles on component mount
+    Object.keys(roleMapping).forEach(role => {
+      fetchUsersByRole(role as RoleKey);
+    });
+  }, []);
+
   const roleMap: RoleKey[] = ["admin", "doctor", "reception", "patient"];
 
   const handleSearchChange = (role: RoleKey, value: string) =>
@@ -273,24 +269,37 @@ export default function UsersPage() {
 
   const filteredList = (role: RoleKey) => {
     const term = (searchTerms[role] || "").toLowerCase();
-    // map appPatients into the demo user shape for listing
-    const patientList: DemoUser[] = (appPatients || []).map((p: any) => ({
-      id: p.id,
-      firstName: p.firstName || p.name || "",
-      lastName: p.lastName || "",
-      email: p.email || "",
-      phone: p.phone || "",
-      role: "patient",
-    }));
+    
+    // Use API data if available, fallback to local data
+    const apiData = apiUsers[role] || [];
+    const apiList: DemoUser[] = apiData.map((user: ApiUser) => {
+      const nameParts = user.name.split(' ');
+      return {
+        id: user.id,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        email: user.email,
+        phone: user.phone || '',
+        department: user.department || user.specialization || '',
+        role: role
+      };
+    });
 
-    const list: DemoUser[] =
-      role === "admin"
-        ? admins
-        : role === "doctor"
-        ? doctors
-        : role === "reception"
-        ? receptions
-        : patientList;
+    // Fallback to local demo data if no API data
+    const localList: DemoUser[] = 
+      role === "admin" ? admins :
+      role === "doctor" ? doctors :
+      role === "reception" ? receptions :
+      (appPatients || []).map((p: any) => ({
+        id: p.id,
+        firstName: p.firstName || p.name || "",
+        lastName: p.lastName || "",
+        email: p.email || "",
+        phone: p.phone || "",
+        role: "patient",
+      }));
+
+    const list = apiList.length > 0 ? apiList : localList;
 
     if (!term) return list;
 
@@ -376,7 +385,12 @@ export default function UsersPage() {
           return (
             <div key={role} className="border rounded p-3">
               <div className="flex items-center justify-between mb-2">
-                <div className="font-medium capitalize">{role}s</div>
+                <div className="font-medium capitalize flex items-center gap-2">
+                  {role}s
+                  {loading[role] && (
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  )}
+                </div>
                 <div>
                   <input
                     className="border px-2 py-1 mr-2"
@@ -385,10 +399,16 @@ export default function UsersPage() {
                     placeholder={`Search ${role}...`}
                   />
                   <button
+                    className="px-2 py-1 bg-blue-600 text-white mr-1"
+                    onClick={() => fetchUsersByRole(role)}
+                    disabled={loading[role]}
+                  >
+                    Refresh
+                  </button>
+                  <button
                     className="px-2 py-1 bg-green-600 text-white"
                     onClick={() => {
                       if (role === "patient") {
-                        // Open the create patient modal (reuse PatientFormModal)
                         setActiveModal({
                           open: true,
                           role,
