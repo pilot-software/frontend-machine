@@ -15,6 +15,7 @@ import {useAuth} from './AuthContext';
 import { GenderType, BloodType, ConditionSeverity, ConditionStatus, PrescriptionStatus } from '../lib/types';
 import { patientService } from '../lib/services/patient';
 import { userService } from '../lib/services/user';
+import { useAppData } from '../lib/hooks/useAppData';
 
 interface PatientFormData {
     firstName: string;
@@ -71,6 +72,7 @@ interface PatientFormModalProps {
 
 export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPatientData, mode}: PatientFormModalProps) {
     const {user} = useAuth();
+    const { refetch } = useAppData();
     const [activeTab, setActiveTab] = useState('basic');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -278,6 +280,7 @@ export function PatientFormModal({isOpen, onClose, patientId, patientData: apiPa
 
             if (mode === 'add') {
                 await patientService.createPatient(apiData);
+                refetch.patients();
             } else if (mode === 'edit' && patientId) {
                 // TODO: Implement updatePatient method
                 console.log('Updating patient:', patientId, apiData);
