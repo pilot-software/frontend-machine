@@ -6,15 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, User, Heart, FileText, Printer } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, User, Heart, FileText, Printer, Download } from 'lucide-react';
 import { useAppData } from '@/lib/hooks/useAppData';
 import { Patient, Doctor } from '@/lib/types';
+import { downloadPatientPDF, downloadPatientHTML } from '@/lib/services/pdf-simple';
 
 export default function PatientDetailPage() {
   const params = useParams();
   const patientId = params.id as string;
   const [patient, setPatient] = useState<Patient | null>(null);
   const [assignedDoctor, setAssignedDoctor] = useState<Doctor | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { patients: patientsData, doctors: doctorsData } = useAppData();
 
   useEffect(() => {
@@ -30,6 +32,34 @@ export default function PatientDetailPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!patient) return;
+    
+    setIsGeneratingPDF(true);
+    try {
+      await downloadPatientPDF(patient, assignedDoctor);
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const handleDownloadHTML = async () => {
+    if (!patient) return;
+    
+    setIsGeneratingPDF(true);
+    try {
+      await downloadPatientHTML(patient, assignedDoctor);
+    } catch (error) {
+      console.error('Failed to generate HTML report:', error);
+      alert('Failed to generate HTML report. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   if (!patient) {
@@ -53,10 +83,29 @@ export default function PatientDetailPage() {
           </Button>
           <h1 className="text-3xl font-bold">Patient Details</h1>
         </div>
-        <Button onClick={handlePrint} className="print:hidden">
-          <Printer className="h-4 w-4 mr-2" />
-          Print
-        </Button>
+        <div className="flex space-x-2">
+          <Button onClick={handlePrint} variant="outline" className="print:hidden">
+            <Printer className="h-4 w-4 mr-2" />
+            Print Page
+          </Button>
+          <Button 
+            onClick={handleDownloadPDF} 
+            disabled={isGeneratingPDF}
+            className="print:hidden"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            {isGeneratingPDF ? 'Generating...' : 'Print PDF'}
+          </Button>
+          <Button 
+            onClick={handleDownloadHTML} 
+            variant="secondary"
+            disabled={isGeneratingPDF}
+            className="print:hidden"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            {isGeneratingPDF ? 'Generating...' : 'Download Report'}
+          </Button>
+        </div>
       </div>
 
       <Card>
