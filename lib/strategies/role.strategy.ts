@@ -3,7 +3,7 @@ import { FeatureConfig, TextConfig } from '@/config';
 import { 
   Activity, BarChart3, BedDouble, Calendar, ClipboardList, 
   FileText, Heart, Lock, PillBottle, Shield, 
-  Stethoscope, User, Users 
+  Stethoscope, User, Users, UserCheck, FlaskConical 
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -140,13 +140,59 @@ export class FinanceRoleStrategy implements IRoleStrategy {
   }
 }
 
+export class ReceptionistRoleStrategy implements IRoleStrategy {
+  getConfig(features: FeatureConfig, text: TextConfig): RoleConfig {
+    const menuItems: MenuItem[] = [];
+
+    if (features.patientManagement) {
+      menuItems.push({ icon: Users, label: "Patients", path: "/patients" });
+    }
+    if (features.appointmentSystem) {
+      menuItems.push({ icon: Calendar, label: text.navigation.appointments, path: "/appointments" });
+    }
+    if (features.financialManagement) {
+      menuItems.push({ icon: FileText, label: "Billing", path: "/financial" });
+    }
+
+    return {
+      color: "bg-teal-100 text-teal-800",
+      icon: UserCheck,
+      menuItems
+    };
+  }
+}
+
+export class TechnicianRoleStrategy implements IRoleStrategy {
+  getConfig(features: FeatureConfig, _text: TextConfig): RoleConfig {
+    const menuItems: MenuItem[] = [];
+
+    if (features.patientManagement) {
+      menuItems.push({ icon: Users, label: "Patients", path: "/patients" });
+    }
+    if (features.appointmentSystem) {
+      menuItems.push({ icon: Calendar, label: "Appointments", path: "/appointments" });
+    }
+    if (features.clinicalInterface) {
+      menuItems.push({ icon: ClipboardList, label: "Lab Records", path: "/clinical" });
+    }
+
+    return {
+      color: "bg-indigo-100 text-indigo-800",
+      icon: FlaskConical,
+      menuItems
+    };
+  }
+}
+
 export class RoleStrategyFactory {
   private static strategies: Record<UserRole, IRoleStrategy> = {
     admin: new AdminRoleStrategy(),
     doctor: new DoctorRoleStrategy(),
     nurse: new NurseRoleStrategy(),
     patient: new PatientRoleStrategy(),
-    finance: new FinanceRoleStrategy()
+    finance: new FinanceRoleStrategy(),
+    receptionist: new ReceptionistRoleStrategy(),
+    technician: new TechnicianRoleStrategy()
   };
 
   static getStrategy(role: UserRole): IRoleStrategy {

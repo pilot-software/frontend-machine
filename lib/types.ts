@@ -1,6 +1,6 @@
 // Database-compatible types based on schema
 
-export type UserRole = 'admin' | 'doctor' | 'nurse' | 'patient' | 'finance';
+export type UserRole = 'admin' | 'doctor' | 'nurse' | 'patient' | 'finance' | 'receptionist' | 'technician';
 export type UserStatus = 'active' | 'inactive' | 'suspended';
 export type GenderType = 'male' | 'female' | 'other';
 export type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';

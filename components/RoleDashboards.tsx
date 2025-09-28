@@ -126,6 +126,8 @@ function FinanceDashboard() {
   );
 }
 
+
+
 export function RoleDashboards() {
   const { user } = useAuth();
 
@@ -143,6 +145,10 @@ export function RoleDashboards() {
         <HealthcareDashboard />
       </div>
     );
+  }
+
+  if (user.role === "receptionist" || user.role === "technician") {
+    return <HealthcareDashboard />;
   }
 
   // For all other roles, show the comprehensive healthcare dashboard

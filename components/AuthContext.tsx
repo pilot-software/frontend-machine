@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User } from "../lib/types";
+import { User, UserRole } from "../lib/types";
 import { storageService } from "../lib/services/storage.service";
 
 interface AuthContextType {
@@ -120,15 +120,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const createUserFromResponse = (response: any): User => ({
-    id: response.id,
-    email: response.email,
-    name: response.email.split('@')[0],
-    role: response.role.toLowerCase() as any,
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  });
+  const createUserFromResponse = (response: any): User => {
+    // Map API role names to internal role names
+    const roleMapping: Record<string, UserRole> = {
+      'ADMIN': 'admin',
+      'DOCTOR': 'doctor', 
+      'NURSE': 'nurse',
+      'PATIENT': 'patient',
+      'FINANCE': 'finance',
+      'RECEPTIONIST': 'receptionist',
+      'TECHNICIAN': 'technician'
+    };
+    
+    const mappedRole = roleMapping[response.role] || response.role.toLowerCase();
+    
+    return {
+      id: response.id,
+      email: response.email,
+      name: response.email.split('@')[0],
+      role: mappedRole as UserRole,
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  };
 
   const saveUserSession = (user: User, token: string) => {
     storageService.setItem('healthcare_user', JSON.stringify(user));

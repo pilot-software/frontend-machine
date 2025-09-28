@@ -23,6 +23,8 @@ export interface FeatureConfig {
     nurse: boolean;
     patient: boolean;
     finance: boolean;
+    receptionist: boolean;
+    technician: boolean;
   };
   
   // UI Features
@@ -63,6 +65,8 @@ export const hospitalConfig: FeatureConfig = {
     nurse: true,
     patient: true,
     finance: true,
+    receptionist: true,
+    technician: true,
   },
   notifications: true,
   twoFactorAuth: true,
@@ -91,6 +95,8 @@ export const clinicConfig: FeatureConfig = {
     nurse: false,
     patient: true,
     finance: false,
+    receptionist: true,
+    technician: false,
   },
   notifications: false,
   twoFactorAuth: false,

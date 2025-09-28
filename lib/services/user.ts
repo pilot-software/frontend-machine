@@ -2,7 +2,7 @@ export interface ApiUser {
   id: string;
   email: string;
   name: string;
-  role: "ADMIN" | "DOCTOR" | "NURSE" | "PATIENT" | "FINANCE";
+  role: "ADMIN" | "DOCTOR" | "NURSE" | "PATIENT" | "FINANCE" | "RECEPTIONIST" | "TECHNICIAN";
   department?: string;
   specialization?: string;
   phone?: string;

@@ -30,7 +30,9 @@ export const ROLE_COLORS = {
   doctor: 'bg-blue-100 text-blue-800',
   nurse: 'bg-green-100 text-green-800',
   patient: 'bg-purple-100 text-purple-800',
-  finance: 'bg-yellow-100 text-yellow-800'
+  finance: 'bg-yellow-100 text-yellow-800',
+  receptionist: 'bg-teal-100 text-teal-800',
+  technician: 'bg-indigo-100 text-indigo-800'
 } as const;
 
 export const getStatusColor = (status: string): string => {

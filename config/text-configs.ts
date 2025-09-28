@@ -9,7 +9,9 @@ export const hospitalText: TextConfig = {
     doctor: "Doctor",
     nurse: "Nurse", 
     patient: "Patient",
-    finance: "Finance"
+    finance: "Finance",
+    receptionist: "Receptionist",
+    technician: "Technician"
   },
   navigation: {
     dashboard: "Dashboard",
@@ -55,7 +57,9 @@ export const clinicText: TextConfig = {
     doctor: "Physician",
     nurse: "Nurse",
     patient: "Patient", 
-    finance: "Billing"
+    finance: "Billing",
+    receptionist: "Front Desk",
+    technician: "Lab Tech"
   },
   navigation: {
     dashboard: "Home",
@@ -101,7 +105,9 @@ export const bigHospitalText: TextConfig = {
     doctor: "Attending Physician",
     nurse: "Registered Nurse",
     patient: "Patient",
-    finance: "Financial Services"
+    finance: "Financial Services",
+    receptionist: "Patient Services Representative",
+    technician: "Laboratory Technician"
   },
   navigation: {
     dashboard: "Executive Dashboard",
