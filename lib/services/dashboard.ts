@@ -43,6 +43,22 @@ export class DashboardService {
   async getDashboardStats(branchId?: string): Promise<DashboardStats> {
     return apiClient.getDashboardData(branchId);
   }
+
+  async getFinancialStats(branchId?: string): Promise<FinancialStats> {
+    return apiClient.getFinancialStats(branchId);
+  }
+
+  async getClinicalStats(branchId?: string) {
+    return apiClient.getClinicalStats(branchId);
+  }
+
+  async getPatientStats(branchId?: string): Promise<PatientStats> {
+    return apiClient.getPatientStats(branchId);
+  }
+
+  async getAppointmentStats(branchId?: string): Promise<AppointmentStats> {
+    return apiClient.getAppointmentStats(branchId);
+  }
 }
 
 export const dashboardService = new DashboardService();

@@ -292,20 +292,13 @@ export const generatePatientHTML = async (patient: Patient, assignedDoctor: Doct
             <div class="qr-title">
               🔍 Patient Identification QR Code
             </div>
-            <div class="qr-description">
-              <strong>Secure Patient ID:</strong> Scan this QR code to quickly access patient information including ID, name, date of birth, and emergency contact details.<br><br>
-              <strong>Usage:</strong> Emergency identification, appointment check-in, medical record access, insurance verification.<br><br>
+            <div class="qr-description">  
               <strong>Generated:</strong> ${currentDate.toLocaleString()}
-            </div>
-            <div class="qr-security">
-              ⚠️ <strong>Security Notice:</strong> This QR code contains protected health information (PHI). Use only for authorized medical purposes.
             </div>
             <div class="qr-data-preview">
               <strong>Data Preview:</strong><br>
-              Patient: ${patient.firstName} ${patient.lastName}<br>
-              ID: ${patient.id}<br>
               DOB: ${patient.dateOfBirth}<br>
-              Emergency: ${patient.emergencyContactPhone || 'N/A'}
+              Mobile: ${patient.phone || 'N/A'}<br>
             </div>
           </div>
         </div>

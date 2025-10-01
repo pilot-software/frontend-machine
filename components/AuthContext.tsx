@@ -28,13 +28,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const savedToken = storageService.getItem("auth_token");
         
         if (savedUser && savedToken) {
-          setUser(JSON.parse(savedUser));
+          const userData = JSON.parse(savedUser);
+          setUser(userData);
           setToken(savedToken);
           
           const { apiClient: newApiClient } = await import('../lib/api/client');
           const { apiClient: originalApiClient } = await import('../lib/api');
           newApiClient.setToken(savedToken);
           originalApiClient.setToken(savedToken);
+          originalApiClient.setUserRole(userData.role?.toUpperCase());
         }
       } catch (error) {
         console.error("Failed to load user session:", error);
@@ -83,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { apiClient: originalApiClient } = await import('../lib/api');
         newApiClient.setToken(response.token);
         originalApiClient.setToken(response.token);
+        originalApiClient.setUserRole(response.role);
         
         const apiUser = createUserFromResponse(response);
         

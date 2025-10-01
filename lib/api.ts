@@ -1,25 +1,58 @@
+import { getEndpoint, handleApiResponse, UserRole } from './utils/api-router';
+
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: any;
   branchId?: string;
+  userRole?: UserRole;
 }
 
 export class ApiClient {
   private token: string | null = null;
+  private userRole: UserRole | null = null;
 
   setToken(token: string) {
     this.token = token;
   }
 
+  setUserRole(role: UserRole) {
+    this.userRole = role;
+  }
+
+  private addBranchId(data: any, branchId?: string) {
+    const payload = { ...data };
+    if (branchId) {
+      payload.branchId = branchId;
+    }
+    return payload;
+  }
+
+  private getUserRole(): UserRole {
+    if (this.userRole) return this.userRole;
+    
+    // Fallback to localStorage
+    if (typeof window !== 'undefined') {
+      const user = localStorage.getItem('healthcare_user');
+      if (user) {
+        const userData = JSON.parse(user);
+        return userData.role?.toUpperCase() || 'PATIENT';
+      }
+    }
+    return 'PATIENT';
+  }
+
   private async request(endpoint: string, options: ApiOptions = {}) {
-    const { method = 'GET', body, branchId } = options;
+    const { method = 'GET', body, branchId, userRole } = options;
+    const role = userRole || this.getUserRole();
     
     // Use environment-based API URL
     const baseUrl = process.env.NODE_ENV === 'production' 
       ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace('/api', '') || 'https://springboot-api.azurewebsites.net'
       : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
-    // Single API call handles both cases
-    const url = baseUrl + endpoint + (branchId && branchId !== 'all' ? `?branchId=${branchId}` : '');
+    
+    // Use new routing logic
+    const routedEndpoint = getEndpoint(role, endpoint);
+    const url = baseUrl + routedEndpoint + (branchId && branchId !== 'all' ? `?branchId=${branchId}` : '');
 
     const config: RequestInit = {
       method,
@@ -34,99 +67,197 @@ export class ApiClient {
     }
 
     const response = await fetch(url, config);
-    
-    if (response.status === 403) {
-      throw new Error('Access denied to this branch');
-    }
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API Error: ${response.status} - ${errorText}`);
-    }
-
-    return response.json();
+    return handleApiResponse(response);
   }
 
   // Patient API
   async getPatients(branchId?: string) {
-    return this.request('/api/patients', { branchId });
+    return this.request('/patients', { branchId });
   }
 
   async createPatient(data: any, branchId?: string) {
-    const payload = { ...data };
-    // Only add branchId if provided (orgs without branches don't need it)
-    if (branchId) {
-      payload.branchId = branchId;
-    }
-    return this.request('/api/patients', {
+    return this.request('/patients', {
       method: 'POST',
-      body: payload
+      body: this.addBranchId(data, branchId)
     });
   }
 
   async updatePatient(id: string, data: any, branchId?: string) {
-    const payload = { ...data };
-    if (branchId) {
-      payload.branchId = branchId;
-    }
-    return this.request(`/api/patients/${id}`, {
+    return this.request(`/patients/${id}`, {
       method: 'PUT',
-      body: payload
+      body: this.addBranchId(data, branchId)
     });
   }
 
   // Appointment API
   async getAppointments(branchId?: string) {
-    return this.request('/api/appointments', { branchId });
+    return this.request('/appointments', { branchId });
   }
 
   async createAppointment(data: any, branchId?: string) {
-    const payload = { ...data };
-    if (branchId) {
-      payload.branchId = branchId;
-    }
-    return this.request('/api/appointments', {
+    return this.request('/appointments', {
       method: 'POST',
-      body: payload
+      body: this.addBranchId(data, branchId)
     });
   }
 
-  // Dashboard API
+  // Dashboard API - Now uses role-based routing
   async getDashboardData(branchId?: string) {
-    return this.request('/api/secure/dashboard/stats', { branchId });
+    return this.request('/dashboard/stats', { branchId });
   }
 
   async getPatientStats(branchId?: string) {
-    return this.request('/api/secure/dashboard/patient-stats', { branchId });
+    return this.request('/dashboard/patient-stats', { branchId });
   }
 
   async getFinancialStats(branchId?: string) {
-    return this.request('/api/secure/dashboard/financial-stats', { branchId });
+    return this.request('/dashboard/financial-stats', { branchId });
   }
 
   async getClinicalStats(branchId?: string) {
-    return this.request('/api/secure/dashboard/clinical-stats', { branchId });
+    return this.request('/dashboard/clinical-stats', { branchId });
   }
 
   async getAppointmentStats(branchId?: string) {
-    return this.request('/api/secure/dashboard/appointment-stats', { branchId });
+    return this.request('/dashboard/appointment-stats', { branchId });
   }
 
   async getAnalytics(branchId?: string) {
-    return this.request('/api/secure/dashboard/analytics', { branchId });
+    return this.request('/dashboard/analytics', { branchId });
   }
 
-  // Branch Management API
+  // Branch Management API - Now uses ops routing
   async getBranches() {
-    return this.request('/api/secure/branches');
+    return this.request('/branches');
   }
 
   async getBranchDetails(branchId: string) {
-    return this.request(`/api/secure/branches/${branchId}`);
+    return this.request(`/branches/${branchId}`);
   }
 
   async getBranchPermissions(branchId: string) {
-    return this.request(`/api/secure/branches/${branchId}/permissions`);
+    return this.request(`/branches/${branchId}/permissions`);
+  }
+
+  // Queue Management API - NEW
+  async getQueues() {
+    return this.request('/queues');
+  }
+
+  async assignToQueue(queueData: any) {
+    return this.request('/queues/assign', { method: 'POST', body: queueData });
+  }
+
+  async updateQueueStatus(id: string, statusData: any) {
+    return this.request(`/queues/${id}/status`, { method: 'PUT', body: statusData });
+  }
+
+  // User Management API - Uses consistent request method
+  async getUsers() {
+    return this.request('/users');
+  }
+
+  async getUsersByRole(role: string) {
+    return this.request(`/users/role/${role}`);
+  }
+
+  async createUser(userData: any) {
+    return this.request('/users', { method: 'POST', body: userData });
+  }
+
+  async updateUser(id: string, userData: any) {
+    return this.request(`/users/${id}`, { method: 'PUT', body: userData });
+  }
+
+  async getDoctors() {
+    return this.request('/users/doctors');
+  }
+
+  async getDoctor(id: string) {
+    return this.request(`/users/doctors/${id}`);
+  }
+
+  // Operations API endpoints
+  async updateUserRole(id: string, role: string) {
+    return this.request(`/users/${id}/role`, { method: 'PUT', body: { role } });
+  }
+
+  async updateUserStatus(id: string, status: string) {
+    return this.request(`/users/${id}/status`, { method: 'PUT', body: { status } });
+  }
+
+  async getUserPermissions(userId: string) {
+    return this.request(`/system/permissions/${userId}`);
+  }
+
+  async getSystemRoles() {
+    return this.request('/system/roles');
+  }
+
+  async getSystemSettings() {
+    return this.request('/system/settings');
+  }
+
+  // Permission Management API - NEW
+  async getAllPermissions() {
+    return this.request('/permissions/all');
+  }
+
+  async getUserPermissions(userId: string) {
+    return this.request(`/permissions/user/${userId}`);
+  }
+
+  async assignUserPermissions(userId: string, permissions: any) {
+    return this.request(`/permissions/user/${userId}`, { method: 'POST', body: permissions });
+  }
+
+  async getRolePermissions(role: string) {
+    return this.request(`/permissions/role/${role}`);
+  }
+
+  async updateRolePermissions(role: string, permissions: any) {
+    return this.request(`/permissions/role/${role}`, { method: 'PUT', body: permissions });
+  }
+
+  async getPermissionGroups() {
+    return this.request('/permissions/groups');
+  }
+
+  async createPermissionGroup(groupData: any) {
+    return this.request('/permissions/groups', { method: 'POST', body: groupData });
+  }
+
+  async getBranchUserPermissions(branchId: string) {
+    return this.request(`/permissions/branch/${branchId}/users`);
+  }
+
+  async assignBranchPermissions(branchId: string, userId: string, permissions: any) {
+    return this.request(`/permissions/branch/${branchId}/user/${userId}`, { method: 'POST', body: permissions });
+  }
+
+  // User Management Extended API
+  async deleteUser(userId: string) {
+    return this.request(`/users/${userId}`, { method: 'DELETE' });
+  }
+
+  async getUserTemporaryRoles(userId: string) {
+    return this.request(`/users/${userId}/temporary-roles`);
+  }
+
+  async grantTemporaryRole(userId: string, roleData: any) {
+    return this.request(`/users/${userId}/temporary-roles`, { method: 'POST', body: roleData });
+  }
+
+  async revokeTemporaryRole(userId: string, roleId: string) {
+    return this.request(`/users/${userId}/temporary-roles/${roleId}/revoke`, { method: 'PUT', body: {} });
+  }
+
+  async getUserAuditLog(userId: string) {
+    return this.request(`/users/${userId}/audit`);
+  }
+
+  async getPermissionAuditLog() {
+    return this.request('/permissions/audit');
   }
 }
 
@@ -139,54 +270,41 @@ const getBaseUrl = () => {
     : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
 };
 
-// Simple API wrapper for services
-export const api = {
-  async get(endpoint: string) {
-    const token = localStorage.getItem('token');
+// Simple API wrapper - DRY compliant
+class SimpleApi {
+  private async makeRequest(endpoint: string, method: string = 'GET', data?: any) {
+    const token = localStorage.getItem('auth_token');
     const response = await fetch(`${getBaseUrl()}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
-      }
-    });
-    return response.json();
-  },
-
-  async post(endpoint: string, data: any) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
-      method: 'POST',
+      method,
       headers: {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` })
       },
-      body: JSON.stringify(data)
+      ...(data && { body: JSON.stringify(data) })
     });
-    return response.json();
-  },
-
-  async put(endpoint: string, data: any) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
-      },
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  },
-
-  async delete(endpoint: string) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
-      }
-    });
-    return response.json();
+    return handleApiResponse(response);
   }
-};
+
+  get = (endpoint: string) => this.makeRequest(endpoint);
+  post = (endpoint: string, data: any) => this.makeRequest(endpoint, 'POST', data);
+  put = (endpoint: string, data: any) => this.makeRequest(endpoint, 'PUT', data);
+  delete = (endpoint: string) => this.makeRequest(endpoint, 'DELETE');
+}
+
+export const api = new SimpleApi();
+
+// Extended API methods for user management
+api.deleteUser = (userId: string) => api.delete(`/api/users/${userId}`);
+api.getUserTemporaryRoles = (userId: string) => api.get(`/api/permissions/temporary/active/${userId}`);
+api.grantTemporaryRole = (userId: string, roleData: any) => api.post(`/api/permissions/temporary/grant/${userId}`, roleData);
+api.revokeTemporaryRole = (userId: string, permission: string) => api.delete(`/api/permissions/temporary/revoke/${userId}/${permission}`);
+api.getUserAuditLog = (userId: string) => api.get(`/api/users/${userId}/permissions/audit`);
+api.getPermissionAuditLog = () => api.get('/api/permissions/audit');
+api.getUserPermissions = (userId: string) => api.get(`/api/users/${userId}/permissions/effective`);
+api.assignUserPermissions = (userId: string, permissions: any) => api.post(`/api/users/${userId}/permissions/override`, permissions);
+api.getRolePermissions = (role: string) => api.get(`/api/permissions/role/${role}`);
+api.updateRolePermissions = (role: string, permissions: any) => api.put(`/api/permissions/role/${role}`, permissions);
+api.getPermissionGroups = () => api.get('/api/permissions/groups');
+api.createPermissionGroup = (groupData: any) => api.post('/api/permissions/groups', groupData);
+api.getBranchUserPermissions = (branchId: string) => api.get(`/api/permissions/branch/${branchId}/users`);
+api.assignBranchPermissions = (branchId: string, userId: string, permissions: any) => api.post(`/api/permissions/branch/${branchId}/user/${userId}`, permissions);
