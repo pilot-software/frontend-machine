@@ -7,8 +7,9 @@ import { Button } from '../../../../../components/ui/button';
 import { Switch } from '../../../../../components/ui/switch';
 import { Label } from '../../../../../components/ui/label';
 import { Badge } from '../../../../../components/ui/badge';
-import { ArrowLeft, Save, Shield, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Save, Shield, Plus, Minus, Clock } from 'lucide-react';
 import { api } from '../../../../../lib/api';
+import { TemporaryPermissionModal } from '../../../../../components/permissions';
 
 const PERMISSION_MODULES = [
   { name: 'Users', key: 'users', special: ['Manage Roles', 'Delete Users'] },
@@ -34,6 +35,7 @@ export default function UserPermissionsPage() {
   
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showTempPermModal, setShowTempPermModal] = useState(false);
 
   useEffect(() => {
     fetchUserPermissions();
@@ -107,6 +109,10 @@ export default function UserPermissionsPage() {
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => router.push('/permissions/audit')}>
             View Audit Log
+          </Button>
+          <Button variant="outline" onClick={() => setShowTempPermModal(true)} className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Grant Temporary
           </Button>
           <Button className="flex items-center gap-2" onClick={savePermissions}>
             <Save className="h-4 w-4" />
@@ -199,6 +205,16 @@ export default function UserPermissionsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <TemporaryPermissionModal
+        isOpen={showTempPermModal}
+        onClose={() => setShowTempPermModal(false)}
+        userId={params.id as string}
+        onSuccess={() => {
+          // Optionally refresh permissions or show success message
+          console.log('Temporary permission granted successfully');
+        }}
+      />
     </div>
   );
 }

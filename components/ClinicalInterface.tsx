@@ -7,19 +7,12 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Progress } from "./ui/progress";
+import { PatientSearch } from "./ui/patient-search";
 import {
   Activity,
   AlertTriangle,
@@ -27,7 +20,6 @@ import {
   Eye,
   Heart,
   Plus,
-  Search,
   Stethoscope,
   TestTube,
   Thermometer,
@@ -37,6 +29,7 @@ import { useAuth } from "./AuthContext";
 import { usePatientData } from "../lib/hooks/usePatientData";
 import { patientService } from "../lib/services/patient";
 import { useApi } from "../lib/hooks/useApi";
+import { api } from "../lib/api";
 
 interface VitalSigns {
   temperature: string;
@@ -100,23 +93,25 @@ const mockLabResults: LabResult[] = [
 
 export function ClinicalInterface() {
   const { user } = useAuth();
-  const [selectedPatient, setSelectedPatient] = useState("patient_2");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [medicalData, setMedicalData] = useState<any>(null);
 
   const { execute: fetchMedicalData, loading } = useApi();
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (selectedPatient && !hasFetched.current) {
+    if (selectedPatient?.id && !hasFetched.current) {
       hasFetched.current = true;
-      // TODO: Implement getPatientMedicalData method
-      setMedicalData(null);
+      fetchMedicalData(async () => {
+        const data = await api.get(`/api/medical/patients/${selectedPatient.id}/medical-data`);
+        setMedicalData(data);
+        return data;
+      });
     }
-  }, [selectedPatient]);
+  }, [selectedPatient, fetchMedicalData]);
 
-  const handlePatientChange = (patientId: string) => {
-    setSelectedPatient(patientId);
+  const handlePatientSelect = (patient: any) => {
+    setSelectedPatient(patient);
     hasFetched.current = false;
     // TODO: Implement getPatientMedicalData method
     setMedicalData(null);
@@ -203,27 +198,15 @@ export function ClinicalInterface() {
     }
   };
 
-  // Get patient options based on user role
-  const getPatientOptions = () => {
+  // Get patients based on user role
+  const getPatients = () => {
     if (user?.role === "doctor") {
-      // compute from appPatients instead of hardcoded/mock lists
-      return appPatients
-        .filter((p) => String(p.assignedDoctorId) === String(user.id))
-        .map((p) => ({
-          value: p.id,
-          label: `${p.firstName} ${p.lastName} (${p.caseNumber})`,
-          doctorId: p.assignedDoctorId,
-        }));
+      return appPatients.filter((p) => String(p.assignedDoctorId) === String(user.id));
     }
-
-    return appPatients.map((p) => ({
-      value: p.id,
-      label: `${p.firstName} ${p.lastName} (${p.caseNumber})`,
-      doctorId: p.assignedDoctorId,
-    }));
+    return appPatients;
   };
 
-  const patientOptions = getPatientOptions();
+  const availablePatients = getPatients();
 
   return (
     <div className="space-y-6">
@@ -289,37 +272,16 @@ export function ClinicalInterface() {
       {user?.role !== "patient" && (
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={
-                    user?.role === "doctor"
-                      ? "Search your patients by name or case number..."
-                      : "Search patients by name or case number..."
-                  }
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select
-                value={selectedPatient}
-                onValueChange={handlePatientChange}
-              >
-                <SelectTrigger className="w-64">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="patient_2">
-                    Bob Wilson (patient_2)
-                  </SelectItem>
-                  <SelectItem value="patient_4">
-                    David Miller (patient_4)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <PatientSearch
+              patients={availablePatients}
+              onSelect={handlePatientSelect}
+              placeholder={
+                user?.role === "doctor"
+                  ? "Search your patients by name or case number..."
+                  : "Search patients by name or case number..."
+              }
+              selectedPatientId={selectedPatient?.id}
+            />
           </CardContent>
         </Card>
       )}
@@ -443,7 +405,7 @@ export function ClinicalInterface() {
                   <div className="col-span-4 text-center text-muted-foreground">
                     {loading
                       ? "Loading vitals..."
-                      : "No vital signs data available"}
+                      : selectedPatient ? "No vital signs data available" : "Select a patient to view vitals"}
                   </div>
                 )}
               </div>
@@ -466,11 +428,7 @@ export function ClinicalInterface() {
                   <div>
                     <Label>Recorded At</Label>
                     <p className="text-lg font-medium">
-                      {medicalData.vitals[0].recordedAt
-                        ? new Date(
-                            medicalData.vitals[0].recordedAt
-                          ).toLocaleDateString()
-                        : "Not available"}
+                      {new Date(medicalData.vitals[0].recordedAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>

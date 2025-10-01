@@ -296,7 +296,7 @@ export const api = new SimpleApi();
 // Extended API methods for user management
 api.deleteUser = (userId: string) => api.delete(`/api/users/${userId}`);
 api.getUserTemporaryRoles = (userId: string) => api.get(`/api/permissions/temporary/active/${userId}`);
-api.grantTemporaryRole = (userId: string, roleData: any) => api.post(`/api/permissions/temporary/grant/${userId}`, roleData);
+api.grantTemporaryRole = (userId: string, permissionData: any) => api.post(`/api/permissions/temporary/grant/${userId}`, permissionData);
 api.revokeTemporaryRole = (userId: string, permission: string) => api.delete(`/api/permissions/temporary/revoke/${userId}/${permission}`);
 api.getUserAuditLog = (userId: string) => api.get(`/api/users/${userId}/permissions/audit`);
 api.getPermissionAuditLog = () => api.get('/api/permissions/audit');
