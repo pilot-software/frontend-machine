@@ -3,15 +3,19 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, UserRole } from "../lib/types";
 import { storageService } from "../lib/services/storage.service";
+import { Permission, permissionService } from "../lib/services/permission";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  permissions: Permission[];
   login: (email: string, password: string, orgId: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
   resetPassword: (email: string) => Promise<boolean>;
   verifyTwoFactor: (code: string) => Promise<boolean>;
+  hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (permissions: string[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -29,19 +34,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (savedUser && savedToken) {
           const userData = JSON.parse(savedUser);
+          const savedPermissions = storageService.getItem("user_permissions");
+          
           setUser(userData);
           setToken(savedToken);
+          
+          if (savedPermissions) {
+            const parsedPermissions = JSON.parse(savedPermissions);
+            setPermissions(Array.isArray(parsedPermissions) ? parsedPermissions : []);
+          }
           
           const { apiClient: newApiClient } = await import('../lib/api/client');
           const { apiClient: originalApiClient } = await import('../lib/api');
           newApiClient.setToken(savedToken);
           originalApiClient.setToken(savedToken);
           originalApiClient.setUserRole(userData.role?.toUpperCase());
+          
+          // Ensure token is available for permission service
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('auth_token', savedToken);
+          }
         }
       } catch (error) {
         console.error("Failed to load user session:", error);
         storageService.removeItem("healthcare_user");
         storageService.removeItem("auth_token");
+        storageService.removeItem("user_permissions");
       } finally {
         setIsLoading(false);
       }
@@ -87,13 +105,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         originalApiClient.setToken(response.token);
         originalApiClient.setUserRole(response.role);
         
+        // Ensure token is available for all API calls
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth_token', response.token);
+        }
+        
         const apiUser = createUserFromResponse(response);
         
-        setUser(apiUser);
-        setToken(response.token);
-        saveUserSession(apiUser, response.token);
-        setIsLoading(false);
-        return true;
+        // Fetch user permissions after successful login
+        try {
+          const userPermissions = await permissionService.getUserPermissions(response.id);
+          const validPermissions = Array.isArray(userPermissions) ? userPermissions : [];
+          setPermissions(validPermissions);
+          
+          setUser(apiUser);
+          setToken(response.token);
+          saveUserSession(apiUser, response.token, validPermissions);
+          setIsLoading(false);
+          return true;
+        } catch (permError) {
+          console.error('Failed to fetch user permissions:', permError);
+          setUser(apiUser);
+          setToken(response.token);
+          setPermissions([]);
+          saveUserSession(apiUser, response.token, []);
+          setIsLoading(false);
+          return true;
+        }
       } else {
         console.log('Login response missing token:', response);
       }
@@ -117,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     setUser(null);
     setToken(null);
+    setPermissions([]);
     clearUserSession();
     if (typeof window !== "undefined") {
       window.location.href = "/login";
@@ -148,14 +187,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   };
 
-  const saveUserSession = (user: User, token: string) => {
+  const saveUserSession = (user: User, token: string, permissions: Permission[]) => {
     storageService.setItem('healthcare_user', JSON.stringify(user));
     storageService.setItem('auth_token', token);
+    storageService.setItem('user_permissions', JSON.stringify(permissions));
   };
 
   const clearUserSession = () => {
     storageService.removeItem('healthcare_user');
     storageService.removeItem('auth_token');
+    storageService.removeItem('user_permissions');
   };
 
   const resetPassword = async (_email: string): Promise<boolean> => {
@@ -168,16 +209,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false;
   };
 
+  const hasPermission = (permission: string): boolean => {
+    return permissions.some(p => p.name === permission);
+  };
+
+  const hasAnyPermission = (requiredPermissions: string[]): boolean => {
+    return requiredPermissions.some(permission => hasPermission(permission));
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
+        permissions,
         login,
         logout,
         isLoading,
         resetPassword,
         verifyTwoFactor,
+        hasPermission,
+        hasAnyPermission,
       }}
     >
       {children}

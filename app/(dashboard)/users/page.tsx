@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { AuthGuard } from '@/components/AuthGuard';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
@@ -40,7 +41,7 @@ interface User {
 
 const ROLES = ['ADMIN', 'DOCTOR', 'NURSE', 'PATIENT', 'RECEPTIONIST', 'TECHNICIAN', 'FINANCE'];
 
-export default function UserManagementPage() {
+function UserManagementPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [users, setUsers] = useState<User[]>([]);
@@ -488,5 +489,13 @@ export default function UserManagementPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function UserManagementPage() {
+  return (
+    <AuthGuard requiredPermissions={['USERS_VIEW', 'USERS_CREATE_STAFF', 'USERS_UPDATE', 'USERS_DELETE']}>
+      <UserManagementPageContent />
+    </AuthGuard>
   );
 }

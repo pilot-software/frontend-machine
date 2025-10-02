@@ -6,11 +6,11 @@ import { useRouter } from 'next/navigation';
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  requiredRole?: string[];
+  requiredPermissions?: string[];
 }
 
-export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
-  const { user, isLoading } = useAuth();
+export function AuthGuard({ children, requiredPermissions }: AuthGuardProps) {
+  const { user, isLoading, hasAnyPermission } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,12 +19,12 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
       return;
     }
 
-    if (user && requiredRole && !requiredRole.includes(user.role)) {
+    if (user && requiredPermissions && !hasAnyPermission(requiredPermissions)) {
       console.log('Access denied: insufficient permissions');
       router.push('/dashboard');
       return;
     }
-  }, [user, isLoading, requiredRole, router]);
+  }, [user, isLoading, requiredPermissions, hasAnyPermission, router]);
 
   if (isLoading) {
     return (
@@ -38,7 +38,7 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
     return null;
   }
 
-  if (requiredRole && !requiredRole.includes(user.role)) {
+  if (requiredPermissions && !hasAnyPermission(requiredPermissions)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

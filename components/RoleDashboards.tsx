@@ -2,7 +2,8 @@ import React from "react";
 import { useAuth } from "./AuthContext";
 import { HealthcareDashboard } from "./HealthcareDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-
+import { PermissionGuard } from "./PermissionGuard";
+import { usePermissions } from "../lib/hooks/usePermissions";
 import { Button } from "./ui/button";
 import {
   AlertTriangle,
@@ -14,6 +15,11 @@ import {
 
 function FinanceDashboard() {
   const { user } = useAuth();
+  const { canViewFinancials } = usePermissions();
+
+  if (!canViewFinancials()) {
+    return null;
+  }
 
   const financeStats = [
     {
@@ -130,27 +136,16 @@ function FinanceDashboard() {
 
 export function RoleDashboards() {
   const { user } = useAuth();
+  const { canViewFinancials } = usePermissions();
 
   if (!user) return null;
 
-  // Default dashboard view based on user role
-  if (user.role === "admin") {
-    return <HealthcareDashboard />;
-  }
-
-  if (user.role === "finance") {
-    return (
-      <div className="space-y-6">
+  return (
+    <div className="space-y-6">
+      <PermissionGuard permissions={['FINANCIAL_REPORTS', 'BILLING_MANAGEMENT']}>
         <FinanceDashboard />
-        <HealthcareDashboard />
-      </div>
-    );
-  }
-
-  if (user.role === "receptionist" || user.role === "technician") {
-    return <HealthcareDashboard />;
-  }
-
-  // For all other roles, show the comprehensive healthcare dashboard
-  return <HealthcareDashboard />;
+      </PermissionGuard>
+      <HealthcareDashboard />
+    </div>
+  );
 }

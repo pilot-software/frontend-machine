@@ -28,7 +28,7 @@ import { NotificationDropdown } from "./NotificationDropdown";
 import { useTheme } from "./ThemeProvider";
 import { BranchSelector } from "./BranchSelector";
 import { useIsMobile } from "./ui/use-mobile";
-import { RoleStrategyFactory } from "../lib/strategies/role.strategy";
+import { PermissionStrategy } from "../lib/strategies/permission.strategy";
 import { getRoleColor } from "../lib/constants/status";
 
 interface DashboardLayoutProps {
@@ -38,7 +38,7 @@ interface DashboardLayoutProps {
 
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, permissions } = useAuth();
   const features = useFeatures();
   const text = useText();
   const router = useRouter();
@@ -51,11 +51,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     router.replace("/login");
     return null;
   }
-  if (!features.roles[user.role]) return null;
 
-  const roleStrategy = RoleStrategyFactory.getStrategy(user.role);
-  const config = roleStrategy.getConfig(features, text);
-  const RoleIcon = config.icon;
+  const menuItems = PermissionStrategy.getMenuItems(permissions);
+  const RoleIcon = Shield; // Default icon
 
   const getInitials = (name: string) => {
     return name
@@ -71,20 +69,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const NavigationContent = () => (
     <nav className="p-4 space-y-2">
-      {/* Dashboard Home Button */}
-      <Button
-        variant={pathname === "/dashboard" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => {
-          router.push("/dashboard");
-          setSidebarOpen(false);
-        }}
-      >
-        <Activity className="h-4 w-4 mr-2" />
-        {text.navigation.dashboard}
-      </Button>
-
-      {config.menuItems.map((item) => {
+      {menuItems.map((item) => {
         const ItemIcon = item.icon;
         return (
           <Button

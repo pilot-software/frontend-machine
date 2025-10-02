@@ -12,9 +12,11 @@ export const getEndpoint = (userRole: UserRole, endpoint: string): string => {
   
   // Operations APIs (staff only)
   if (endpoint.startsWith('/dashboard/')) {
-    const dashboardType = userRole === 'FINANCE' ? 'financial-stats' : 
-                         ['DOCTOR', 'NURSE'].includes(userRole) ? 'clinical-stats' : 'stats';
-    return `/api/ops/dashboard/${dashboardType}`;
+    if (userRole === 'ADMIN') {
+      return `/api/admin/stats`;
+    } else {
+      return `/api/ops/dashboard/stats`;
+    }
   }
   
   if (endpoint.startsWith('/queues')) {
