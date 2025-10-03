@@ -207,18 +207,12 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         {/* Floating orb effect */}
                         <div className={`absolute -top-2 -right-2 w-12 h-12 ${card.color.replace('text-', 'bg-').replace('-600', '-100')} rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-300`} />
                         
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4 relative z-10">
-                            <CardTitle className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-                                {card.title}
-                            </CardTitle>
-                            <Icon className={`h-4 w-4 ${card.color} group-hover:scale-110 transition-all duration-300 relative z-10`}/>
-                        </CardHeader>
-                        
-                        <CardContent className="px-4 pb-4 relative z-10">
-                            <div className="text-2xl font-bold mb-1 group-hover:scale-105 transition-transform duration-300">
-                                {card.value}
-                            </div>
-                            <div className="flex items-center space-x-2">
+                        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-1.5 px-3 pt-3 relative z-10">
+                            <div className="flex-1">
+                                <CardTitle className="text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300 mb-1.5">
+                                    {card.title}
+                                </CardTitle>
+                                <div className="flex items-center space-x-1.5">
                                 {card.trend === 'up' && (
                                     <div className="flex items-center space-x-1 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded-full">
                                         <TrendingUp className="h-2.5 w-2.5 text-green-600 dark:text-green-400" />
@@ -236,8 +230,17 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                                         <span className="text-xs font-semibold text-muted-foreground">{card.change}</span>
                                     </div>
                                 )}
+                                </div>
                             </div>
-                        </CardContent>
+                            <div className="flex flex-col items-end gap-1.5">
+                                <Icon className={`h-3.5 w-3.5 ${card.color} group-hover:scale-110 transition-all duration-300 relative z-10`}/>
+                                <div className="text-lg font-bold group-hover:scale-105 transition-transform duration-300">
+                                    {card.value}
+                                </div>
+                            </div>
+                        </CardHeader>
+                        
+                        <CardContent className="hidden" />
                         
                         {/* Bottom accent line */}
                         <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${card.color.replace('text-', 'bg-')} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
