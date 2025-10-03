@@ -8,12 +8,6 @@ import {
 } from 'lucide-react';
 
 export function DoctorDashboardWidgets() {
-  const criticalAlerts = [
-    { id: 1, patient: 'John Doe', room: '302', issue: 'BP Critical - 180/110', severity: 'high', time: '5 min ago' },
-    { id: 2, patient: 'Sarah Smith', room: '215', issue: 'SpO₂ Low - 88%', severity: 'high', time: '12 min ago' },
-    { id: 3, patient: 'Mike Johnson', room: '401', issue: 'Heart Rate Elevated', severity: 'medium', time: '25 min ago' },
-  ];
-
   const vitalsOverview = [
     { patient: 'Alice Brown', room: '105', bp: '120/80', hr: 72, spo2: 98, status: 'stable' },
     { patient: 'Bob Wilson', room: '203', bp: '145/95', hr: 88, spo2: 95, status: 'monitor' },
@@ -34,34 +28,40 @@ export function DoctorDashboardWidgets() {
 
   return (
     <div className="space-y-6">
-      {/* Critical Alerts */}
-      <Card className="border-red-200 dark:border-red-900">
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-            Critical Alerts
-            <Badge variant="destructive" className="ml-auto">{criticalAlerts.length}</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {criticalAlerts.map((alert) => (
-            <div key={alert.id} className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-900">
-              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-sm">{alert.patient}</p>
-                  <Badge variant="outline" className="text-xs">Room {alert.room}</Badge>
-                </div>
-                <p className="text-sm text-red-700 dark:text-red-400 mt-1">{alert.issue}</p>
-                <p className="text-xs text-muted-foreground mt-1">{alert.time}</p>
-              </div>
-              <Button size="sm" variant="destructive">View</Button>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Today's Schedule */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-orange-600" />
+              Today's Schedule
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+              <div>
+                <p className="font-semibold text-sm">Consultations</p>
+                <p className="text-xs text-muted-foreground">8:00 AM - 12:00 PM</p>
+              </div>
+              <Badge>12 patients</Badge>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+              <div>
+                <p className="font-semibold text-sm">Surgery - Appendectomy</p>
+                <p className="text-xs text-muted-foreground">2:00 PM - 4:00 PM</p>
+              </div>
+              <Badge variant="secondary">Scheduled</Badge>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
+              <div>
+                <p className="font-semibold text-sm">Ward Rounds</p>
+                <p className="text-xs text-muted-foreground">5:00 PM - 6:00 PM</p>
+              </div>
+              <Badge variant="outline">Pending</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Patient Vitals Overview */}
         <Card>
           <CardHeader>
@@ -101,33 +101,6 @@ export function DoctorDashboardWidgets() {
           </CardContent>
         </Card>
 
-        {/* Lab Results Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <TestTube className="h-5 w-5 text-purple-600" />
-              Lab Results Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {labResults.map((lab, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-sm">{lab.patient}</p>
-                    {lab.urgent && <Badge variant="destructive" className="text-xs">Urgent</Badge>}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{lab.test}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{lab.time}</p>
-                </div>
-                <Badge variant={lab.status === 'completed' ? 'secondary' : 'default'}>
-                  {lab.status}
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
         {/* Medication Tracking */}
         <Card>
           <CardHeader>
@@ -157,36 +130,30 @@ export function DoctorDashboardWidgets() {
           </CardContent>
         </Card>
 
-        {/* Upcoming Schedule */}
+        {/* Lab Results Summary */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-orange-600" />
-              Today's Schedule
+              <TestTube className="h-5 w-5 text-purple-600" />
+              Lab Results Summary
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-              <div>
-                <p className="font-semibold text-sm">Consultations</p>
-                <p className="text-xs text-muted-foreground">8:00 AM - 12:00 PM</p>
+            {labResults.map((lab, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-sm">{lab.patient}</p>
+                    {lab.urgent && <Badge variant="destructive" className="text-xs">Urgent</Badge>}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{lab.test}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{lab.time}</p>
+                </div>
+                <Badge variant={lab.status === 'completed' ? 'secondary' : 'default'}>
+                  {lab.status}
+                </Badge>
               </div>
-              <Badge>12 patients</Badge>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-              <div>
-                <p className="font-semibold text-sm">Surgery - Appendectomy</p>
-                <p className="text-xs text-muted-foreground">2:00 PM - 4:00 PM</p>
-              </div>
-              <Badge variant="secondary">Scheduled</Badge>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
-              <div>
-                <p className="font-semibold text-sm">Ward Rounds</p>
-                <p className="text-xs text-muted-foreground">5:00 PM - 6:00 PM</p>
-              </div>
-              <Badge variant="outline">Pending</Badge>
-            </div>
+            ))}
           </CardContent>
         </Card>
       </div>

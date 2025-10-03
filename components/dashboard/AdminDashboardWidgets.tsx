@@ -10,20 +10,6 @@ import {
 } from 'lucide-react';
 
 export function AdminDashboardWidgets() {
-  const metrics = [
-    { 
-      label: 'Patient Census', 
-      value: 1247, 
-      subValue: '156 admitted', 
-      change: '+12 today', 
-      icon: Users, 
-      color: 'text-blue-600' 
-    },
-    { label: 'Discharges Today', value: 23, change: '+5', icon: TrendingUp, color: 'text-green-600' },
-    { label: 'Transfers', value: 8, change: '-2', icon: Activity, color: 'text-orange-600' },
-    { label: 'ER Wait Time', value: '18 min', change: '-5 min', icon: Clock, color: 'text-red-600' },
-  ];
-
   const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
   const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
   const erStatus = { waiting: 12, inTreatment: 8, avgWait: '18 min' };
@@ -66,38 +52,6 @@ export function AdminDashboardWidgets() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map((metric, idx) => {
-          const Icon = metric.icon;
-          const colors = [
-            { bg: 'bg-blue-500', light: 'bg-blue-50 dark:bg-blue-950', border: 'border-l-blue-500' },
-            { bg: 'bg-green-500', light: 'bg-green-50 dark:bg-green-950', border: 'border-l-green-500' },
-            { bg: 'bg-orange-500', light: 'bg-orange-50 dark:bg-orange-950', border: 'border-l-orange-500' },
-            { bg: 'bg-red-500', light: 'bg-red-50 dark:bg-red-950', border: 'border-l-red-500' },
-          ];
-          return (
-            <div key={idx} className={`relative p-4 rounded-lg border-l-4 ${colors[idx].border} ${colors[idx].light} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
-              <div className="flex items-center gap-3">
-                <div className={`${colors[idx].bg} p-3 rounded-full text-white group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">{metric.label}</p>
-                  <div className="flex items-baseline gap-2 mt-1 flex-wrap">
-                    <p className="text-xl sm:text-2xl font-bold">{metric.value}</p>
-                    <Badge variant="outline" className="text-xs whitespace-nowrap">{metric.change}</Badge>
-                  </div>
-                  {metric.subValue && (
-                    <p className="text-xs text-muted-foreground mt-1">{metric.subValue}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bed Occupancy */}
