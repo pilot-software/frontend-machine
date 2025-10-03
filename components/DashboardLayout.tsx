@@ -328,43 +328,62 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex pt-[73px]">
         {/* Desktop Sidebar */}
-        <aside className={`hidden md:block fixed left-0 top-[73px] bottom-0 bg-card border-r border-border transition-all duration-300 ${desktopSidebarCollapsed ? 'w-16' : 'w-64'}`}>
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
-              className="absolute -right-3 top-4 z-10 h-6 w-6 rounded-full border bg-card p-0 shadow-md hover:shadow-lg"
-            >
-              {desktopSidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            </Button>
-            {desktopSidebarCollapsed ? (
-              <nav className="p-2 space-y-2">
-                {menuItems.map((item) => {
-                  const ItemIcon = item.icon;
-                  const isActive = pathname === item.path;
-                  return (
-                    <Button
-                      key={item.path}
-                      variant="ghost"
-                      size="sm"
-                      className={`w-full justify-center p-2 transition-all duration-300 ${isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'}`}
-                      onClick={() => router.push(item.path)}
-                      title={item.label}
-                    >
-                      <ItemIcon className="h-5 w-5" />
-                    </Button>
-                  );
-                })}
-              </nav>
-            ) : (
-              <NavigationContent />
+        <aside className={`hidden md:block fixed left-0 top-[73px] bottom-0 bg-gradient-to-b from-card via-card to-card/95 backdrop-blur-sm transition-all duration-300 ease-in-out ${desktopSidebarCollapsed ? 'w-20' : 'w-64'} group/sidebar`}>
+          {/* Sidebar border with gradient */}
+          <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
+          
+          {/* Navigation */}
+          <nav className={`h-full overflow-y-auto overflow-x-hidden ${desktopSidebarCollapsed ? 'px-2 py-4' : 'px-3 pt-14 pb-4'}`}>
+            {/* Toggle button inside collapsed nav */}
+            {desktopSidebarCollapsed && (
+              <div className="mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDesktopSidebarCollapsed(false)}
+                  className="w-full justify-center p-2.5 h-12 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300"
+                >
+                  <ChevronRight className="h-5 w-5 text-blue-600" />
+                </Button>
+              </div>
             )}
-          </div>
+            
+            {/* Toggle button on border when expanded */}
+            {!desktopSidebarCollapsed && (
+              <div className="absolute -right-3 top-6 z-20">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDesktopSidebarCollapsed(true)}
+                  className="h-6 w-6 rounded-full bg-card p-0 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 border border-border"
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+            <div className="space-y-1">
+              {menuItems.map((item) => {
+                const ItemIcon = item.icon;
+                const isActive = pathname === item.path;
+                return (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    onClick={() => router.push(item.path)}
+                    title={desktopSidebarCollapsed ? item.label : undefined}
+                    className={`w-full transition-all duration-200 ${desktopSidebarCollapsed ? 'justify-center px-0 h-12' : 'justify-start px-3 h-11'} ${isActive ? 'bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-600 font-medium shadow-sm' : 'hover:bg-muted/50'}`}
+                  >
+                    <ItemIcon className={`${desktopSidebarCollapsed ? 'h-5 w-5' : 'h-4 w-4 mr-3'} ${isActive ? 'text-blue-600' : ''}`} />
+                    {!desktopSidebarCollapsed && <span className="truncate">{item.label}</span>}
+                  </Button>
+                );
+              })}
+            </div>
+          </nav>
         </aside>
 
         {/* Main Content */}
-        <main className={`flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-auto transition-all duration-300 ${desktopSidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
+        <main className={`flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-auto transition-all duration-300 ${desktopSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
           {children}
         </main>
       </div>

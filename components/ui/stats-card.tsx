@@ -13,48 +13,50 @@ export interface StatsCardProps {
 
 export function StatsCard({ title, value, icon: Icon, color, bgGradient, change, trend = 'neutral' }: StatsCardProps) {
   return (
-    <div className={`relative overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.01] cursor-pointer group border-0 bg-card/80 backdrop-blur-sm rounded-lg`}>
-      {/* Animated background gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-40 group-hover:opacity-60 transition-all duration-300`} />
+    <div className={`relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm shadow-sm hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 cursor-pointer group`}>
+      {/* Animated gradient overlay */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-[0.07] group-hover:opacity-[0.15] transition-all duration-500`} />
       
-      {/* Floating orb effect */}
-      <div className={`absolute -top-2 -right-2 w-12 h-12 ${color.replace('text-', 'bg-').replace('-600', '-100')} rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-300`} />
+      {/* Shimmer effect on hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      </div>
       
-      <div className="flex flex-row items-start justify-between space-y-0 pb-1.5 px-3 pt-3 relative z-10">
-        <div className="flex-1">
-          <div className="text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300 mb-1.5">
-            {title}
+      {/* Floating orbs */}
+      <div className={`absolute -top-8 -right-8 w-24 h-24 ${color.replace('text-', 'bg-').replace('-600', '-500/20')} rounded-full blur-2xl group-hover:blur-3xl group-hover:scale-150 transition-all duration-500`} />
+      <div className={`absolute -bottom-8 -left-8 w-24 h-24 ${color.replace('text-', 'bg-').replace('-600', '-400/10')} rounded-full blur-2xl group-hover:blur-3xl group-hover:scale-150 transition-all duration-500`} />
+      
+      <div className="relative z-10 p-5">
+        <div className="flex items-start justify-between mb-4">
+          <div className="p-3 rounded-xl bg-white dark:bg-slate-800 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 relative">
+            <Icon className={`${color} group-hover:scale-125 group-hover:rotate-12 transition-all duration-300`} strokeWidth={2.5} style={{ width: '24px', height: '24px' }} />
           </div>
-          <div className="flex items-center space-x-1.5">
-            {trend === 'up' && change && (
-              <div className="flex items-center space-x-1 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded-full">
-                <TrendingUp className="h-2.5 w-2.5 text-green-600 dark:text-green-400" />
-                <span className="text-xs font-semibold text-green-700 dark:text-green-400">{change}</span>
-              </div>
-            )}
-            {trend === 'down' && change && (
-              <div className="flex items-center space-x-1 bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded-full">
-                <TrendingUp className="h-2.5 w-2.5 text-red-600 dark:text-red-400 rotate-180" />
-                <span className="text-xs font-semibold text-red-700 dark:text-red-400">{change}</span>
-              </div>
-            )}
-            {trend === 'neutral' && change && (
-              <div className="bg-muted px-1.5 py-0.5 rounded-full">
-                <span className="text-xs font-semibold text-muted-foreground">{change}</span>
-              </div>
-            )}
-          </div>
+          {change && (
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${
+              trend === 'up' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+              trend === 'down' ? 'bg-red-500/10 text-red-600 dark:text-red-400' :
+              'bg-muted text-muted-foreground'
+            }`}>
+              {trend !== 'neutral' && (
+                <TrendingUp className={`h-3 w-3 ${trend === 'down' ? 'rotate-180' : ''}`} />
+              )}
+              <span className="text-xs font-semibold">{change}</span>
+            </div>
+          )}
         </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <Icon className={`h-3.5 w-3.5 ${color} group-hover:scale-110 transition-all duration-300 relative z-10`}/>
-          <div className="text-lg font-bold group-hover:scale-105 transition-transform duration-300">
+        
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+            {title}
+          </p>
+          <p className="text-2xl font-bold tracking-tight group-hover:scale-105 transition-transform duration-300 origin-left">
             {value}
-          </div>
+          </p>
         </div>
       </div>
       
-      {/* Bottom accent line */}
-      <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${color.replace('text-', 'bg-')} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      {/* Accent border */}
+      <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
     </div>
   );
 }
