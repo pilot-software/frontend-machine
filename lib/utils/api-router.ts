@@ -12,11 +12,7 @@ export const getEndpoint = (userRole: UserRole, endpoint: string): string => {
   
   // Operations APIs (staff only)
   if (endpoint.startsWith('/dashboard/')) {
-    if (userRole === 'ADMIN') {
-      return `/api/admin/stats`;
-    } else {
-      return `/api/ops/dashboard/stats`;
-    }
+    return `/api/ops/dashboard/stats`;
   }
   
   if (endpoint.startsWith('/queues')) {
