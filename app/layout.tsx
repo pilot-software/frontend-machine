@@ -1,9 +1,9 @@
 import type {Metadata} from 'next'
-import {Inter} from 'next/font/google'
+import {Manrope} from 'next/font/google'
 import './globals.css'
 import {Providers} from '@/components/Providers'
 
-const inter = Inter({subsets: ['latin']})
+const manrope = Manrope({subsets: ['latin']})
 
 export const metadata: Metadata = {
     title: 'Healthcare Management System',
@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className={inter.className} suppressHydrationWarning={true}>
+        <body className={manrope.className} suppressHydrationWarning={true}>
         <Providers>
             {children}
         </Providers>
