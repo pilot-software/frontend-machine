@@ -119,7 +119,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border px-3 sm:px-4 md:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Mobile Menu + Logo */}
           <div className="flex items-center space-x-2 sm:space-x-3">
@@ -326,9 +326,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex pt-[73px]">
         {/* Desktop Sidebar */}
-        <aside className={`hidden md:block bg-card border-r border-border min-h-[calc(100vh-73px)] transition-all duration-300 ${desktopSidebarCollapsed ? 'w-16' : 'w-64'}`}>
+        <aside className={`hidden md:block fixed left-0 top-[73px] bottom-0 bg-card border-r border-border transition-all duration-300 ${desktopSidebarCollapsed ? 'w-16' : 'w-64'}`}>
           <div className="relative">
             <Button
               variant="ghost"
@@ -364,7 +364,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-auto">
+        <main className={`flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-auto transition-all duration-300 ${desktopSidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
           {children}
         </main>
       </div>
