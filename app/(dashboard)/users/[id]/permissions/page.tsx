@@ -63,7 +63,7 @@ export default function UserPermissionsPage() {
 
   const savePermissions = async () => {
     try {
-      const permissionData = {};
+      const permissionData: Record<string, boolean> = {};
       permissions.forEach(perm => {
         permissionData[`${perm.module}.create`] = perm.create;
         permissionData[`${perm.module}.read`] = perm.read;

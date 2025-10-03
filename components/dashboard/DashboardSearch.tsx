@@ -59,7 +59,7 @@ export function DashboardSearch({
                 variant="outline"
                 size="sm"
                 className="whitespace-nowrap"
-                onClick={() => window.open('/dashboard/customize', '_blank', 'noopener,noreferrer')}
+                onClick={() => window.open('/customize', '_blank', 'noopener,noreferrer')}
               >
                 <Settings className="h-4 w-4 mr-2" aria-hidden="true" />
                 Customize

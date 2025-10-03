@@ -72,23 +72,23 @@ export class PermissionStrategy {
     const permissionNames = userPermissions.map(p => p.name);
     const menuItems: MenuItem[] = [];
 
-    // Dashboard subroutes
+    // Main routes without dashboard prefix
     menuItems.push({ icon: Activity, label: "Dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW' });
     
     if (permissionNames.some(p => p.startsWith('PATIENTS_'))) {
-      menuItems.push({ icon: User, label: "Patients", path: "/dashboard/patients", permission: 'PATIENTS_VIEW' });
+      menuItems.push({ icon: User, label: "Patients", path: "/patients", permission: 'PATIENTS_VIEW' });
     }
     
     if (permissionNames.some(p => p.startsWith('APPOINTMENTS_'))) {
-      menuItems.push({ icon: Calendar, label: "Appointments", path: "/dashboard/appointments", permission: 'APPOINTMENTS_VIEW' });
+      menuItems.push({ icon: Calendar, label: "Appointments", path: "/appointments", permission: 'APPOINTMENTS_VIEW' });
     }
     
     if (permissionNames.some(p => p.startsWith('MEDICAL_RECORDS_'))) {
-      menuItems.push({ icon: ClipboardList, label: "Clinical", path: "/dashboard/clinical", permission: 'MEDICAL_RECORDS_READ' });
+      menuItems.push({ icon: ClipboardList, label: "Clinical", path: "/clinical", permission: 'MEDICAL_RECORDS_READ' });
     }
     
     if (permissionNames.some(p => p.startsWith('BILLING_'))) {
-      menuItems.push({ icon: BarChart3, label: "Financial", path: "/dashboard/financial", permission: 'BILLING_VIEW_INVOICES' });
+      menuItems.push({ icon: BarChart3, label: "Financial", path: "/financial", permission: 'BILLING_VIEW_INVOICES' });
     }
     
     if (permissionNames.some(p => p.startsWith('USERS_'))) {

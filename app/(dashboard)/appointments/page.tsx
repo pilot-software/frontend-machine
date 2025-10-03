@@ -5,7 +5,7 @@ import { AuthGuard } from '@/components/AuthGuard';
 
 export default function AppointmentsPage() {
     return (
-        <AuthGuard requiredPermissions={['APPOINTMENT_VIEW', 'APPOINTMENT_MANAGEMENT']}>
+        <AuthGuard requiredPermissions={['APPOINTMENTS_VIEW', 'APPOINTMENTS_CREATE', 'APPOINTMENTS_UPDATE']}>
             <AppointmentSystem />
         </AuthGuard>
     );
