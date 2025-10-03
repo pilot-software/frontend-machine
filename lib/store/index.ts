@@ -2,11 +2,13 @@ import {configureStore} from "@reduxjs/toolkit";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import appReducer from "./slices/appSlice";
 import patientReducer from "./slices/patientSlice";
+import modalReducer from "./slices/modalSlice";
 
 export const store = configureStore({
     reducer: {
         app: appReducer,
         patient: patientReducer,
+        modal: modalReducer,
     },
 });
 

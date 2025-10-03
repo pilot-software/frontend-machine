@@ -1193,20 +1193,14 @@ export function PatientFormModal({
                     </Tabs>
                 </div>
 
-                <div
-                    className="flex justify-between items-center pt-6 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50/30 -mx-6 px-6 pb-6 mt-6 rounded-b-xl">
-                    <Button
-                        variant="outline"
-                        onClick={onClose}
-                        className="bg-white/80 backdrop-blur-sm border-gray-300 hover:bg-gray-50"
-                    >
+                <div className="flex justify-between items-center pt-4 border-t mt-4">
+                    <Button variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
                     {!isReadOnly && (
                         <Button
                             onClick={handleSubmit}
                             disabled={isSubmitting || loading.updating}
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
                         >
                             {isSubmitting || loading.updating ? (
                                 <>

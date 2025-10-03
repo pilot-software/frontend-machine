@@ -12,15 +12,11 @@ export interface StatsCardProps {
 }
 
 export function StatsCard({ title, value, icon: Icon, color, bgGradient, change, trend = 'neutral' }: StatsCardProps) {
+  const borderGradient = bgGradient;
   return (
     <div className={`relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm shadow-sm hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 cursor-pointer group`}>
       {/* Animated gradient overlay */}
       <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-[0.07] group-hover:opacity-[0.15] transition-all duration-500`} />
-      
-      {/* Shimmer effect on hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-      </div>
       
       {/* Floating orbs */}
       <div className={`absolute -top-8 -right-8 w-24 h-24 ${color.replace('text-', 'bg-').replace('-600', '-500/20')} rounded-full blur-2xl group-hover:blur-3xl group-hover:scale-150 transition-all duration-500`} />
@@ -53,6 +49,24 @@ export function StatsCard({ title, value, icon: Icon, color, bgGradient, change,
             {value}
           </p>
         </div>
+      </div>
+      
+      {/* Animated border sweep left to right */}
+      <div className="absolute inset-0 rounded-xl pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:[animation:border-sweep_1.5s_ease-out_forwards]"
+          style={{
+            borderImage: `linear-gradient(90deg, transparent 0%, ${color.includes('blue') ? '#3b82f6' : color.includes('orange') ? '#f97316' : color.includes('green') ? '#10b981' : color.includes('purple') ? '#a855f7' : '#3b82f6'} 50%, transparent 100%) 1`,
+            borderWidth: '2px',
+            borderStyle: 'solid',
+            borderRadius: '0.75rem',
+            width: '40%',
+            height: '100%',
+            position: 'absolute',
+            left: '-40%',
+            top: 0,
+          }}
+        />
       </div>
       
       {/* Accent border */}

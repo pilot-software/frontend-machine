@@ -5,13 +5,9 @@ import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
 import {
   Bed,
-  Users,
-  Clock,
   Activity,
   DollarSign,
-  Package,
   AlertTriangle,
-  TrendingUp,
   Calendar,
   UserCheck,
   FileText,
@@ -22,10 +18,15 @@ import {
 
 interface AdminDashboardWidgetsProps {
   onNavigate?: (path: string) => void;
+  onAddPatient?: () => void;
+  onAddAppointment?: () => void;
+  onAddPrescription?: () => void;
 }
 
 export function AdminDashboardWidgets({
-  onNavigate,
+  onAddPatient,
+  onAddAppointment,
+  onAddPrescription,
 }: AdminDashboardWidgetsProps) {
   const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
   const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
@@ -33,13 +34,17 @@ export function AdminDashboardWidgets({
   const staff = { doctors: 45, nurses: 120, technicians: 35, onDuty: 200 };
 
   const handleQuickAction = (action: string) => {
-    const routes: Record<string, string> = {
-      "View Patients": "/patients",
-      "View Schedules": "/appointments",
-      "View Prescriptions": "/prescriptions",
-    };
-    if (onNavigate && routes[action]) {
-      onNavigate(routes[action]);
+    if (action === "Add Patients" && onAddPatient) {
+      onAddPatient();
+      return;
+    }
+    if (action === "Schedule Appointments" && onAddAppointment) {
+      onAddAppointment();
+      return;
+    }
+    if (action === "New Prescriptions" && onAddPrescription) {
+      onAddPrescription();
+      return;
     }
   };
 
@@ -56,15 +61,15 @@ export function AdminDashboardWidgets({
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { icon: UserPlus, label: "View Patients", color: "bg-blue-500" },
+              { icon: UserPlus, label: "Add Patients", color: "bg-blue-500" },
               {
                 icon: Calendar,
-                label: "View Schedules",
+                label: "Schedule Appointments",
                 color: "bg-purple-500",
               },
               {
                 icon: Pill,
-                label: "View Prescriptions",
+                label: "New Prescriptions",
                 color: "bg-green-500",
               },
               {
@@ -197,7 +202,7 @@ export function AdminDashboardWidgets({
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Today's Billing</span>
+              <span className="text-sm">Today&apos;s Billing</span>
               <span className="font-semibold text-green-600">$45,230</span>
             </div>
             <div className="flex justify-between items-center">

@@ -20,21 +20,20 @@ import {DoctorTable} from "./tables/DoctorTable";
 import {DashboardSearch} from "./dashboard/DashboardSearch";
 import {DashboardTabs} from "./dashboard/DashboardTabs";
 import {DashboardWidgets} from "./DashboardWidgets";
+import {useAppDispatch, useAppSelector} from "../lib/store";
+import {openPatientModal, closePatientModal, openDoctorModal, closeDoctorModal, openAppointmentModal, closeAppointmentModal, closePrescriptionModal} from "../lib/store/slices/modalSlice";
+import {AppointmentFormModal} from "./AppointmentFormModal";
+import {PrescriptionFormModal} from "./PrescriptionFormModal";
 
 export function HealthcareDashboard() {
     const {user} = useAuth();
     const features = useFeatures();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedView, setSelectedView] = useState<"patients" | "doctors" | "departments">("patients");
+    const dispatch = useAppDispatch();
+    const { patientModal, doctorModal, appointmentModal, prescriptionModal } = useAppSelector((state) => state.modal);
     const [activeTab, setActiveTab] = useState(user?.role === "patient" ? "clinical" : "dashboard");
-    const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
-    const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState<"add" | "edit" | "view">("add");
-    const [selectedPatientId, setSelectedPatientId] = useState<string | undefined>();
-    const [selectedPatientData, setSelectedPatientData] = useState<any>(null);
-    const [selectedDoctorId, setSelectedDoctorId] = useState<string | undefined>();
     const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
-    const [modalOrigin, setModalOrigin] = useState<{ x: number; y: number } | null>(null);
     const [columnConfig, setColumnConfig] = useState<any>(null);
 
     useEffect(() => {
@@ -117,36 +116,23 @@ export function HealthcareDashboard() {
     );
 
     const handleViewPatient = (patient: any, origin: { x: number; y: number }) => {
-        setModalOrigin(origin);
-        setSelectedPatientData(patient);
-        setModalMode("view");
-        setSelectedPatientId(patient.id);
-        setIsPatientModalOpen(true);
+        dispatch(openPatientModal({ mode: 'view', patientId: patient.id, patientData: patient, origin }));
     };
 
     const handleEditPatient = (patientId: string) => {
-        setModalMode("edit");
-        setSelectedPatientId(patientId);
-        setIsPatientModalOpen(true);
+        dispatch(openPatientModal({ mode: 'edit', patientId }));
     };
 
     const handleViewDoctor = (doctorId: string, origin: { x: number; y: number }) => {
-        setModalOrigin(origin);
-        setSelectedDoctorId(doctorId);
-        setModalMode("view");
-        setIsDoctorModalOpen(true);
+        dispatch(openDoctorModal({ mode: 'view', doctorId, origin }));
     };
 
     const handleEditDoctor = (doctorId: string) => {
-        setSelectedDoctorId(doctorId);
-        setModalMode("edit");
-        setIsDoctorModalOpen(true);
+        dispatch(openDoctorModal({ mode: 'edit', doctorId }));
     };
 
     const handleAddPatient = () => {
-        setModalMode("add");
-        setSelectedPatientId(undefined);
-        setIsPatientModalOpen(true);
+        dispatch(openPatientModal({ mode: 'add' }));
     };
 
     const getFilterOptions = () => {
@@ -346,55 +332,66 @@ export function HealthcareDashboard() {
                 )}
             </DashboardTabs>
 
-            {isPatientModalOpen && (
+            {patientModal.isOpen && (
                 <>
                     <div className="fixed inset-0 z-40 bg-black/50" style={{animation: 'fadeIn 0.2s ease-out'}}/>
                     <div
                         className="fixed z-50 modal-responsive"
                         style={{
-                            left: modalOrigin && window.innerWidth > 640 ? `${modalOrigin.x}px` : '50%',
-                            top: modalOrigin && window.innerWidth > 640 ? `${modalOrigin.y}px` : '50%',
+                            left: patientModal.origin && window.innerWidth > 640 ? `${patientModal.origin.x}px` : '50%',
+                            top: patientModal.origin && window.innerWidth > 640 ? `${patientModal.origin.y}px` : '50%',
                             transform: 'translate(-50%, -50%)',
                             animation: 'appleModalGrow 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                         }}
                     >
                         <PatientFormModal
-                            isOpen={isPatientModalOpen}
-                            onClose={() => {
-                                setIsPatientModalOpen(false);
-                                setSelectedPatientData(null);
-                                setModalOrigin(null);
-                            }}
-                            patientId={selectedPatientId}
-                            mode={modalMode}
+                            isOpen={patientModal.isOpen}
+                            onClose={() => dispatch(closePatientModal())}
+                            patientId={patientModal.patientId}
+                            mode={patientModal.mode}
                         />
                     </div>
                 </>
             )}
 
-            {isDoctorModalOpen && (
+            {doctorModal.isOpen && (
                 <>
                     <div className="fixed inset-0 z-40 bg-black/50" style={{animation: 'fadeIn 0.2s ease-out'}}/>
                     <div
                         className="fixed z-50 modal-responsive"
                         style={{
-                            left: modalOrigin && window.innerWidth > 640 ? `${modalOrigin.x}px` : '50%',
-                            top: modalOrigin && window.innerWidth > 640 ? `${modalOrigin.y}px` : '50%',
+                            left: doctorModal.origin && window.innerWidth > 640 ? `${doctorModal.origin.x}px` : '50%',
+                            top: doctorModal.origin && window.innerWidth > 640 ? `${doctorModal.origin.y}px` : '50%',
                             transform: 'translate(-50%, -50%)',
                             animation: 'appleModalGrow 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                         }}
                     >
                         <DoctorFormModal
-                            isOpen={isDoctorModalOpen}
-                            onClose={() => {
-                                setIsDoctorModalOpen(false);
-                                setModalOrigin(null);
-                            }}
-                            doctorId={selectedDoctorId}
-                            mode={modalMode as "add" | "edit" | "view"}
+                            isOpen={doctorModal.isOpen}
+                            onClose={() => dispatch(closeDoctorModal())}
+                            doctorId={doctorModal.doctorId}
+                            mode={doctorModal.mode}
                         />
                     </div>
                 </>
+            )}
+
+            {appointmentModal.isOpen && (
+                <AppointmentFormModal
+                    isOpen={appointmentModal.isOpen}
+                    onClose={() => dispatch(closeAppointmentModal())}
+                    appointmentId={appointmentModal.appointmentId}
+                    mode={appointmentModal.mode === 'add' ? 'schedule' : appointmentModal.mode === 'edit' ? 'reschedule' : 'view'}
+                />
+            )}
+
+            {prescriptionModal.isOpen && (
+                <PrescriptionFormModal
+                    isOpen={prescriptionModal.isOpen}
+                    onClose={() => dispatch(closePrescriptionModal())}
+                    prescriptionId={prescriptionModal.prescriptionId}
+                    mode={prescriptionModal.mode}
+                />
             )}
         </div>
     );
