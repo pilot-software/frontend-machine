@@ -1,25 +1,13 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Mail, Phone, User, Save } from "lucide-react";
-import { userService } from "../lib/services/user";
+import React, {useState} from "react";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "./ui/dialog";
+import {Button} from "./ui/button";
+import {Input} from "./ui/input";
+import {Label} from "./ui/label";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {Badge} from "./ui/badge";
+import {Avatar, AvatarFallback, AvatarImage} from "./ui/avatar";
+import {Mail, Phone, Save, User} from "lucide-react";
+import {userService} from "../lib/services/user";
 
 interface DoctorFormData {
   name: string;

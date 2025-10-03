@@ -1,18 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AnalyticsPageSkeleton } from '@/components/skeletons';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
+import {useEffect, useState} from 'react';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {AnalyticsPageSkeleton} from '@/components/skeletons';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Badge} from '@/components/ui/badge';
+import {Progress} from '@/components/ui/progress';
+import {
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
 } from 'recharts';
 import {
-  Activity, Users, Calendar, DollarSign, TrendingUp, TrendingDown,
-  Heart, Stethoscope, Building2, Clock, AlertTriangle, CheckCircle2
+    Activity,
+    AlertTriangle,
+    Building2,
+    Calendar,
+    CheckCircle2,
+    DollarSign,
+    TrendingDown,
+    TrendingUp,
+    Users
 } from 'lucide-react';
 
 export default function AnalyticsPage() {
@@ -406,11 +425,11 @@ export default function AnalyticsPage() {
                         Target: {metric.target}{metric.unit || ''}
                       </span>
                     </div>
-                    <Progress 
-                      value={metric.unit === 'min' || metric.unit === '%' ? 
-                        (metric.score / metric.target) * 100 : 
+                    <Progress
+                      value={metric.unit === 'min' || metric.unit === '%' ?
+                        (metric.score / metric.target) * 100 :
                         (metric.score / 5) * 100
-                      } 
+                      }
                     />
                   </div>
                 </CardContent>

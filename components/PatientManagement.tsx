@@ -1,32 +1,20 @@
-import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { PatientFormModal } from "./PatientFormModal";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import { useAppData } from "../lib/hooks/useAppData";
-import { useAuth } from "./AuthContext";
-import { useModal } from "../lib/hooks/useModal";
-import { transformPatientToDisplay } from "../lib/utils/data-transformers";
-import { PatientStats } from "./patient/PatientStats";
-import { PatientSearch } from "./patient/PatientSearch";
-import { PatientList } from "./patient/PatientList";
-import { Activity, Plus, Stethoscope, Thermometer } from "lucide-react";
-import { Patient } from "@/lib/types";
+import React, {useState} from "react";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {Button} from "./ui/button";
+import {Label} from "./ui/label";
+import {PatientFormModal} from "./PatientFormModal";
+import {Badge} from "./ui/badge";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "./ui/tabs";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "./ui/dialog";
+import {useAppData} from "../lib/hooks/useAppData";
+import {useAuth} from "./AuthContext";
+import {useModal} from "../lib/hooks/useModal";
+import {transformPatientToDisplay} from "../lib/utils/data-transformers";
+import {PatientStats} from "./patient/PatientStats";
+import {PatientSearch} from "./patient/PatientSearch";
+import {PatientList} from "./patient/PatientList";
+import {Activity, Plus, Stethoscope, Thermometer} from "lucide-react";
+import {Patient} from "@/lib/types";
 
 interface Visit {
   id: string;

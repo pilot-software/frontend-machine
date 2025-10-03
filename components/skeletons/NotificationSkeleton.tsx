@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { BadgeSkeleton, SearchBarSkeleton } from "./CommonSkeletons";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {BadgeSkeleton, SearchBarSkeleton} from "./CommonSkeletons";
 
 export function NotificationItemSkeleton() {
   return (

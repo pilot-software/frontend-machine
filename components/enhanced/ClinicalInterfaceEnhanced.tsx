@@ -1,60 +1,35 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "../ui/card";
+import {Button} from "../ui/button";
+import {Input} from "../ui/input";
+import {Label} from "../ui/label";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "../ui/select";
+import {Badge} from "../ui/badge";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "../ui/tabs";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "../ui/table";
+import {Avatar, AvatarFallback} from "../ui/avatar";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "../ui/dialog";
+import {Separator} from "../ui/separator";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Badge } from "../ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import { Separator } from "../ui/separator";
-import {
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
-  Clipboard,
-  Download,
-  Edit,
-  Eye,
-  FileText,
-  Filter,
-  Heart,
-  Pill,
-  Plus,
-  Search,
-  TestTube,
-  Thermometer,
-  User,
+    Activity,
+    AlertTriangle,
+    CheckCircle2,
+    Clipboard,
+    Download,
+    Edit,
+    Eye,
+    FileText,
+    Filter,
+    Heart,
+    Pill,
+    Plus,
+    Search,
+    TestTube,
+    Thermometer,
+    User,
 } from "lucide-react";
-import { useAuth } from "../AuthContext";
-import { usePatientData } from "../../lib/hooks/usePatientData";
+import {useAuth} from "../AuthContext";
+import {usePatientData} from "../../lib/hooks/usePatientData";
 
 interface VitalSigns {
   id: string;

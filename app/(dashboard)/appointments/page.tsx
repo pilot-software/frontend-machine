@@ -1,7 +1,7 @@
 'use client';
 
-import { AppointmentSystem } from '@/components/AppointmentSystem';
-import { AuthGuard } from '@/components/AuthGuard';
+import {AppointmentSystem} from '@/components/AppointmentSystem';
+import {AuthGuard} from '@/components/AuthGuard';
 
 export default function AppointmentsPage() {
     return (

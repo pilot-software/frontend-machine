@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Textarea } from './ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { DollarSign, Save, CreditCard } from 'lucide-react';
-import { useAuth } from './AuthContext';
+import React, {useState} from 'react';
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from './ui/dialog';
+import {Button} from './ui/button';
+import {Input} from './ui/input';
+import {Label} from './ui/label';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from './ui/select';
+import {Textarea} from './ui/textarea';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from './ui/card';
+import {CreditCard, DollarSign, Save} from 'lucide-react';
+import {useAuth} from './AuthContext';
 
 interface BillingFormData {
     patientId: string;
@@ -123,7 +123,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                         )}
                     </DialogTitle>
                     <DialogDescription>
-                        {mode === 'billing' 
+                        {mode === 'billing'
                             ? 'Create a new billing record for patient services'
                             : 'Process payment for an existing billing record'
                         }
@@ -137,7 +137,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                                 {mode === 'billing' ? 'Billing Information' : 'Payment Information'}
                             </CardTitle>
                             <CardDescription>
-                                {mode === 'billing' 
+                                {mode === 'billing'
                                     ? 'Enter billing details and service information'
                                     : 'Enter payment details and transaction information'
                                 }

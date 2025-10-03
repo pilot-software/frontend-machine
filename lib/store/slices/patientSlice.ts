@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { ApiPatient, patientService } from '../../services/patient';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {ApiPatient, patientService} from '../../services/patient';
 
 interface PatientState {
   selectedPatient: ApiPatient | null;

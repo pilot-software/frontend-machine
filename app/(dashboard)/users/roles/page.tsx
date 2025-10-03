@@ -1,31 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
-import { Badge } from "../../../../components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../../components/ui/table";
-import { Switch } from "../../../../components/ui/switch";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../../../../components/ui/dialog";
-import { Settings, Users, Shield, Edit } from "lucide-react";
-import { apiClient } from "../../../../lib/api";
+import React, {useEffect, useState} from "react";
+import {Card, CardContent, CardHeader, CardTitle,} from "../../../../components/ui/card";
+import {Button} from "../../../../components/ui/button";
+import {Badge} from "../../../../components/ui/badge";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "../../../../components/ui/table";
+import {Switch} from "../../../../components/ui/switch";
+import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "../../../../components/ui/dialog";
+import {Edit, Settings, Shield, Users} from "lucide-react";
+import {apiClient} from "../../../../lib/api";
 
 const ROLES = ["ADMIN", "DOCTOR", "NURSE", "FINANCE", "RECEPTIONIST"];
 const MODULES = [

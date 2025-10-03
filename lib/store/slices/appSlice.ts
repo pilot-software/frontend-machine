@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Patient, Doctor } from '../../types';
-import { dashboardService } from '../../services/dashboard';
-import { doctorService } from '../../services/doctor';
-import { patientService } from '../../services/patient';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {Doctor, Patient} from '../../types';
+import {dashboardService} from '../../services/dashboard';
+import {doctorService} from '../../services/doctor';
+import {patientService} from '../../services/patient';
 
 interface AppState {
   stats: any;

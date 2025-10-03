@@ -1,8 +1,8 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from './AuthContext';
-import { apiClient } from '../lib/api';
+import {createContext, useContext, useEffect, useState} from 'react';
+import {useAuth} from './AuthContext';
+import {apiClient} from '../lib/api';
 
 interface Branch {
   id: string;

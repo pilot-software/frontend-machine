@@ -1,61 +1,22 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { Textarea } from "./ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Separator } from "./ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import {
-  Activity,
-  Calendar,
-  Heart,
-  Mail,
-  MapPin,
-  Phone,
-  PillBottle,
-  Plus,
-  Save,
-  Thermometer,
-  User,
-  X,
-} from "lucide-react";
-import { useAuth } from "./AuthContext";
-import {
-  GenderType,
-  BloodType,
-  ConditionSeverity,
-  ConditionStatus,
-  PrescriptionStatus,
-} from "../lib/types";
-import { patientService } from "../lib/services/patient";
-import { userService } from "../lib/services/user";
-import { medicalService, MedicalData } from "../lib/services/medical";
-import { useAppData } from "../lib/hooks/useAppData";
-import { useAppSelector, useAppDispatch } from "../lib/store";
-import { fetchPatients } from "../lib/store/slices/appSlice";
+import React, {useState} from "react";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "./ui/dialog";
+import {Button} from "./ui/button";
+import {Input} from "./ui/input";
+import {Label} from "./ui/label";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "./ui/select";
+import {Textarea} from "./ui/textarea";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {Badge} from "./ui/badge";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "./ui/tabs";
+import {Separator} from "./ui/separator";
+import {Avatar, AvatarFallback, AvatarImage} from "./ui/avatar";
+import {Activity, Calendar, Heart, Mail, MapPin, Phone, PillBottle, Save, Thermometer, User,} from "lucide-react";
+import {useAuth} from "./AuthContext";
+import {patientService} from "../lib/services/patient";
+import {userService} from "../lib/services/user";
+import {MedicalData, medicalService} from "../lib/services/medical";
+import {useAppData} from "../lib/hooks/useAppData";
+import {useAppDispatch, useAppSelector} from "../lib/store";
 
 interface PatientFormData {
   firstName: string;

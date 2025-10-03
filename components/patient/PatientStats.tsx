@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent } from '../ui/card';
-import { AlertTriangle, CheckCircle2, Plus, UserPlus } from 'lucide-react';
+import {Card, CardContent} from '../ui/card';
+import {AlertTriangle, CheckCircle2, Plus, UserPlus} from 'lucide-react';
 
 interface PatientStatsProps {
   stats: {

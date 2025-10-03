@@ -1,35 +1,26 @@
-import React, { useState } from "react";
-import { useAuth } from "./AuthContext";
-import { useFeatures, useText } from "../lib/useFeatures";
-import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Badge } from "./ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import React, {useState} from "react";
+import {useAuth} from "./AuthContext";
+import {useFeatures, useText} from "../lib/useFeatures";
+import {Button} from "./ui/button";
+import {Avatar, AvatarFallback, AvatarImage} from "./ui/avatar";
+import {Badge} from "./ui/badge";
+import {Sheet, SheetContent, SheetTrigger} from "./ui/sheet";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  Activity,
-  LogOut,
-  Menu,
-  Moon,
-  Settings,
-  Shield,
-  Sun,
-  User,
-} from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import { NotificationDropdown } from "./NotificationDropdown";
-import { useTheme } from "./ThemeProvider";
-import { BranchSelector } from "./BranchSelector";
-import { useIsMobile } from "./ui/use-mobile";
-import { PermissionStrategy } from "../lib/strategies/permission.strategy";
-import { getRoleColor } from "../lib/constants/status";
+import {LogOut, Menu, Moon, Settings, Shield, Sun, User,} from "lucide-react";
+import {usePathname, useRouter} from "next/navigation";
+import {NotificationDropdown} from "./NotificationDropdown";
+import {useTheme} from "./ThemeProvider";
+import {BranchSelector} from "./BranchSelector";
+import {useIsMobile} from "./ui/use-mobile";
+import {PermissionStrategy} from "../lib/strategies/permission.strategy";
+import {getRoleColor} from "../lib/constants/status";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -120,9 +111,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </SheetContent>
               </Sheet>
             )}
-            
+
             {/* Logo and System Name */}
-            <div 
+            <div
               className="flex items-center space-x-2 sm:space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => router.push("/dashboard")}
             >
@@ -144,7 +135,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="hidden sm:block">
               <BranchSelector />
             </div>
-            
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -158,7 +149,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
               )}
             </Button>
-            
+
             {/* Notifications */}
             {features.notifications && <NotificationDropdown />}
 

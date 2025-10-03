@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { LoadingState } from './ui/loading-state';
-import { StatusBadge } from './ui/status-badge';
-import { AppointmentFormModal } from './AppointmentFormModal';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { appointmentService, ApiAppointment } from '../lib/services/appointment';
-import { useApi } from '../lib/hooks/useApi';
-import { useModal } from '../lib/hooks/useModal';
-import { transformAppointmentToDisplay, AppointmentDisplay } from '../lib/utils/data-transformers';
+import React, {useEffect, useRef} from 'react';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from './ui/card';
+import {Button} from './ui/button';
+import {Input} from './ui/input';
+import {LoadingState} from './ui/loading-state';
+import {StatusBadge} from './ui/status-badge';
+import {AppointmentFormModal} from './AppointmentFormModal';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs';
+import {ApiAppointment, appointmentService} from '../lib/services/appointment';
+import {useApi} from '../lib/hooks/useApi';
+import {useModal} from '../lib/hooks/useModal';
+import {AppointmentDisplay, transformAppointmentToDisplay} from '../lib/utils/data-transformers';
 import {
     AlertCircle,
     Calendar as CalendarIcon,
@@ -27,7 +27,7 @@ import {
 export function AppointmentSystem() {
     const { isOpen, mode, selectedId, openModal, closeModal } = useModal<string>('schedule');
     const [searchTerm, setSearchTerm] = React.useState('');
-    
+
     const { execute: fetchAppointments, loading: appointmentsLoading, data: appointments, statusCode } = useApi<(ApiAppointment & { patientName: string })[]>();
     const hasFetched = useRef(false);
 

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import {useCallback, useState} from 'react';
 
 interface UseApiOptions {
   onError?: (error: string) => void;
@@ -14,7 +14,7 @@ export const useApi = <T = any>(options: UseApiOptions = {}) => {
     setLoading(true);
     setError(null);
     setStatusCode(null);
-    
+
     try {
       const result = await apiCall();
       setData(result);
@@ -25,13 +25,13 @@ export const useApi = <T = any>(options: UseApiOptions = {}) => {
       setError(errorMessage);
       setStatusCode(500);
       options.onError?.(errorMessage);
-      
+
       // Don't throw auth errors, just log them
       if (errorMessage.includes('Authentication required') || errorMessage.includes('Service temporarily unavailable')) {
         console.log('API call failed:', errorMessage);
         return null;
       }
-      
+
       throw err;
     } finally {
       setLoading(false);

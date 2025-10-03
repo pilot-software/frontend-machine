@@ -1,4 +1,4 @@
-import { useAuth } from '@/components/AuthContext';
+import {useAuth} from '@/components/AuthContext';
 
 export const usePermissions = () => {
   const { permissions, hasPermission, hasAnyPermission } = useAuth();

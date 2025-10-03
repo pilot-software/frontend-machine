@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
+import {cn} from '@/lib/utils';
 
 interface ResponsiveContainerProps {
   children: React.ReactNode;
@@ -8,15 +8,15 @@ interface ResponsiveContainerProps {
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
-export function ResponsiveContainer({ 
-  children, 
-  className, 
+export function ResponsiveContainer({
+  children,
+  className,
   maxWidth = 'full',
   padding = 'md'
 }: ResponsiveContainerProps) {
   const maxWidthClasses = {
     sm: 'max-w-screen-sm',
-    md: 'max-w-screen-md', 
+    md: 'max-w-screen-md',
     lg: 'max-w-screen-lg',
     xl: 'max-w-screen-xl',
     '2xl': 'max-w-screen-2xl',
@@ -55,8 +55,8 @@ interface ResponsiveGridProps {
   gap?: 'sm' | 'md' | 'lg';
 }
 
-export function ResponsiveGrid({ 
-  children, 
+export function ResponsiveGrid({
+  children,
   className,
   cols = { default: 1, sm: 2, lg: 3, xl: 4 },
   gap = 'md'
@@ -95,8 +95,8 @@ interface ResponsiveStackProps {
   align?: 'start' | 'center' | 'end' | 'stretch';
 }
 
-export function ResponsiveStack({ 
-  children, 
+export function ResponsiveStack({
+  children,
   className,
   direction = 'vertical',
   spacing = 'md',

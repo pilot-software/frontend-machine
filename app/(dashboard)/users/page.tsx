@@ -1,32 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { AuthGuard } from '@/components/AuthGuard';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Badge } from '../../../components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../../../components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
-import { Label } from '../../../components/ui/label';
-import { Checkbox } from '../../../components/ui/checkbox';
-import { 
-  Search, 
-  Plus, 
-  Edit, 
-  Eye, 
-  Trash2,
-  Users,
-  Shield,
-  Settings,
-  Activity,
-  UserCheck,
-  AlertTriangle
+import React, {useEffect, useState} from 'react';
+import {AuthGuard} from '@/components/AuthGuard';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {Card, CardContent, CardHeader, CardTitle} from '../../../components/ui/card';
+import {Button} from '../../../components/ui/button';
+import {Input} from '../../../components/ui/input';
+import {Badge} from '../../../components/ui/badge';
+import {Avatar, AvatarFallback} from '../../../components/ui/avatar';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../../../components/ui/table';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../../../components/ui/select';
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from '../../../components/ui/dialog';
+import {Label} from '../../../components/ui/label';
+import {Checkbox} from '../../../components/ui/checkbox';
+import {
+    Activity,
+    AlertTriangle,
+    Edit,
+    Eye,
+    Plus,
+    Search,
+    Settings,
+    Shield,
+    Trash2,
+    UserCheck,
+    Users
 } from 'lucide-react';
-import { api } from '../../../lib/api';
+import {api} from '../../../lib/api';
 
 interface User {
   id: string;
@@ -92,8 +92,8 @@ function UserManagementPageContent() {
   };
 
   const toggleUserSelection = (userId: string) => {
-    setSelectedUsers(prev => 
-      prev.includes(userId) 
+    setSelectedUsers(prev =>
+      prev.includes(userId)
         ? prev.filter(id => id !== userId)
         : [...prev, userId]
     );
@@ -123,7 +123,7 @@ function UserManagementPageContent() {
           }
           break;
       }
-      
+
       await fetchUsers();
       setSelectedUsers([]);
       setBulkAction('');
@@ -223,15 +223,15 @@ function UserManagementPageContent() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="font-medium">{selectedUsers.length} users selected</span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setSelectedUsers([])}
                 >
                   Clear Selection
                 </Button>
               </div>
-              
+
               <div className="flex flex-col md:flex-row gap-4">
                 <Select value={bulkAction} onValueChange={setBulkAction}>
                   <SelectTrigger className="w-[200px]">
@@ -258,7 +258,7 @@ function UserManagementPageContent() {
                   </Select>
                 )}
 
-                <Button 
+                <Button
                   onClick={executeBulkAction}
                   disabled={!bulkAction || selectedUsers.length === 0}
                   variant={bulkAction === 'delete' ? 'destructive' : 'default'}

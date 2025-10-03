@@ -1,5 +1,5 @@
-import { IApiClient } from '../abstractions/service.interface';
-import { getApiBaseUrl } from '../config/api.config';
+import {IApiClient} from '../abstractions/service.interface';
+import {getApiBaseUrl} from '../config/api.config';
 
 export class ApiClient implements IApiClient {
   private baseUrl: string;
@@ -66,7 +66,7 @@ export class ApiClient implements IApiClient {
       method: 'DELETE',
       headers: this.getHeaders(),
     });
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`API Error: ${response.status} - ${errorText}`);

@@ -1,4 +1,4 @@
-import { UserRole } from './api-router';
+import {UserRole} from './api-router';
 
 export interface MenuItem {
   label: string;

@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import {useState} from "react";
+import {Button} from "./ui/button";
+import {Badge} from "./ui/badge";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Bell, AlertCircle, Calendar, FileText } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {AlertCircle, Bell, Calendar, FileText} from "lucide-react";
+import {useRouter} from "next/navigation";
 
 const mockNotifications = [
   {
@@ -103,7 +103,7 @@ export function NotificationDropdown() {
           );
         })}
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="text-center text-sm text-primary cursor-pointer"
           onClick={() => router.push('/notifications')}
         >

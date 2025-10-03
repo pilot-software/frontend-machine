@@ -1,14 +1,14 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Phone, Stethoscope, Building2, Users, Calendar, Printer } from 'lucide-react';
-import { useAppData } from '@/lib/hooks/useAppData';
-import { Doctor } from '@/lib/types';
+import {useParams} from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Button} from '@/components/ui/button';
+import {ArrowLeft, Building2, Mail, Phone, Printer, Stethoscope, Users} from 'lucide-react';
+import {useAppData} from '@/lib/hooks/useAppData';
+import {Doctor} from '@/lib/types';
 
 export default function DoctorDetailPage() {
   const params = useParams();
@@ -58,9 +58,9 @@ export default function DoctorDetailPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-3">
             <Avatar className="h-16 w-16">
-              <AvatarImage 
-                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face" 
-                alt={doctor.name} 
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face"
+                alt={doctor.name}
               />
               <AvatarFallback className="text-lg">
                 {doctor.name.split(' ').map(n => n[0]).join('')}

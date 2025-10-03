@@ -1,5 +1,5 @@
-import { Patient, Doctor } from '../types';
-import { calculateAge, safeDateToString } from './dateUtils';
+import {Doctor, Patient} from '../types';
+import {calculateAge, safeDateToString} from './dateUtils';
 
 export interface PatientDisplay {
   id: string;
@@ -30,7 +30,7 @@ export interface AppointmentDisplay {
 
 export const transformPatientToDisplay = (patient: Patient, doctors: Doctor[] = []): PatientDisplay => {
   const assignedDoctor = doctors.find(d => d.id === patient.assignedDoctorId);
-  
+
   return {
     id: patient.id,
     name: `${patient.firstName} ${patient.lastName}`,

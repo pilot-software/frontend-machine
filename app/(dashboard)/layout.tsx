@@ -1,9 +1,9 @@
 'use client';
 
-import { AuthProvider } from '@/components/AuthContext';
-import { AuthGuard } from '@/components/AuthGuard';
-import { DashboardLayout } from '@/components/DashboardLayout';
-import { SessionManager } from '@/components/SessionManager';
+import {AuthProvider} from '@/components/AuthContext';
+import {AuthGuard} from '@/components/AuthGuard';
+import {DashboardLayout} from '@/components/DashboardLayout';
+import {SessionManager} from '@/components/SessionManager';
 
 export default function DashboardLayoutWrapper({
   children,

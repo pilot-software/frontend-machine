@@ -1,6 +1,5 @@
-import { FeatureConfig, TextConfig } from '../config/features';
-import { hospitalConfig, clinicConfig } from '../config/features';
-import { hospitalText, clinicText } from '../config/text-configs';
+import {clinicConfig, FeatureConfig, hospitalConfig, TextConfig} from '../config/features';
+import {clinicText, hospitalText} from '../config/text-configs';
 
 export type HospitalType = 'clinic' | 'hospital';
 

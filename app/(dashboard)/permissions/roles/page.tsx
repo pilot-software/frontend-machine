@@ -1,26 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
-import { Badge } from "../../../../components/ui/badge";
-import {
-  ArrowLeft,
-  Save,
-  Shield,
-  GripVertical,
-  Users,
-  Settings,
-} from "lucide-react";
-import { api } from "../../../../lib/api";
-import { toast } from "sonner";
-import { useResponsive } from "../../../../lib/hooks/useResponsive";
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import {Card, CardContent, CardHeader, CardTitle,} from "../../../../components/ui/card";
+import {Button} from "../../../../components/ui/button";
+import {Badge} from "../../../../components/ui/badge";
+import {ArrowLeft, GripVertical, Save, Settings, Shield, Users,} from "lucide-react";
+import {api} from "../../../../lib/api";
+import {toast} from "sonner";
+import {useResponsive} from "../../../../lib/hooks/useResponsive";
 
 const ROLES = [
   { key: "ADMIN", name: "Administrator", color: "bg-red-100 text-red-800" },

@@ -1,8 +1,8 @@
 'use client';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { useBranch } from './BranchContext';
-import { useAuth } from './AuthContext';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from './ui/select';
+import {useBranch} from './BranchContext';
+import {useAuth} from './AuthContext';
 
 export function BranchSelector() {
   const { branches, selectedBranch, selectBranch, isLoading, hasBranches } = useBranch();

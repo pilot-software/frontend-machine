@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
-import { Button } from '../../../../components/ui/button';
-import { Input } from '../../../../components/ui/input';
-import { Badge } from '../../../../components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../../components/ui/dialog';
-import { Building, Users, Shield, Search, Plus, MapPin } from 'lucide-react';
-import { apiClient } from '../../../../lib/api';
+import React, {useEffect, useState} from 'react';
+import {Card, CardContent, CardHeader, CardTitle} from '../../../../components/ui/card';
+import {Button} from '../../../../components/ui/button';
+import {Input} from '../../../../components/ui/input';
+import {Badge} from '../../../../components/ui/badge';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../../../../components/ui/table';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../../../../components/ui/select';
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from '../../../../components/ui/dialog';
+import {Building, MapPin, Plus, Search, Shield, Users} from 'lucide-react';
+import {apiClient} from '../../../../lib/api';
 
 interface Branch {
   id: string;
@@ -46,10 +46,10 @@ export default function BranchesPage() {
       setLoading(true);
       const branchesData = await apiClient.getBranches();
       setBranches(branchesData || []);
-      
+
       // Fetch permissions for each branch
       if (branchesData?.length > 0) {
-        const permissionsPromises = branchesData.map((branch: Branch) => 
+        const permissionsPromises = branchesData.map((branch: Branch) =>
           apiClient.getBranchUserPermissions(branch.id)
         );
         const permissionsResults = await Promise.all(permissionsPromises);
@@ -278,14 +278,14 @@ export default function BranchesPage() {
   );
 }
 
-function AssignBranchPermissionModal({ 
-  isOpen, 
-  onClose, 
-  branches, 
-  onSuccess 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
+function AssignBranchPermissionModal({
+  isOpen,
+  onClose,
+  branches,
+  onSuccess
+}: {
+  isOpen: boolean;
+  onClose: () => void;
   branches: Branch[];
   onSuccess: () => void;
 }) {

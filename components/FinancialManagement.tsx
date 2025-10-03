@@ -1,49 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {Button} from "./ui/button";
+import {Input} from "./ui/input";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "./ui/select";
+import {Badge} from "./ui/badge";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "./ui/tabs";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "./ui/table";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  CreditCard,
-  DollarSign,
-  Download,
-  Eye,
-  FileText,
-  Filter,
-  Plus,
-  Receipt,
-  Search,
-  TrendingDown,
-  TrendingUp,
+    AlertCircle,
+    CheckCircle2,
+    Clock,
+    CreditCard,
+    DollarSign,
+    Download,
+    Eye,
+    FileText,
+    Filter,
+    Plus,
+    Receipt,
+    Search,
+    TrendingDown,
+    TrendingUp,
 } from "lucide-react";
-import { billingService } from "../lib/services/billing";
-import { useApi } from "../lib/hooks/useApi";
-import { FinancialStatsSkeleton, BillingTableSkeleton } from "./skeletons";
+import {billingService} from "../lib/services/billing";
+import {useApi} from "../lib/hooks/useApi";
+import {BillingTableSkeleton, FinancialStatsSkeleton} from "./skeletons";
 
 interface Bill {
   id: string;

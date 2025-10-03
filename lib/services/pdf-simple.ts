@@ -1,4 +1,4 @@
-import { Patient, Doctor } from '@/lib/types';
+import {Doctor, Patient} from '@/lib/types';
 import QRCode from 'qrcode';
 
 // Generate QR code data URL for patient identification
@@ -19,9 +19,9 @@ const generatePatientQRCode = async (patient: Patient): Promise<string> => {
     timestamp: new Date().toISOString(),
     facility: 'Healthcare Management System'
   };
-  
+
   const qrData = JSON.stringify(patientData);
-  
+
   try {
     // Generate QR code as data URL
     const qrCodeDataURL = await QRCode.toDataURL(qrData, {
@@ -44,7 +44,7 @@ const generatePatientQRCode = async (patient: Patient): Promise<string> => {
 // Simple HTML to PDF conversion using browser's print functionality
 export const generatePatientHTML = async (patient: Patient, assignedDoctor: Doctor | null): Promise<string> => {
   const currentDate = new Date();
-  
+
   return `
     <!DOCTYPE html>
     <html>
@@ -393,16 +393,16 @@ export const downloadPatientPDF = async (
 ): Promise<void> => {
   try {
     const htmlContent = await generatePatientHTML(patient, assignedDoctor);
-    
+
     // Create a new window with the HTML content
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
       throw new Error('Unable to open print window. Please check popup blocker settings.');
     }
-    
+
     printWindow.document.write(htmlContent);
     printWindow.document.close();
-    
+
     // Wait for content to load, then trigger print
     printWindow.onload = () => {
       setTimeout(() => {
@@ -410,7 +410,7 @@ export const downloadPatientPDF = async (
         printWindow.close();
       }, 500);
     };
-    
+
   } catch (error) {
     console.error('Error generating PDF:', error);
     throw error;
@@ -425,13 +425,13 @@ export const downloadPatientHTML = async (
   const htmlContent = await generatePatientHTML(patient, assignedDoctor);
   const blob = new Blob([htmlContent], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   link.download = `Patient-Report-${patient.firstName}-${patient.lastName}-${new Date().toISOString().split('T')[0]}.html`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
+
   URL.revokeObjectURL(url);
 };

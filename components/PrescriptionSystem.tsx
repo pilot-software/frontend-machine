@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from './ui/card';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
@@ -24,9 +24,8 @@ import {
     Send,
     Stethoscope
 } from 'lucide-react';
-import { patientService } from '../lib/services/patient';
-import { useApi } from '../lib/hooks/useApi';
-import { useAuth } from './AuthContext';
+import {useApi} from '../lib/hooks/useApi';
+import {useAuth} from './AuthContext';
 
 interface Prescription {
     id: string;
@@ -98,7 +97,7 @@ export function PrescriptionSystem() {
     const [selectedMedication, setSelectedMedication] = useState('');
     const [selectedPatient, setSelectedPatient] = useState('patient_2');
     const [medicalData, setMedicalData] = useState<any>(null);
-    
+
     const { loading } = useApi();
     const { execute: fetchMedicalData, loading: medicalLoading } = useApi();
 

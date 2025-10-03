@@ -1,11 +1,11 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Building2, Phone, MapPin, Users, Activity, Clock, Printer } from 'lucide-react';
+import {useParams} from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Button} from '@/components/ui/button';
+import {Activity, ArrowLeft, Building2, MapPin, Phone, Printer, Users} from 'lucide-react';
 
 interface Department {
   id: string;
@@ -47,7 +47,7 @@ export default function DepartmentDetailPage() {
         status: "operational",
       },
     ];
-    
+
     const foundDepartment = mockDepartments.find(d => d.id === departmentId);
     setDepartment(foundDepartment || null);
   }, [departmentId]);

@@ -1,9 +1,21 @@
-import { UserRole } from '../types';
-import { FeatureConfig, TextConfig } from '@/config';
-import { 
-  Activity, BarChart3, BedDouble, Calendar, ClipboardList, 
-  FileText, Heart, Lock, PillBottle, Shield, 
-  Stethoscope, User, Users, UserCheck, FlaskConical 
+import {UserRole} from '../types';
+import {FeatureConfig, TextConfig} from '@/config';
+import {
+    Activity,
+    BarChart3,
+    BedDouble,
+    Calendar,
+    ClipboardList,
+    FileText,
+    FlaskConical,
+    Heart,
+    Lock,
+    PillBottle,
+    Shield,
+    Stethoscope,
+    User,
+    UserCheck,
+    Users
 } from 'lucide-react';
 
 export interface MenuItem {

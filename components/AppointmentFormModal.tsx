@@ -12,9 +12,9 @@ import {AlertCircle, Calendar as CalendarIcon, Clock, Save, Stethoscope, User} f
 import {useAuth} from './AuthContext';
 import {cn} from './ui/utils';
 import {format} from 'date-fns';
-import { appointmentService } from '../lib/services/appointment';
-import { useAppDispatch, useAppSelector } from '../lib/store';
-import { fetchPatients, fetchDoctors } from '../lib/store/slices/appSlice';
+import {appointmentService} from '../lib/services/appointment';
+import {useAppDispatch, useAppSelector} from '../lib/store';
+import {fetchDoctors, fetchPatients} from '../lib/store/slices/appSlice';
 
 interface AppointmentFormData {
     patientId: string;
@@ -49,7 +49,7 @@ export function AppointmentFormModal({
     const { patients, doctors, loading } = useAppSelector(state => state.app);
     const patientsLoading = loading.patients;
     const doctorsLoading = loading.doctors;
-    
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
@@ -160,7 +160,7 @@ export function AppointmentFormModal({
         } catch (error) {
             console.error('Failed to save appointment:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-            
+
             // Check for specific time-related errors
             if (errorMessage.includes('Invalid time') || errorMessage.includes('time value')) {
                 alert('Invalid date or time format. Please check your selections and try again.');

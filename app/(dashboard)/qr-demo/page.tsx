@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import {useState} from 'react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
 import QRScanner from '@/components/QRScanner';
-import { downloadPatientPDF, downloadPatientHTML } from '@/lib/services/pdf-simple';
-import { Patient, Doctor } from '@/lib/types';
-import { QrCode, Download, FileText, User } from 'lucide-react';
+import {downloadPatientHTML, downloadPatientPDF} from '@/lib/services/pdf-simple';
+import {Doctor, Patient} from '@/lib/types';
+import {Download, FileText, QrCode, User} from 'lucide-react';
 
 export default function QRDemoPage() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -116,7 +116,7 @@ export default function QRDemoPage() {
             </div>
 
             <div className="space-y-2">
-              <Button 
+              <Button
                 onClick={handleGeneratePDF}
                 disabled={isGenerating}
                 className="w-full"
@@ -124,8 +124,8 @@ export default function QRDemoPage() {
                 <Download className="h-4 w-4 mr-2" />
                 {isGenerating ? 'Generating...' : 'Generate PDF with QR Code'}
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={handleGenerateHTML}
                 disabled={isGenerating}
                 variant="outline"

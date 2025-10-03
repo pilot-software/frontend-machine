@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../../components/ui/card';
-import { Button } from '../../../../../components/ui/button';
-import { Switch } from '../../../../../components/ui/switch';
-import { Label } from '../../../../../components/ui/label';
-import { Badge } from '../../../../../components/ui/badge';
-import { ArrowLeft, Save, Shield, Plus, Minus, Clock } from 'lucide-react';
-import { api } from '../../../../../lib/api';
-import { TemporaryPermissionModal } from '../../../../../components/permissions';
+import React, {useEffect, useState} from 'react';
+import {useParams, useRouter} from 'next/navigation';
+import {Card, CardContent, CardHeader, CardTitle} from '../../../../../components/ui/card';
+import {Button} from '../../../../../components/ui/button';
+import {Switch} from '../../../../../components/ui/switch';
+import {Label} from '../../../../../components/ui/label';
+import {Badge} from '../../../../../components/ui/badge';
+import {ArrowLeft, Clock, Minus, Plus, Save, Shield} from 'lucide-react';
+import {api} from '../../../../../lib/api';
+import {TemporaryPermissionModal} from '../../../../../components/permissions';
 
 const PERMISSION_MODULES = [
   { name: 'Users', key: 'users', special: ['Manage Roles', 'Delete Users'] },
@@ -32,7 +32,7 @@ interface Permission {
 export default function UserPermissionsPage() {
   const router = useRouter();
   const params = useParams();
-  
+
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTempPermModal, setShowTempPermModal] = useState(false);
@@ -80,7 +80,7 @@ export default function UserPermissionsPage() {
   };
 
   const updatePermission = (moduleKey: string, type: keyof Permission, value: boolean | string[]) => {
-    setPermissions(prev => prev.map(perm => 
+    setPermissions(prev => prev.map(perm =>
       perm.module === moduleKey ? { ...perm, [type]: value } : perm
     ));
   };
@@ -140,7 +140,7 @@ export default function UserPermissionsPage() {
                     <h3 className="text-lg font-semibold">{module.name}</h3>
                     <Badge variant="outline">{module.key}</Badge>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div className="flex items-center space-x-2">
                       <Switch

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { StatsCardSkeleton, SearchBarSkeleton, TableRowSkeleton } from "./CommonSkeletons";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {StatsCardSkeleton} from "./CommonSkeletons";
 
 export function FinancialStatsSkeleton() {
   return (

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { StatusBadge } from '../ui/status-badge';
-import { LoadingState } from '../ui/loading-state';
-import { Edit, Eye, FileText } from 'lucide-react';
-import { PatientDisplay } from '../../lib/utils/data-transformers';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '../ui/card';
+import {Button} from '../ui/button';
+import {Avatar, AvatarFallback, AvatarImage} from '../ui/avatar';
+import {StatusBadge} from '../ui/status-badge';
+import {LoadingState} from '../ui/loading-state';
+import {Edit, Eye, FileText} from 'lucide-react';
+import {PatientDisplay} from '../../lib/utils/data-transformers';
 
 interface PatientListProps {
   patients: PatientDisplay[];

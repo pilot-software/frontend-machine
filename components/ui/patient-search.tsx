@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, User } from 'lucide-react';
-import { Input } from './input';
-import { Card } from './card';
+import React, {useEffect, useRef, useState} from 'react';
+import {Search, User} from 'lucide-react';
+import {Input} from './input';
+import {Card} from './card';
 
 interface Patient {
   id: string;
@@ -31,7 +31,7 @@ export function PatientSearch({ patients, onSelect, placeholder = "Search patien
 
   useEffect(() => {
     if (searchTerm.trim()) {
-      const filtered = patients.filter(patient => 
+      const filtered = patients.filter(patient =>
         `${patient.firstName} ${patient.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.caseNumber.toLowerCase().includes(searchTerm.toLowerCase())
       );

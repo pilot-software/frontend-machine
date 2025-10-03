@@ -1,6 +1,6 @@
-import { generate } from '@pdfme/generator';
-import { text } from '@pdfme/schemas';
-import { Patient, Doctor } from '@/lib/types';
+import {generate} from '@pdfme/generator';
+import {text} from '@pdfme/schemas';
+import {Doctor, Patient} from '@/lib/types';
 
 const plugins = { text };
 
@@ -52,7 +52,7 @@ const createPatientTemplate = () => ({
         fontColor: '#666666',
         alignment: 'right',
       },
-      
+
       // Divider line
       divider1: {
         type: 'text',
@@ -62,7 +62,7 @@ const createPatientTemplate = () => ({
         fontSize: 8,
         fontColor: '#E5E7EB',
       },
-      
+
       // Patient Information Section
       patientInfoHeader: {
         type: 'text',
@@ -112,7 +112,7 @@ const createPatientTemplate = () => ({
         fontSize: 10,
         fontColor: '#059669',
       },
-      
+
       // Contact Information Section
       contactInfoHeader: {
         type: 'text',
@@ -154,7 +154,7 @@ const createPatientTemplate = () => ({
         fontSize: 10,
         fontColor: '#374151',
       },
-      
+
       // Medical Information Section
       medicalInfoHeader: {
         type: 'text',
@@ -188,7 +188,7 @@ const createPatientTemplate = () => ({
         fontSize: 10,
         fontColor: '#374151',
       },
-      
+
       // Additional Medical Notes Section
       notesHeader: {
         type: 'text',
@@ -206,7 +206,7 @@ const createPatientTemplate = () => ({
         fontSize: 10,
         fontColor: '#374151',
       },
-      
+
       // Footer with compliance info
       confidentialityNotice: {
         type: 'text',
@@ -235,7 +235,7 @@ export const generatePatientPDF = async (
   assignedDoctor: Doctor | null
 ): Promise<Uint8Array> => {
   const template = createPatientTemplate();
-  
+
   const currentDate = new Date();
   const inputs = [
     {
@@ -245,28 +245,28 @@ export const generatePatientPDF = async (
       reportDate: `Date: ${currentDate.toLocaleDateString()}`,
       reportTime: `Time: ${currentDate.toLocaleTimeString()}`,
       divider1: '────────────────────────────────────────────────────────────────────────',
-      
+
       patientInfoHeader: '👤 PATIENT INFORMATION',
       patientName: `Name: ${patient.firstName} ${patient.lastName}`,
       patientId: `ID: ${patient.id}`,
       dateOfBirth: `DOB: ${patient.dateOfBirth || 'N/A'}`,
       gender: `Gender: ${patient.gender?.charAt(0).toUpperCase() + patient.gender?.slice(1) || 'N/A'}`,
       patientStatus: 'Status: Active Patient',
-      
+
       contactInfoHeader: '📞 CONTACT INFORMATION',
       email: `Email: ${patient.email || 'Not provided'}`,
       phone: `Phone: ${patient.phone || 'Not provided'}`,
       emergencyContact: `Emergency: ${patient.emergencyContactPhone || 'Not provided'}`,
       address: `Address: ${patient.address || 'Not provided'}`,
-      
+
       medicalInfoHeader: '🩺 MEDICAL INFORMATION',
       assignedDoctor: `Attending Physician: ${assignedDoctor?.name || 'Not assigned'}`,
       department: `Department: ${assignedDoctor?.department || 'General Medicine'}`,
       insuranceProvider: `Insurance Provider: ${patient.insuranceProvider || 'Not provided'}`,
-      
+
       notesHeader: '📋 MEDICAL NOTES',
       medicalNotes: 'Patient record generated from Healthcare Management System.\nFor complete medical history and recent visits, please refer to the electronic health record system.\n\nLast updated: ' + currentDate.toLocaleString(),
-      
+
       confidentialityNotice: '⚠️ CONFIDENTIAL PATIENT INFORMATION',
       footer: 'This document contains protected health information (PHI). Handle according to HIPAA guidelines and institutional policies.',
     },
@@ -278,7 +278,7 @@ export const generatePatientPDF = async (
       inputs,
       plugins,
     });
-    
+
     return pdf;
   } catch (error) {
     console.error('Error generating PDF:', error);
@@ -292,17 +292,17 @@ export const downloadPatientPDF = async (
 ): Promise<void> => {
   try {
     const pdfBytes = await generatePatientPDF(patient, assignedDoctor);
-    
+
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `Patient-Report-${patient.firstName}-${patient.lastName}-${new Date().toISOString().split('T')[0]}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Error downloading PDF:', error);

@@ -1,15 +1,15 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, User, Heart, FileText, Printer, Download } from 'lucide-react';
-import { useAppData } from '@/lib/hooks/useAppData';
-import { Patient, Doctor } from '@/lib/types';
-import { downloadPatientPDF, downloadPatientHTML } from '@/lib/services/pdf-simple';
+import {useParams} from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Button} from '@/components/ui/button';
+import {ArrowLeft, Calendar, Download, FileText, Heart, Mail, MapPin, Phone, Printer, User} from 'lucide-react';
+import {useAppData} from '@/lib/hooks/useAppData';
+import {Doctor, Patient} from '@/lib/types';
+import {downloadPatientHTML, downloadPatientPDF} from '@/lib/services/pdf-simple';
 
 export default function PatientDetailPage() {
   const params = useParams();
@@ -36,7 +36,7 @@ export default function PatientDetailPage() {
 
   const handleDownloadPDF = async () => {
     if (!patient) return;
-    
+
     setIsGeneratingPDF(true);
     try {
       await downloadPatientPDF(patient, assignedDoctor);
@@ -50,7 +50,7 @@ export default function PatientDetailPage() {
 
   const handleDownloadHTML = async () => {
     if (!patient) return;
-    
+
     setIsGeneratingPDF(true);
     try {
       await downloadPatientHTML(patient, assignedDoctor);
@@ -88,16 +88,16 @@ export default function PatientDetailPage() {
             <Printer className="h-4 w-4 mr-2" />
             Print Page
           </Button>
-          <Button 
-            onClick={handleDownloadPDF} 
+          <Button
+            onClick={handleDownloadPDF}
             disabled={isGeneratingPDF}
             className="print:hidden"
           >
             <Download className="h-4 w-4 mr-2" />
             {isGeneratingPDF ? 'Generating...' : 'Print PDF'}
           </Button>
-          <Button 
-            onClick={handleDownloadHTML} 
+          <Button
+            onClick={handleDownloadHTML}
             variant="secondary"
             disabled={isGeneratingPDF}
             className="print:hidden"
@@ -112,9 +112,9 @@ export default function PatientDetailPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-3">
             <Avatar className="h-16 w-16">
-              <AvatarImage 
-                src={`https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`} 
-                alt={patient.firstName} 
+              <AvatarImage
+                src={`https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`}
+                alt={patient.firstName}
               />
               <AvatarFallback className="text-lg">
                 {patient.firstName[0]}{patient.lastName[0]}

@@ -1,22 +1,36 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  FileText, Download, Calendar as CalendarIcon, Clock, Users, DollarSign,
-  Activity, TrendingUp, BarChart3, PieChart, File, FileImage,
-  Mail, Settings, Play, Pause, RefreshCw, Filter, Search
+import {useState} from 'react';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Badge} from '@/components/ui/badge';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Calendar} from '@/components/ui/calendar';
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
+import {
+    Activity,
+    BarChart3,
+    Calendar as CalendarIcon,
+    Clock,
+    DollarSign,
+    Download,
+    File,
+    FileImage,
+    FileText,
+    Filter,
+    Mail,
+    Pause,
+    Play,
+    Search,
+    Settings,
+    TrendingUp,
+    Users
 } from 'lucide-react';
-import { format } from 'date-fns';
+import {format} from 'date-fns';
 
 export default function ReportsPage() {
   const [selectedDate, setSelectedDate] = useState<Date>();

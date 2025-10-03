@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { useAppData } from "./useAppData";
-import { Doctor, Patient } from "@/lib/types";
-import { safeDateToString } from "@/lib/utils/dateUtils";
+import {useMemo} from "react";
+import {useAppData} from "./useAppData";
+import {Doctor, Patient} from "@/lib/types";
+import {safeDateToString} from "@/lib/utils/dateUtils";
 
 export function usePatientData() {
   const { doctors: doctorsData, patients: patientsData } = useAppData();

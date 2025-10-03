@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Label } from './ui/label';
-import { Separator } from './ui/separator';
-import { Filter, X } from 'lucide-react';
+import React, {useState} from 'react';
+import {Button} from './ui/button';
+import {Badge} from './ui/badge';
+import {Popover, PopoverContent, PopoverTrigger} from './ui/popover';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from './ui/select';
+import {Label} from './ui/label';
+import {Separator} from './ui/separator';
+import {Filter, X} from 'lucide-react';
 
 interface FilterOption {
   key: string;
@@ -66,9 +66,9 @@ export function FilterDropdown({ filters, activeFilters, onFilterChange, onClear
               </Button>
             )}
           </div>
-          
+
           <Separator />
-          
+
           <div className="space-y-3">
             {filters.map((filter) => (
               <div key={filter.key}>

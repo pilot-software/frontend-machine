@@ -1,6 +1,6 @@
 'use client';
 
-import { usePermissions } from '@/lib/hooks/usePermissions';
+import {usePermissions} from '@/lib/hooks/usePermissions';
 
 interface PermissionGuardProps {
   children: React.ReactNode;
@@ -8,10 +8,10 @@ interface PermissionGuardProps {
   requireAll?: boolean; // If true, user must have ALL permissions, otherwise ANY
 }
 
-export function PermissionGuard({ 
-  children, 
-  permissions = [], 
-  requireAll = false 
+export function PermissionGuard({
+  children,
+  permissions = [],
+  requireAll = false
 }: PermissionGuardProps) {
   const { hasPermission, hasAnyPermission } = usePermissions();
 
@@ -19,7 +19,7 @@ export function PermissionGuard({
     return <>{children}</>;
   }
 
-  const hasAccess = requireAll 
+  const hasAccess = requireAll
     ? permissions.every(permission => hasPermission(permission))
     : hasAnyPermission(permissions);
 

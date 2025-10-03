@@ -1,7 +1,7 @@
 'use client';
 
-import { FinancialManagement } from '@/components/FinancialManagement';
-import { AuthGuard } from '@/components/AuthGuard';
+import {FinancialManagement} from '@/components/FinancialManagement';
+import {AuthGuard} from '@/components/AuthGuard';
 
 export default function FinancialPage() {
     return (

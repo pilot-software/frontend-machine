@@ -1,7 +1,5 @@
-
-
-import { BaseEntity, IBaseService } from '../abstractions/service.interface';
-import { apiClient } from '../api';
+import {BaseEntity, IBaseService} from '../abstractions/service.interface';
+import {apiClient} from '../api';
 
 export interface ApiAppointment extends BaseEntity {
   organizationId: string;
@@ -62,7 +60,7 @@ export class AppointmentService implements IBaseService<ApiAppointment, CreateAp
       this.getAll(),
       apiClient.getPatients()
     ]);
-    
+
     return appointments.map(apt => {
       const patient = (patients as any[]).find((p: any) => p.id === apt.patientId);
       return {

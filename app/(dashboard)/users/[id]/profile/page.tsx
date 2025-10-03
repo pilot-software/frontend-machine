@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../../components/ui/card';
-import { Button } from '../../../../../components/ui/button';
-import { Input } from '../../../../../components/ui/input';
-import { Label } from '../../../../../components/ui/label';
-import { Badge } from '../../../../../components/ui/badge';
-import { Avatar, AvatarFallback } from '../../../../../components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../../components/ui/tabs';
-import { ArrowLeft, Edit, Shield, Clock, FileText } from 'lucide-react';
-import { api } from '../../../../../lib/api';
+import React, {useEffect, useState} from 'react';
+import {useParams, useRouter} from 'next/navigation';
+import {Card, CardContent, CardHeader, CardTitle} from '../../../../../components/ui/card';
+import {Button} from '../../../../../components/ui/button';
+import {Input} from '../../../../../components/ui/input';
+import {Label} from '../../../../../components/ui/label';
+import {Badge} from '../../../../../components/ui/badge';
+import {Avatar, AvatarFallback} from '../../../../../components/ui/avatar';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '../../../../../components/ui/tabs';
+import {ArrowLeft, Clock, Edit, FileText, Shield} from 'lucide-react';
+import {api} from '../../../../../lib/api';
 
 interface User {
   id: string;
@@ -80,23 +80,23 @@ export default function UserProfilePage() {
                 <Badge className="mt-2">{user.role}</Badge>
               </div>
               <div className="w-full space-y-2">
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   onClick={() => router.push(`/users/${user.id}/permissions`)}
                 >
                   <Shield className="h-4 w-4 mr-2" />
                   Manage Permissions
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => router.push(`/users/${user.id}/temporary-roles`)}
                 >
                   <Clock className="h-4 w-4 mr-2" />
                   Temporary Roles
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => router.push(`/users/${user.id}/audit`)}
                 >
@@ -115,13 +115,13 @@ export default function UserProfilePage() {
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="details">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>User Information</CardTitle>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setIsEditing(!isEditing)}
                   >
                     <Edit className="h-4 w-4 mr-2" />
@@ -147,7 +147,7 @@ export default function UserProfilePage() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Phone</Label>

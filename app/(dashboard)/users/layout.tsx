@@ -1,19 +1,19 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { Users, Shield, Building, Settings, FileText } from 'lucide-react';
+import {usePathname, useRouter} from 'next/navigation';
+import {Building, FileText, Settings, Shield, Users} from 'lucide-react';
 
 export default function UsersLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
   // Check if we're in a sub-route that should show minimal layout
-  const isSubRoute = pathname.includes('/users/') && pathname !== '/users' && 
+  const isSubRoute = pathname.includes('/users/') && pathname !== '/users' &&
                     !pathname.includes('/create');
-  
+
   // Show full layout for permissions routes and main user management routes
-  const showFullLayout = pathname === '/users' || pathname.startsWith('/permissions') || 
+  const showFullLayout = pathname === '/users' || pathname.startsWith('/permissions') ||
                         pathname === '/users/create';
 
   // If it's a sub-route, show minimal layout
@@ -53,7 +53,7 @@ export default function UsersLayout({ children }: { children: React.ReactNode })
           <h1 className="text-3xl font-bold">User Management</h1>
           <p className="text-muted-foreground mb-6">Manage users, permissions, and access control</p>
         </div>
-        
+
         <div className="px-6">
           <div className="flex space-x-1">
             {tabs.map((tab) => {

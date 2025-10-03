@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
-import { Button } from '../../../../components/ui/button';
-import { Badge } from '../../../../components/ui/badge';
-import { Shield, Users, Building, FileText, Settings, Eye, ArrowRight } from 'lucide-react';
+import {useRouter} from 'next/navigation';
+import {Card, CardContent, CardHeader, CardTitle} from '../../../../components/ui/card';
+import {Button} from '../../../../components/ui/button';
+import {Badge} from '../../../../components/ui/badge';
+import {ArrowRight, Building, Eye, FileText, Settings, Shield, Users} from 'lucide-react';
 
 export default function PermissionsOverviewPage() {
   const router = useRouter();
@@ -172,32 +172,32 @@ export default function PermissionsOverviewPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full justify-start"
                 onClick={() => router.push('/users/create')}
               >
                 <Users className="h-4 w-4 mr-2" />
                 Create New User
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full justify-start"
                 onClick={() => router.push('/permissions/groups')}
               >
                 <Settings className="h-4 w-4 mr-2" />
                 Create Permission Group
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full justify-start"
                 onClick={() => router.push('/permissions/roles')}
               >
                 <Shield className="h-4 w-4 mr-2" />
                 Modify Role Permissions
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full justify-start"
                 onClick={() => router.push('/users/bulk-operations')}
               >

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { PatientFormModal } from './PatientFormModal';
-import { AppointmentFormModal } from './AppointmentFormModal';
-import { DoctorFormModal } from './DoctorFormModal';
-import { BillingFormModal } from './BillingFormModal';
-import { User, Calendar, Stethoscope, DollarSign, CreditCard } from 'lucide-react';
+import React, {useState} from 'react';
+import {Button} from './ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from './ui/card';
+import {PatientFormModal} from './PatientFormModal';
+import {AppointmentFormModal} from './AppointmentFormModal';
+import {DoctorFormModal} from './DoctorFormModal';
+import {BillingFormModal} from './BillingFormModal';
+import {Calendar, CreditCard, DollarSign, Stethoscope, User} from 'lucide-react';
 
 export function FormExamples() {
     const [patientModalOpen, setPatientModalOpen] = useState(false);
@@ -34,7 +34,7 @@ export function FormExamples() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button 
+                        <Button
                             onClick={() => setPatientModalOpen(true)}
                             className="w-full"
                         >
@@ -55,7 +55,7 @@ export function FormExamples() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button 
+                        <Button
                             onClick={() => setAppointmentModalOpen(true)}
                             className="w-full"
                         >
@@ -76,7 +76,7 @@ export function FormExamples() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button 
+                        <Button
                             onClick={() => setDoctorModalOpen(true)}
                             className="w-full"
                         >
@@ -97,7 +97,7 @@ export function FormExamples() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button 
+                        <Button
                             onClick={() => setBillingModalOpen(true)}
                             className="w-full"
                         >
@@ -118,7 +118,7 @@ export function FormExamples() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button 
+                        <Button
                             onClick={() => setPaymentModalOpen(true)}
                             className="w-full"
                         >

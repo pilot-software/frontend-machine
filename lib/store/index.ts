@@ -1,5 +1,5 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
+import {configureStore} from "@reduxjs/toolkit";
+import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import appReducer from "./slices/appSlice";
 import patientReducer from "./slices/patientSlice";
 

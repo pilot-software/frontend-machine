@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../store';
-import { fetchStats, fetchDoctors, fetchPatients } from '../store/slices/appSlice';
+import {useEffect, useRef} from 'react';
+import {useAppDispatch, useAppSelector} from '../store';
+import {fetchDoctors, fetchPatients, fetchStats} from '../store/slices/appSlice';
 
 // Global flags to prevent duplicate requests
 let statsRequested = false;

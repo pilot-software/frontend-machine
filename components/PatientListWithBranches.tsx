@@ -1,9 +1,9 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { BranchBadge } from './BranchBadge';
-import { usePatients } from '@/lib/hooks/useBranchData';
-import { Skeleton } from './ui/skeleton';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from './ui/table';
+import {BranchBadge} from './BranchBadge';
+import {usePatients} from '@/lib/hooks/useBranchData';
+import {Skeleton} from './ui/skeleton';
 
 interface Patient {
   id: string;

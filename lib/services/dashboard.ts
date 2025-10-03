@@ -37,7 +37,7 @@ export interface FinancialStats {
   revenueByPaymentMethod: Record<string, number>;
 }
 
-import { apiClient } from '../api';
+import {apiClient} from '../api';
 
 export class DashboardService {
   async getDashboardStats(branchId?: string): Promise<DashboardStats> {

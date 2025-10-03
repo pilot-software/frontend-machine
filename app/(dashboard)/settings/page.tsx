@@ -1,24 +1,12 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Bell, Shield, Database, Palette } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Switch} from "@/components/ui/switch";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
+import {Label} from "@/components/ui/label";
+import {Bell, Database, Palette, Shield} from "lucide-react";
+import {useTheme} from "@/components/ThemeProvider";
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme();

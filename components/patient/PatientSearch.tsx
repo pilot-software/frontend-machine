@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card, CardContent } from '../ui/card';
-import { Input } from '../ui/input';
-import { FilterDropdown } from '../FilterDropdown';
-import { Search } from 'lucide-react';
+import {Card, CardContent} from '../ui/card';
+import {Input} from '../ui/input';
+import {FilterDropdown} from '../FilterDropdown';
+import {Search} from 'lucide-react';
 
 interface PatientSearchProps {
   searchTerm: string;
@@ -12,12 +12,12 @@ interface PatientSearchProps {
   onClearFilters: () => void;
 }
 
-export function PatientSearch({ 
-  searchTerm, 
-  onSearchChange, 
-  activeFilters, 
-  onFilterChange, 
-  onClearFilters 
+export function PatientSearch({
+  searchTerm,
+  onSearchChange,
+  activeFilters,
+  onFilterChange,
+  onClearFilters
 }: PatientSearchProps) {
   return (
     <Card>

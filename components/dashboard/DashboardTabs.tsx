@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs } from "../ui/tabs";
+import {Tabs} from "../ui/tabs";
 
 interface DashboardTabsProps {
   activeTab: string;

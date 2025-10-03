@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { AvatarSkeleton, BadgeSkeleton } from "./CommonSkeletons";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {AvatarSkeleton, BadgeSkeleton} from "./CommonSkeletons";
 
 export function AppointmentCardSkeleton() {
   return (

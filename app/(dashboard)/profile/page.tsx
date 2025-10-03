@@ -1,13 +1,13 @@
 'use client';
 
-import { useAuth } from '@/components/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Edit, Mail, Phone, MapPin, Calendar, Shield } from 'lucide-react';
+import {useAuth} from '@/components/AuthContext';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Badge} from '@/components/ui/badge';
+import {Calendar, Edit, Mail, MapPin, Phone, Shield} from 'lucide-react';
 
 export default function ProfilePage() {
     const { user } = useAuth();

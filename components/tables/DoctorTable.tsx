@@ -1,14 +1,14 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Card, CardContent } from '../ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { Eye, ExternalLink, Edit, MoreHorizontal, Printer, Mail, Phone } from 'lucide-react';
-import { useAuth } from '../AuthContext';
-import { printService } from '@/lib/utils/printService';
-import { useIsMobile } from '../ui/use-mobile';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../ui/table';
+import {Avatar, AvatarFallback, AvatarImage} from '../ui/avatar';
+import {Badge} from '../ui/badge';
+import {Button} from '../ui/button';
+import {Card, CardContent} from '../ui/card';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '../ui/dropdown-menu';
+import {Edit, ExternalLink, Eye, Mail, MoreHorizontal, Phone, Printer} from 'lucide-react';
+import {useAuth} from '../AuthContext';
+import {printService} from '@/lib/utils/printService';
+import {useIsMobile} from '../ui/use-mobile';
 
 interface DoctorTableProps {
   doctors: any[];
@@ -66,9 +66,9 @@ export function DoctorTable({ doctors, onViewDoctor, onEditDoctor }: DoctorTable
                     className="h-8 w-8 p-0 touch-target"
                     onClick={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
-                      onViewDoctor(doctor.id, { 
-                        x: rect.left + rect.width / 2, 
-                        y: rect.top + rect.height / 2 
+                      onViewDoctor(doctor.id, {
+                        x: rect.left + rect.width / 2,
+                        y: rect.top + rect.height / 2
                       });
                     }}
                   >
@@ -99,7 +99,7 @@ export function DoctorTable({ doctors, onViewDoctor, onEditDoctor }: DoctorTable
                   )}
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 gap-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Department:</span>
@@ -186,9 +186,9 @@ export function DoctorTable({ doctors, onViewDoctor, onEditDoctor }: DoctorTable
                   className="transition-all duration-200 hover:scale-110 hover:bg-accent group"
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
-                    onViewDoctor(doctor.id, { 
-                      x: rect.left + rect.width / 2, 
-                      y: rect.top + rect.height / 2 
+                    onViewDoctor(doctor.id, {
+                      x: rect.left + rect.width / 2,
+                      y: rect.top + rect.height / 2
                     });
                   }}
                   aria-label="View doctor details"

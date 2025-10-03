@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Activity, Users, Calendar, DollarSign } from 'lucide-react';
+import {Card, CardContent, CardHeader, CardTitle} from './ui/card';
+import {Activity, Calendar, DollarSign, Users} from 'lucide-react';
 
 interface DashboardStatsProps {
   stats: any;

@@ -1,26 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
-import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Alert, AlertDescription } from "./ui/alert";
-import { Eye, EyeOff, Loader2, Shield } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { setLocalConfig, HospitalType } from "../lib/runtimeConfig";
+import React, {useEffect, useState} from "react";
+import {useAuth} from "./AuthContext";
+import {useRouter} from "next/navigation";
+import {Button} from "./ui/button";
+import {Input} from "./ui/input";
+import {Label} from "./ui/label";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {Alert, AlertDescription} from "./ui/alert";
+import {Eye, EyeOff, Loader2, Shield} from "lucide-react";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "./ui/select";
+import {HospitalType, setLocalConfig} from "../lib/runtimeConfig";
 import hospitalFlags from "../config/hospital-flags.json";
 
 interface LoginFormProps {

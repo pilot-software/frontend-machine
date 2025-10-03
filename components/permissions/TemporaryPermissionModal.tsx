@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Textarea } from '../ui/textarea';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { api } from '../../lib/api';
+import React, {useEffect, useState} from 'react';
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from '../ui/dialog';
+import {Button} from '../ui/button';
+import {Input} from '../ui/input';
+import {Label} from '../ui/label';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../ui/select';
+import {Textarea} from '../ui/textarea';
+import {RadioGroup, RadioGroupItem} from '../ui/radio-group';
+import {api} from '../../lib/api';
 
 interface TemporaryPermissionModalProps {
   isOpen: boolean;
@@ -102,8 +102,8 @@ export function TemporaryPermissionModal({ isOpen, onClose, userId, onSuccess }:
     setReason('');
   };
 
-  const isValid = reason.trim() && expiresInHours && 
-    ((permissionType === 'group' && selectedGroup) || 
+  const isValid = reason.trim() && expiresInHours &&
+    ((permissionType === 'group' && selectedGroup) ||
      (permissionType === 'individual' && selectedPermission));
 
   return (
@@ -112,7 +112,7 @@ export function TemporaryPermissionModal({ isOpen, onClose, userId, onSuccess }:
         <DialogHeader>
           <DialogTitle>Grant Temporary Permission</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label>Permission Type</Label>

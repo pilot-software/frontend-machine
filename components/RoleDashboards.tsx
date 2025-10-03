@@ -1,17 +1,11 @@
 import React from "react";
-import { useAuth } from "./AuthContext";
-import { HealthcareDashboard } from "./HealthcareDashboard";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { PermissionGuard } from "./PermissionGuard";
-import { usePermissions } from "../lib/hooks/usePermissions";
-import { Button } from "./ui/button";
-import {
-  AlertTriangle,
-  Clock,
-  FileText,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import {useAuth} from "./AuthContext";
+import {HealthcareDashboard} from "./HealthcareDashboard";
+import {Card, CardContent, CardHeader, CardTitle} from "./ui/card";
+import {PermissionGuard} from "./PermissionGuard";
+import {usePermissions} from "../lib/hooks/usePermissions";
+import {Button} from "./ui/button";
+import {AlertTriangle, Clock, FileText, TrendingUp, Users,} from "lucide-react";
 
 function FinanceDashboard() {
   const { user } = useAuth();

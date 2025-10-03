@@ -1,4 +1,4 @@
-import { TextConfig } from './features';
+import {TextConfig} from './features';
 
 // Default hospital text configuration
 export const hospitalText: TextConfig = {
@@ -7,7 +7,7 @@ export const hospitalText: TextConfig = {
   roles: {
     admin: "Administrator",
     doctor: "Doctor",
-    nurse: "Nurse", 
+    nurse: "Nurse",
     patient: "Patient",
     finance: "Finance",
     receptionist: "Receptionist",
@@ -56,7 +56,7 @@ export const clinicText: TextConfig = {
     admin: "Clinic Admin",
     doctor: "Physician",
     nurse: "Nurse",
-    patient: "Patient", 
+    patient: "Patient",
     finance: "Billing",
     receptionist: "Front Desk",
     technician: "Lab Tech"
@@ -82,7 +82,7 @@ export const clinicText: TextConfig = {
   },
   buttons: {
     login: "Login",
-    logout: "Logout", 
+    logout: "Logout",
     save: "Save",
     cancel: "Cancel",
     edit: "Edit",

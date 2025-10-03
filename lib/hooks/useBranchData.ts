@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useBranch } from '@/components/BranchContext';
-import { apiClient } from '@/lib/api';
+import {useEffect, useRef, useState} from 'react';
+import {useBranch} from '@/components/BranchContext';
+import {apiClient} from '@/lib/api';
 
 // Request cache to prevent duplicates
 const requestCache = new Map<string, Promise<any>>();
@@ -24,14 +24,14 @@ export function useBranchData<T>(
         abortController.current.abort();
       }
       abortController.current = new AbortController();
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const branchId = hasBranches ? (selectedBranch === 'all' ? undefined : selectedBranch) : undefined;
         const cacheKey = `${fetchFn.name}-${branchId || 'all'}`;
-        
+
         // Check cache first
         if (requestCache.has(cacheKey)) {
           const result = await requestCache.get(cacheKey);
@@ -42,12 +42,12 @@ export function useBranchData<T>(
           // Create new request and cache it
           const request = fetchFn(branchId);
           requestCache.set(cacheKey, request);
-          
+
           const result = await request;
           if (!abortController.current?.signal.aborted) {
             setData(result);
           }
-          
+
           // Clear cache after 30 seconds
           setTimeout(() => requestCache.delete(cacheKey), 30000);
         }
@@ -63,7 +63,7 @@ export function useBranchData<T>(
     };
 
     fetchData();
-    
+
     return () => {
       if (abortController.current) {
         abortController.current.abort();

@@ -1,35 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {Button} from "./ui/button";
+import {Label} from "./ui/label";
+import {Textarea} from "./ui/textarea";
+import {Badge} from "./ui/badge";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "./ui/tabs";
+import {Progress} from "./ui/progress";
+import {PatientSearch} from "./ui/patient-search";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Progress } from "./ui/progress";
-import { PatientSearch } from "./ui/patient-search";
-import {
-  Activity,
-  AlertTriangle,
-  Droplets,
-  Eye,
-  Heart,
-  Plus,
-  Stethoscope,
-  TestTube,
-  Thermometer,
-  TrendingUp,
+    Activity,
+    AlertTriangle,
+    Droplets,
+    Eye,
+    Heart,
+    Plus,
+    Stethoscope,
+    TestTube,
+    Thermometer,
+    TrendingUp,
 } from "lucide-react";
-import { useAuth } from "./AuthContext";
-import { usePatientData } from "../lib/hooks/usePatientData";
-import { patientService } from "../lib/services/patient";
-import { useApi } from "../lib/hooks/useApi";
-import { api } from "../lib/api";
+import {useAuth} from "./AuthContext";
+import {usePatientData} from "../lib/hooks/usePatientData";
+import {useApi} from "../lib/hooks/useApi";
+import {api} from "../lib/api";
 
 interface VitalSigns {
   temperature: string;

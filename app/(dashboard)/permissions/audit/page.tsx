@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
-import { Button } from '../../../../components/ui/button';
-import { Input } from '../../../../components/ui/input';
-import { Badge } from '../../../../components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../components/ui/table';
-import { ArrowLeft, RefreshCw, FileText, Search, Shield, User, Users } from 'lucide-react';
-import { api } from '../../../../lib/api';
+import React, {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {Card, CardContent, CardHeader, CardTitle} from '../../../../components/ui/card';
+import {Button} from '../../../../components/ui/button';
+import {Input} from '../../../../components/ui/input';
+import {Badge} from '../../../../components/ui/badge';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../../../../components/ui/select';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../../../../components/ui/table';
+import {ArrowLeft, FileText, RefreshCw, Search, Shield, User, Users} from 'lucide-react';
+import {api} from '../../../../lib/api';
 
 interface PermissionAuditLog {
   id: string;
@@ -25,7 +25,7 @@ interface PermissionAuditLog {
 
 export default function PermissionAuditPage() {
   const router = useRouter();
-  
+
   const [auditLogs, setAuditLogs] = useState<PermissionAuditLog[]>([]);
   const [loading, setLoading] = useState(true);
 

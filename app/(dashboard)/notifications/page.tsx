@@ -1,22 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { NotificationPageSkeleton } from "@/components/skeletons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Bell,
-  AlertCircle,
-  Calendar,
-  FileText,
-  Search,
-  Check,
-  Trash2,
-  Settings,
-} from "lucide-react";
+import {useEffect, useState} from "react";
+import {NotificationPageSkeleton} from "@/components/skeletons";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {Input} from "@/components/ui/input";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {AlertCircle, Bell, Calendar, Check, FileText, Search, Settings, Trash2,} from "lucide-react";
 
 const mockNotifications = [
   {
@@ -138,8 +129,8 @@ export default function NotificationsPage() {
   const filteredNotifications = notifications.filter(notification => {
     const matchesSearch = notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       notification.message.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesTab = selectedTab === "all" || 
+
+    const matchesTab = selectedTab === "all" ||
       (selectedTab === "unread" && notification.unread) ||
       (selectedTab === "read" && !notification.unread) ||
       notification.type === selectedTab;

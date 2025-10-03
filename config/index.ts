@@ -1,4 +1,4 @@
-import { getRuntimeConfig } from "../lib/runtimeConfig";
+import {getRuntimeConfig} from "../lib/runtimeConfig";
 
 const currentConfig = getRuntimeConfig();
 export const features = currentConfig.features;

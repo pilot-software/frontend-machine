@@ -1,5 +1,5 @@
-import { FeatureConfig, TextConfig } from '../config/features';
-import { api } from './api';
+import {FeatureConfig, TextConfig} from '../config/features';
+import {api} from './api';
 
 interface ConfigFile {
   features: FeatureConfig;

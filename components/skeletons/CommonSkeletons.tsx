@@ -1,14 +1,14 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {Skeleton} from "@/components/ui/skeleton";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
 
 // Avatar Skeleton
 export function AvatarSkeleton({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   const sizeClasses = {
     sm: "h-6 w-6",
-    md: "h-10 w-10", 
+    md: "h-10 w-10",
     lg: "h-16 w-16"
   };
-  
+
   return <Skeleton className={`${sizeClasses[size]} rounded-full`} />;
 }
 
@@ -26,12 +26,12 @@ export function TableRowSkeleton({ columns = 8 }: { columns?: number }) {
 }
 
 // Card Skeleton
-export function CardSkeleton({ 
-  showHeader = true, 
-  contentLines = 3 
-}: { 
-  showHeader?: boolean; 
-  contentLines?: number; 
+export function CardSkeleton({
+  showHeader = true,
+  contentLines = 3
+}: {
+  showHeader?: boolean;
+  contentLines?: number;
 }) {
   return (
     <Card>
@@ -75,7 +75,7 @@ export function ButtonSkeleton({ size = "default" }: { size?: "sm" | "default" |
     default: "h-10 w-20",
     lg: "h-12 w-24"
   };
-  
+
   return <Skeleton className={`${sizeClasses[size]} rounded-md`} />;
 }
 

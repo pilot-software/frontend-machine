@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Search, Settings, Plus, Users, Stethoscope, Building2 } from 'lucide-react';
-import { useAuth } from '../AuthContext';
-import { useFeatures } from '@/lib/useFeatures';
-import { FilterDropdown } from '../FilterDropdown';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '../ui/card';
+import {Input} from '../ui/input';
+import {Button} from '../ui/button';
+import {Building2, Plus, Search, Settings, Stethoscope, Users} from 'lucide-react';
+import {useAuth} from '../AuthContext';
+import {useFeatures} from '@/lib/useFeatures';
+import {FilterDropdown} from '../FilterDropdown';
 
 interface DashboardSearchProps {
   searchTerm: string;

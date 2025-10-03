@@ -1,9 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, UserRole } from "../lib/types";
-import { storageService } from "../lib/services/storage.service";
-import { Permission, permissionService } from "../lib/services/permission";
+import React, {createContext, useContext, useEffect, useState} from "react";
+import {User, UserRole} from "../lib/types";
+import {storageService} from "../lib/services/storage.service";
+import {Permission, permissionService} from "../lib/services/permission";
 
 interface AuthContextType {
   user: User | null;
@@ -31,25 +31,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const savedUser = storageService.getItem("healthcare_user");
         const savedToken = storageService.getItem("auth_token");
-        
+
         if (savedUser && savedToken) {
           const userData = JSON.parse(savedUser);
           const savedPermissions = storageService.getItem("user_permissions");
-          
+
           setUser(userData);
           setToken(savedToken);
-          
+
           if (savedPermissions) {
             const parsedPermissions = JSON.parse(savedPermissions);
             setPermissions(Array.isArray(parsedPermissions) ? parsedPermissions : []);
           }
-          
+
           const { apiClient: newApiClient } = await import('../lib/api/client');
           const { apiClient: originalApiClient } = await import('../lib/api');
           newApiClient.setToken(savedToken);
           originalApiClient.setToken(savedToken);
           originalApiClient.setUserRole(userData.role?.toUpperCase());
-          
+
           // Ensure token is available for permission service
           if (typeof window !== 'undefined') {
             localStorage.setItem('auth_token', savedToken);
@@ -98,26 +98,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.token) {
         console.log('Login successful, token received:', response.token.substring(0, 20) + '...');
-        
+
         const { apiClient: newApiClient } = await import('../lib/api/client');
         const { apiClient: originalApiClient } = await import('../lib/api');
         newApiClient.setToken(response.token);
         originalApiClient.setToken(response.token);
         originalApiClient.setUserRole(response.role);
-        
+
         // Ensure token is available for all API calls
         if (typeof window !== 'undefined') {
           localStorage.setItem('auth_token', response.token);
         }
-        
+
         const apiUser = createUserFromResponse(response);
-        
+
         // Fetch user permissions after successful login
         try {
           const userPermissions = await permissionService.getUserPermissions(response.id);
           const validPermissions = Array.isArray(userPermissions) ? userPermissions : [];
           setPermissions(validPermissions);
-          
+
           setUser(apiUser);
           setToken(response.token);
           saveUserSession(apiUser, response.token, validPermissions);
@@ -152,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Logout error:', error);
     }
-    
+
     setUser(null);
     setToken(null);
     setPermissions([]);
@@ -166,16 +166,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Map API role names to internal role names
     const roleMapping: Record<string, UserRole> = {
       'ADMIN': 'admin',
-      'DOCTOR': 'doctor', 
+      'DOCTOR': 'doctor',
       'NURSE': 'nurse',
       'PATIENT': 'patient',
       'FINANCE': 'finance',
       'RECEPTIONIST': 'receptionist',
       'TECHNICIAN': 'technician'
     };
-    
+
     const mappedRole = roleMapping[response.role] || response.role.toLowerCase();
-    
+
     return {
       id: response.id,
       email: response.email,

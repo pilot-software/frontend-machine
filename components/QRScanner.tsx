@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { QrCode, User, Phone, Calendar, AlertTriangle } from 'lucide-react';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {AlertTriangle, Calendar, Phone, QrCode, User} from 'lucide-react';
 
 interface PatientQRData {
   type: string;
@@ -37,19 +37,19 @@ export default function QRScanner({ onPatientScanned }: QRScannerProps) {
   const handleManualInput = (qrText: string) => {
     try {
       const data = JSON.parse(qrText) as PatientQRData;
-      
+
       if (data.type !== 'HEALTHCARE_PATIENT_ID') {
         throw new Error('Invalid QR code type');
       }
-      
+
       if (!data.version || !data.facility) {
         throw new Error('Invalid QR code format');
       }
-      
+
       setScannedData(data);
       setError('');
       onPatientScanned?.(data);
-      
+
       // Auto-redirect to patient page
       if (data.redirectUrl) {
         console.log('Redirecting to:', data.redirectUrl);
@@ -79,7 +79,7 @@ export default function QRScanner({ onPatientScanned }: QRScannerProps) {
       timestamp: new Date().toISOString(),
       facility: 'Healthcare Management System'
     };
-    
+
     setIsScanning(true);
     setTimeout(() => {
       handleManualInput(JSON.stringify(mockPatientData));
@@ -98,7 +98,7 @@ export default function QRScanner({ onPatientScanned }: QRScannerProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center">
-            <Button 
+            <Button
               onClick={simulateQRScan}
               disabled={isScanning}
               className="w-full"
@@ -178,9 +178,9 @@ export default function QRScanner({ onPatientScanned }: QRScannerProps) {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="pt-3 border-t border-green-200 space-y-2">
-                  <Button 
+                  <Button
                     onClick={() => router.push(scannedData.redirectUrl)}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
