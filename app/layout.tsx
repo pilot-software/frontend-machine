@@ -1,9 +1,9 @@
 import type {Metadata} from 'next'
-import {Manrope} from 'next/font/google'
+import {Poppins} from 'next/font/google'
 import './globals.css'
 import {Providers} from '@/components/Providers'
 
-const manrope = Manrope({subsets: ['latin']})
+const poppins = Poppins({subsets: ['latin'], weight: ['300', '400', '500', '600', '700']})
 
 export const metadata: Metadata = {
     title: 'Healthcare Management System',
@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className={manrope.className} suppressHydrationWarning={true}>
+        <body className={poppins.className} suppressHydrationWarning={true}>
         <Providers>
             {children}
         </Providers>

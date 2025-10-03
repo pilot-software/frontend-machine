@@ -3,7 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --font-size: 14px;
+    --font-size: 15px;
     --background: #ffffff;
     --foreground: oklch(0.145 0 0);
     --card: #ffffff;
@@ -361,13 +361,13 @@ html {
 /* Responsive font scaling */
 @media (max-width: 640px) {
     html {
-        font-size: 13px;
+        font-size: 14px;
     }
 }
 
 @media (min-width: 1024px) {
     html {
-        font-size: 15px;
+        font-size: 16px;
     }
 }
 
