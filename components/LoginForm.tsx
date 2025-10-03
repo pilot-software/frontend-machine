@@ -166,8 +166,8 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       <style dangerouslySetInnerHTML={{ __html: floatingStyles }} />
       <div className="min-h-screen flex relative">
         {/* Unified Background with Medical Tech Image */}
-        <div className="absolute inset-0 bg-background" />
-        <div className="hidden lg:block absolute inset-0 lg:right-0 lg:left-1/2">
+        <div className="absolute inset-0 z-0 bg-background" />
+        <div className="hidden lg:block absolute inset-0 z-0 lg:right-0 lg:left-1/2">
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
             style={{
@@ -178,14 +178,14 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
         </div>
 
         {/* Animated Color Orbs */}
-        <div className="hidden lg:block absolute inset-0 overflow-hidden">
+        <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse" />
           <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-green-500/15 rounded-full blur-lg animate-pulse delay-1000" />
           <div className="absolute bottom-1/3 right-1/5 w-20 h-20 bg-red-500/10 rounded-full blur-md animate-pulse delay-2000" />
         </div>
 
         {/* Left Side - Login Form */}
-        <div className="flex-1 flex items-center justify-center relative z-10 p-6 lg:p-12">
+        <div className="flex-1 flex items-center justify-center relative z-20 p-6 lg:p-12">
           <div className="w-full max-w-md">
             <div className="mb-8">
               <div className="flex items-center mb-4">
@@ -199,8 +199,8 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
               </p>
             </div>
 
-            <Card className="border-0 shadow-none">
-              <CardContent className="p-0">
+            <Card className="border-0 shadow-none bg-card/80 backdrop-blur-sm">
+              <CardContent className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {error && (
                     <Alert variant="destructive">
@@ -345,7 +345,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
         </div>
 
         {/* Right Side - Healthcare Theme */}
-        <div className="hidden lg:flex flex-1 relative z-10">
+        <div className="hidden lg:flex flex-1 relative z-20">
           <div className="flex items-center justify-center h-full w-full">
             <div className="text-center max-w-md -mt-16">
               <div className="mb-8">
@@ -367,10 +367,10 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                   <Heart className="h-12 w-12 text-red-500 animate-pulse" />
                 </div>
               </div>
-              <h2 className="text-4xl font-bold mb-6 text-gray-800">
+              <h2 className="text-4xl font-bold mb-6 text-foreground">
                 Advanced Healthcare Technology
               </h2>
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed">
                 Digital healthcare solutions powered by cutting-edge technology
               </p>
               <div className="mt-8 flex justify-center space-x-4">

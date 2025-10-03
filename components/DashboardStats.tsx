@@ -200,7 +200,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
             {dashboardCards.map((card, index) => {
                 const Icon = card.icon;
                 return (
-                    <Card key={index} className="relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] cursor-pointer group border-0 bg-white/80 backdrop-blur-sm">
+                    <Card key={index} className="relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] cursor-pointer group border-0 bg-card/80 backdrop-blur-sm">
                         {/* Animated background gradient */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${card.bgGradient} opacity-40 group-hover:opacity-60 transition-all duration-500`} />
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

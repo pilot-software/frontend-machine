@@ -90,11 +90,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <nav className="p-4 space-y-2">
       {menuItems.map((item) => {
         const ItemIcon = item.icon;
+        const isActive = pathname === item.path;
         return (
           <Button
             key={item.path}
-            variant={pathname === item.path ? "default" : "ghost"}
-            className="w-full justify-start"
+            variant="ghost"
+            className={`w-full justify-start transition-all duration-300 ${
+              isActive
+                ? "bg-accent text-accent-foreground font-medium"
+                : "hover:bg-muted"
+            }`}
             onClick={() => {
               router.push(item.path);
               setSidebarOpen(false);
@@ -169,31 +174,34 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
-              ) : (
-                <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
-              )}
-            </Button>
+            <div className="relative z-50">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
+                ) : (
+                  <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
+                )}
+              </Button>
+            </div>
 
             {/* Notifications */}
-            {features.notifications && <NotificationDropdown />}
+            <div className="relative z-50">
+              {features.notifications && <NotificationDropdown />}
+            </div>
 
             {/* User Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <div className="relative z-40 isolate">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   className="relative flex items-center gap-2 sm:gap-3 px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl group transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 hover:shadow-xl hover:shadow-blue-500/20"
                 >
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/30 to-transparent overflow-hidden rounded-2xl" />
 
                   <Avatar className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 ring-2 ring-blue-500/20 group-hover:ring-blue-500/40 transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-blue-500/30">
                     <AvatarImage
@@ -224,13 +232,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-64 animate-in slide-in-from-top-2 duration-300 border-blue-500/20 shadow-2xl shadow-blue-500/10 bg-white/95 backdrop-blur-xl"
+                className="w-64 animate-in slide-in-from-top-2 duration-300 border-blue-500/20 shadow-2xl shadow-blue-500/10 bg-card/95 backdrop-blur-xl"
               >
                 <DropdownMenuLabel className="p-0">
                   <div className="relative overflow-hidden rounded-t-lg">
                     {/* Gradient background */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/50 to-transparent" />
 
                     {/* Floating orb effect */}
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
@@ -310,7 +317,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   {text.buttons.logout}
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </header>

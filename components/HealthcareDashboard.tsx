@@ -19,6 +19,7 @@ import {PatientTable} from "./tables/PatientTable";
 import {DoctorTable} from "./tables/DoctorTable";
 import {DashboardSearch} from "./dashboard/DashboardSearch";
 import {DashboardTabs} from "./dashboard/DashboardTabs";
+import {DashboardWidgets} from "./DashboardWidgets";
 
 export function HealthcareDashboard() {
     const {user} = useAuth();
@@ -308,6 +309,7 @@ export function HealthcareDashboard() {
                         <div className="spacing-responsive">
                             {loading.stats ? <DashboardStatsSkeleton/> :
                                 <DashboardStats stats={statsData} loading={loading.stats}/>}
+                            <DashboardWidgets />
                             {loading.patients || loading.doctors ? <DashboardTableSkeleton/> : renderDashboardContent()}
                         </div>
                     </TabsContent>
