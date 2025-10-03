@@ -46,7 +46,7 @@ export function AppointmentFormModal({
                                      }: AppointmentFormModalProps) {
     const {user} = useAuth();
     const dispatch = useAppDispatch();
-    const { patients, doctors, loading } = useAppSelector(state => state.app);
+    const {patients, doctors, loading} = useAppSelector(state => state.app);
     const patientsLoading = loading.patients;
     const doctorsLoading = loading.doctors;
 
@@ -212,13 +212,16 @@ export function AppointmentFormModal({
                                                 disabled={isReadOnly || !!preSelectedPatientId || isLoadingData}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder={isLoadingData ? "Loading patients..." : "Select patient"}/>
+                                                    <SelectValue
+                                                        placeholder={isLoadingData ? "Loading patients..." : "Select patient"}/>
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {isLoadingData ? (
-                                                        <SelectItem value="loading" disabled>Loading patients...</SelectItem>
+                                                        <SelectItem value="loading" disabled>Loading
+                                                            patients...</SelectItem>
                                                     ) : patients.length === 0 ? (
-                                                        <SelectItem value="no-patients" disabled>No patients available</SelectItem>
+                                                        <SelectItem value="no-patients" disabled>No patients
+                                                            available</SelectItem>
                                                     ) : (
                                                         patients.map((patient) => (
                                                             <SelectItem key={patient.id} value={patient.id}>
@@ -238,13 +241,16 @@ export function AppointmentFormModal({
                                                 disabled={isReadOnly || user?.role === 'doctor' || isLoadingData}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder={isLoadingData ? "Loading doctors..." : "Select doctor"}/>
+                                                    <SelectValue
+                                                        placeholder={isLoadingData ? "Loading doctors..." : "Select doctor"}/>
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {isLoadingData ? (
-                                                        <SelectItem value="loading" disabled>Loading doctors...</SelectItem>
+                                                        <SelectItem value="loading" disabled>Loading
+                                                            doctors...</SelectItem>
                                                     ) : doctors.length === 0 ? (
-                                                        <SelectItem value="no-doctors" disabled>No doctors available</SelectItem>
+                                                        <SelectItem value="no-doctors" disabled>No doctors
+                                                            available</SelectItem>
                                                     ) : (
                                                         doctors.map((doctor) => (
                                                             <SelectItem key={doctor.id} value={doctor.id}>
@@ -345,7 +351,8 @@ export function AppointmentFormModal({
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {durations.map((duration) => (
-                                                        <SelectItem key={duration.value} value={duration.value.toString()}>
+                                                        <SelectItem key={duration.value}
+                                                                    value={duration.value.toString()}>
                                                             {duration.label}
                                                         </SelectItem>
                                                     ))}

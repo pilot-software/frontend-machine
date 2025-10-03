@@ -3,5 +3,5 @@
 import {SecurityLog} from '@/components/SecurityLog';
 
 export default function SecurityPage() {
-    return <SecurityLog />;
+    return <SecurityLog/>;
 }

@@ -9,4 +9,4 @@ export * from './NotificationSkeleton';
 export * from './AnalyticsSkeleton';
 
 // Base Skeleton
-export { Skeleton } from '../ui/skeleton';
+export {Skeleton} from '../ui/skeleton';

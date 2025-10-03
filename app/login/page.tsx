@@ -9,7 +9,7 @@ export default function LoginPage() {
 
     return (
         <AuthProvider>
-            <LoginForm onForgotPassword={() => router.push('/forgot-password')} />
+            <LoginForm onForgotPassword={() => router.push('/forgot-password')}/>
         </AuthProvider>
     );
 }

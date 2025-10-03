@@ -25,10 +25,15 @@ import {
 } from 'lucide-react';
 
 export function AppointmentSystem() {
-    const { isOpen, mode, selectedId, openModal, closeModal } = useModal<string>('schedule');
+    const {isOpen, mode, selectedId, openModal, closeModal} = useModal<string>('schedule');
     const [searchTerm, setSearchTerm] = React.useState('');
 
-    const { execute: fetchAppointments, loading: appointmentsLoading, data: appointments, statusCode } = useApi<(ApiAppointment & { patientName: string })[]>();
+    const {
+        execute: fetchAppointments,
+        loading: appointmentsLoading,
+        data: appointments,
+        statusCode
+    } = useApi<(ApiAppointment & { patientName: string })[]>();
     const hasFetched = useRef(false);
 
     useEffect(() => {
@@ -48,7 +53,6 @@ export function AppointmentSystem() {
         {label: 'Phone Consultations', value: '6', icon: Phone, color: 'text-purple-600'},
         {label: 'Video Calls', value: '2', icon: Video, color: 'text-orange-600'}
     ];
-
 
 
     const getTypeIcon = (type: string) => {
@@ -94,7 +98,8 @@ export function AppointmentSystem() {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-semibold text-foreground">Appointment System</h2>
-                    <p className="text-muted-foreground mt-1">Schedule and manage patient appointments - Direct, Phone &amp;
+                    <p className="text-muted-foreground mt-1">Schedule and manage patient appointments - Direct,
+                        Phone &amp;
                         Video</p>
                 </div>
                 <Button onClick={() => openModal('schedule')}
@@ -180,69 +185,69 @@ export function AppointmentSystem() {
                         </CardHeader>
                         <CardContent>
                             {appointmentsLoading ? (
-                                <LoadingState message="Loading appointments..." />
+                                <LoadingState message="Loading appointments..."/>
                             ) : (
-                            <div className="space-y-4">
-                                {displayAppointments.map((appointment) => {
-                                    const TypeIcon = getTypeIcon(appointment.type);
-                                    const StatusIcon = getStatusIcon(appointment.status);
+                                <div className="space-y-4">
+                                    {displayAppointments.map((appointment) => {
+                                        const TypeIcon = getTypeIcon(appointment.type);
+                                        const StatusIcon = getStatusIcon(appointment.status);
 
-                                    return (
-                                        <div key={appointment.id}
-                                             className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="flex items-center space-x-2">
-                                                    <div className="p-2 bg-muted rounded-full">
-                                                        <TypeIcon className="h-4 w-4 text-muted-foreground"/>
+                                        return (
+                                            <div key={appointment.id}
+                                                 className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        <div className="p-2 bg-muted rounded-full">
+                                                            <TypeIcon className="h-4 w-4 text-muted-foreground"/>
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-sm">{appointment.time}</p>
+                                                            <p className="text-xs text-muted-foreground">{appointment.duration} min</p>
+                                                        </div>
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-sm">{appointment.time}</p>
-                                                        <p className="text-xs text-muted-foreground">{appointment.duration} min</p>
+                                                        <div className="flex items-center space-x-2">
+                                                            <h3 className="font-medium">{appointment.patientName}</h3>
+                                                            <StatusBadge status={appointment.status}/>
+                                                        </div>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {appointment.doctorName} • {appointment.department}
+                                                        </p>
+                                                        <p className="text-sm text-muted-foreground opacity-70">
+                                                            {appointment.reason}
+                                                        </p>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <h3 className="font-medium">{appointment.patientName}</h3>
-                                                        <StatusBadge status={appointment.status} />
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {appointment.doctorName} • {appointment.department}
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground opacity-70">
-                                                        {appointment.reason}
-                                                    </p>
+                                                <div className="flex items-center space-x-2">
+                                                    {appointment.type === 'consultation' && (
+                                                        <Button variant="outline" size="sm">
+                                                            <Phone className="h-4 w-4 mr-2"/>
+                                                            Call Patient
+                                                        </Button>
+                                                    )}
+                                                    {appointment.type === 'follow_up' && (
+                                                        <Button variant="outline" size="sm">
+                                                            <Video className="h-4 w-4 mr-2"/>
+                                                            Start Video
+                                                        </Button>
+                                                    )}
+                                                    {(appointment.type === 'routine' || appointment.type === 'surgery') && (
+                                                        <Button variant="outline" size="sm">
+                                                            <MapPin className="h-4 w-4 mr-2"/>
+                                                            Room Info
+                                                        </Button>
+                                                    )}
+                                                    <Button variant="ghost" size="sm">
+                                                        <StatusIcon className="h-4 w-4"/>
+                                                    </Button>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center space-x-2">
-                                                {appointment.type === 'consultation' && (
-                                                    <Button variant="outline" size="sm">
-                                                        <Phone className="h-4 w-4 mr-2"/>
-                                                        Call Patient
-                                                    </Button>
-                                                )}
-                                                {appointment.type === 'follow_up' && (
-                                                    <Button variant="outline" size="sm">
-                                                        <Video className="h-4 w-4 mr-2"/>
-                                                        Start Video
-                                                    </Button>
-                                                )}
-                                                {(appointment.type === 'routine' || appointment.type === 'surgery') && (
-                                                    <Button variant="outline" size="sm">
-                                                        <MapPin className="h-4 w-4 mr-2"/>
-                                                        Room Info
-                                                    </Button>
-                                                )}
-                                                <Button variant="ghost" size="sm">
-                                                    <StatusIcon className="h-4 w-4"/>
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                                {displayAppointments.length === 0 && !appointmentsLoading && (
-                                    <LoadingState message="No appointments found" className="text-center" />
-                                )}
-                            </div>
+                                        );
+                                    })}
+                                    {displayAppointments.length === 0 && !appointmentsLoading && (
+                                        <LoadingState message="No appointments found" className="text-center"/>
+                                    )}
+                                </div>
                             )}
                         </CardContent>
                     </Card>

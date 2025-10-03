@@ -33,8 +33,8 @@ interface BillingFormModalProps {
     billingId?: number;
 }
 
-export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }: BillingFormModalProps) {
-    const { user } = useAuth();
+export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: BillingFormModalProps) {
+    const {user} = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [patients, setPatients] = useState<any[]>([]);
 
@@ -59,7 +59,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
         const loadPatients = async () => {
             if (isOpen) {
                 try {
-                    const { patientService } = await import('../lib/services/patient');
+                    const {patientService} = await import('../lib/services/patient');
                     const patientsData = await patientService.getPatients();
                     setPatients(patientsData);
                 } catch (error) {
@@ -71,30 +71,30 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
     }, [isOpen]);
 
     const paymentMethods = [
-        { value: 'CREDIT_CARD', label: 'Credit Card' },
-        { value: 'DEBIT_CARD', label: 'Debit Card' },
-        { value: 'CASH', label: 'Cash' },
-        { value: 'CHECK', label: 'Check' },
-        { value: 'INSURANCE', label: 'Insurance' },
-        { value: 'BANK_TRANSFER', label: 'Bank Transfer' }
+        {value: 'CREDIT_CARD', label: 'Credit Card'},
+        {value: 'DEBIT_CARD', label: 'Debit Card'},
+        {value: 'CASH', label: 'Cash'},
+        {value: 'CHECK', label: 'Check'},
+        {value: 'INSURANCE', label: 'Insurance'},
+        {value: 'BANK_TRANSFER', label: 'Bank Transfer'}
     ];
 
     const handleBillingChange = (field: keyof BillingFormData, value: string | number) => {
-        setBillingData(prev => ({ ...prev, [field]: value }));
+        setBillingData(prev => ({...prev, [field]: value}));
     };
 
     const handlePaymentChange = (field: keyof PaymentFormData, value: string | number) => {
-        setPaymentData(prev => ({ ...prev, [field]: value }));
+        setPaymentData(prev => ({...prev, [field]: value}));
     };
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
             if (mode === 'billing') {
-                const { api } = await import('../lib/api');
+                const {api} = await import('../lib/api');
                 await api.post('/financial', billingData);
             } else {
-                const { api } = await import('../lib/api');
+                const {api} = await import('../lib/api');
                 await api.post('/financial/payments', paymentData);
             }
             onClose();
@@ -112,12 +112,12 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                     <DialogTitle className="flex items-center space-x-2">
                         {mode === 'billing' ? (
                             <>
-                                <DollarSign className="h-5 w-5 text-green-600" />
+                                <DollarSign className="h-5 w-5 text-green-600"/>
                                 <span>Create Billing Record</span>
                             </>
                         ) : (
                             <>
-                                <CreditCard className="h-5 w-5 text-blue-600" />
+                                <CreditCard className="h-5 w-5 text-blue-600"/>
                                 <span>Process Payment</span>
                             </>
                         )}
@@ -154,7 +154,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                                             disabled={!!patientId}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select patient" />
+                                                <SelectValue placeholder="Select patient"/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {Array.isArray(patients) && patients.map((patient) => (
@@ -185,7 +185,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                                                 onValueChange={(value) => handleBillingChange('paymentMethod', value)}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue />
+                                                    <SelectValue/>
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {paymentMethods.map((method) => (
@@ -230,7 +230,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                                                 disabled={!!patientId}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select patient" />
+                                                    <SelectValue placeholder="Select patient"/>
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {patients.map((patient) => (
@@ -262,7 +262,7 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                                                 onValueChange={(value) => handlePaymentChange('paymentMethod', value)}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue />
+                                                    <SelectValue/>
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {paymentMethods.map((method) => (
@@ -290,19 +290,22 @@ export function BillingFormModal({ isOpen, onClose, mode, patientId, billingId }
                     </Card>
                 </div>
 
-                <div className="flex justify-between items-center pt-6 border-t border-border bg-gradient-to-r from-muted/50 to-green-50/30 -mx-6 px-6 pb-6 mt-6 rounded-b-xl">
-                    <Button variant="outline" onClick={onClose} className="bg-background/80 backdrop-blur-sm border-border hover:bg-muted">
+                <div
+                    className="flex justify-between items-center pt-6 border-t border-border bg-gradient-to-r from-muted/50 to-green-50/30 -mx-6 px-6 pb-6 mt-6 rounded-b-xl">
+                    <Button variant="outline" onClick={onClose}
+                            className="bg-background/80 backdrop-blur-sm border-border hover:bg-muted">
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg">
+                    <Button onClick={handleSubmit} disabled={isSubmitting}
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg">
                         {isSubmitting ? (
                             <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"/>
                                 Processing...
                             </>
                         ) : (
                             <>
-                                <Save className="h-4 w-4 mr-2" />
+                                <Save className="h-4 w-4 mr-2"/>
                                 {mode === 'billing' ? 'Create Billing Record' : 'Process Payment'}
                             </>
                         )}

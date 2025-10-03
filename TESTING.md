@@ -9,6 +9,7 @@
 ## Manual Testing Steps
 
 ### 1. Basic Test (ConfigSwitcher)
+
 ```bash
 npm run dev
 # Visit http://localhost:3000
@@ -16,6 +17,7 @@ npm run dev
 ```
 
 ### 2. Domain Test (Recommended)
+
 ```bash
 # Add to /etc/hosts:
 echo "127.0.0.1 clinic.localhost" | sudo tee -a /etc/hosts
@@ -31,13 +33,15 @@ npm run dev
 ### 3. Verify Differences
 
 **Small Clinic (clinic.localhost:3000):**
+
 - System Name: "Family Clinic"
 - No Finance role
 - No Ward Management
 - Simplified navigation
 
 **Big Hospital (enterprise.localhost:3000):**
-- System Name: "Metro General Hospital" 
+
+- System Name: "Metro General Hospital"
 - All roles enabled
 - Advanced features
 - Enterprise navigation labels

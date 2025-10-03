@@ -26,7 +26,7 @@ export function FormExamples() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                            <User className="h-5 w-5 text-blue-600" />
+                            <User className="h-5 w-5 text-blue-600"/>
                             <span>Patient Management</span>
                         </CardTitle>
                         <CardDescription>
@@ -47,7 +47,7 @@ export function FormExamples() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                            <Calendar className="h-5 w-5 text-green-600" />
+                            <Calendar className="h-5 w-5 text-green-600"/>
                             <span>Appointment Scheduling</span>
                         </CardTitle>
                         <CardDescription>
@@ -68,7 +68,7 @@ export function FormExamples() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                            <Stethoscope className="h-5 w-5 text-purple-600" />
+                            <Stethoscope className="h-5 w-5 text-purple-600"/>
                             <span>Doctor Management</span>
                         </CardTitle>
                         <CardDescription>
@@ -89,7 +89,7 @@ export function FormExamples() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                            <DollarSign className="h-5 w-5 text-orange-600" />
+                            <DollarSign className="h-5 w-5 text-orange-600"/>
                             <span>Billing Management</span>
                         </CardTitle>
                         <CardDescription>
@@ -110,7 +110,7 @@ export function FormExamples() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                            <CreditCard className="h-5 w-5 text-red-600" />
+                            <CreditCard className="h-5 w-5 text-red-600"/>
                             <span>Payment Processing</span>
                         </CardTitle>
                         <CardDescription>

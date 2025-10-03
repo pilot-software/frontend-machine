@@ -1,12 +1,12 @@
 const escapeHtml = (str: string) => {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 };
 
 export const printService = {
-  printPatient: (data: any) => {
-    const content = `
+    printPatient: (data: any) => {
+        const content = `
       <html>
         <head>
           <title>Patient Information - ${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}</title>
@@ -38,11 +38,11 @@ export const printService = {
         </body>
       </html>
     `;
-    openPrintWindow(content);
-  },
+        openPrintWindow(content);
+    },
 
-  printDoctor: (data: any) => {
-    const content = `
+    printDoctor: (data: any) => {
+        const content = `
       <html>
         <head>
           <title>Doctor Information - ${escapeHtml(data.name)}</title>
@@ -68,11 +68,11 @@ export const printService = {
         </body>
       </html>
     `;
-    openPrintWindow(content);
-  },
+        openPrintWindow(content);
+    },
 
-  printDepartment: (data: any) => {
-    const content = `
+    printDepartment: (data: any) => {
+        const content = `
       <html>
         <head>
           <title>Department Information - ${escapeHtml(data.name)}</title>
@@ -98,15 +98,15 @@ export const printService = {
         </body>
       </html>
     `;
-    openPrintWindow(content);
-  }
+        openPrintWindow(content);
+    }
 };
 
 function openPrintWindow(content: string) {
-  const printWindow = window.open('', '_blank', 'noopener,noreferrer');
-  if (!printWindow) return;
-  
-  printWindow.document.write(content);
-  printWindow.document.close();
-  printWindow.print();
+    const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+    if (!printWindow) return;
+
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.print();
 }

@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
 
     return (
         <AuthProvider>
-            <ForgotPassword onBackToLogin={() => router.push('/login')} />
+            <ForgotPassword onBackToLogin={() => router.push('/login')}/>
         </AuthProvider>
     );
 }

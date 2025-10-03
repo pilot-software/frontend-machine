@@ -253,51 +253,51 @@ html {
     .container-responsive {
         @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
     }
-    
+
     .grid-responsive {
         @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
     }
-    
+
     .flex-responsive {
         @apply flex flex-col sm:flex-row gap-4 sm:gap-6;
     }
-    
+
     .text-responsive {
         @apply text-sm sm:text-base;
     }
-    
+
     .heading-responsive {
         @apply text-lg sm:text-xl lg:text-2xl;
     }
-    
+
     .card-responsive {
         @apply p-4 sm:p-6;
     }
-    
+
     .button-responsive {
         @apply px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base;
     }
-    
+
     .table-responsive {
         @apply overflow-x-auto;
     }
-    
+
     .modal-responsive {
         @apply w-[95vw] max-w-lg sm:w-full;
     }
-    
+
     .sidebar-responsive {
         @apply w-full sm:w-64 lg:w-72;
     }
-    
+
     .spacing-responsive {
         @apply space-y-4 sm:space-y-6;
     }
-    
+
     .padding-responsive {
         @apply p-4 sm:p-6 lg:p-8;
     }
-    
+
     .margin-responsive {
         @apply m-4 sm:m-6 lg:m-8;
     }
@@ -308,15 +308,15 @@ html {
     .mobile-only {
         @apply block sm:hidden;
     }
-    
+
     .tablet-up {
         @apply hidden sm:block;
     }
-    
+
     .desktop-up {
         @apply hidden lg:block;
     }
-    
+
     .mobile-tablet {
         @apply block lg:hidden;
     }
@@ -328,7 +328,7 @@ html {
         min-height: 44px;
         min-width: 44px;
     }
-    
+
     button, [role="button"] {
         min-height: 44px;
     }

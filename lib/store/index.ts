@@ -4,10 +4,10 @@ import appReducer from "./slices/appSlice";
 import patientReducer from "./slices/patientSlice";
 
 export const store = configureStore({
-  reducer: {
-    app: appReducer,
-    patient: patientReducer,
-  },
+    reducer: {
+        app: appReducer,
+        patient: patientReducer,
+    },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

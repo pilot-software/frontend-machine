@@ -263,7 +263,8 @@ export function SecurityLog() {
                                                 </Badge>
                                             </div>
 
-                                            <div className="flex items-center space-x-4 mt-1 text-sm text-muted-foreground">
+                                            <div
+                                                className="flex items-center space-x-4 mt-1 text-sm text-muted-foreground">
                                                 <div className="flex items-center space-x-1">
                                                     <Globe className="h-3 w-3"/>
                                                     <span>{event.ipAddress}</span>

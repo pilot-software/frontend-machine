@@ -57,6 +57,7 @@ npm run dev
 ```
 
 **For mock data only (legacy):**
+
 ```bash
 npm install --legacy-peer-deps
 npm run dev
@@ -85,6 +86,7 @@ http://localhost:3000
 ### Test Credentials
 
 **With Real API (Recommended):**
+
 ```bash
 # City General Hospital (hospital_org1)
 Admin:    admin@hospital.com     / admin123
@@ -98,6 +100,7 @@ Patient:  tommy.johnson@email.com / admin123
 ```
 
 **Legacy Mock Data:**
+
 ```bash
 Admin:    admin@hospital.com    / admin123
 Doctor:   doctor@hospital.com   / doctor123  
@@ -151,6 +154,7 @@ Finance:  finance@hospital.com  / finance123
 See [API-INTEGRATION.md](./API-INTEGRATION.md) for complete setup guide.
 
 ### API Services
+
 - **Authentication**: Login, logout, token management
 - **Patient Management**: CRUD operations, search, medical records
 - **Appointments**: Scheduling, updates, calendar integration

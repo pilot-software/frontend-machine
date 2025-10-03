@@ -91,15 +91,15 @@ const mockMedications: Medication[] = [
 ];
 
 export function PrescriptionSystem() {
-    const { user } = useAuth();
+    const {user} = useAuth();
     const [isNewPrescriptionOpen, setIsNewPrescriptionOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedMedication, setSelectedMedication] = useState('');
     const [selectedPatient, setSelectedPatient] = useState('patient_2');
     const [medicalData, setMedicalData] = useState<any>(null);
 
-    const { loading } = useApi();
-    const { execute: fetchMedicalData, loading: medicalLoading } = useApi();
+    const {loading} = useApi();
+    const {execute: fetchMedicalData, loading: medicalLoading} = useApi();
 
     const hasFetchedMedical = useRef(false);
 
@@ -467,71 +467,71 @@ export function PrescriptionSystem() {
                                     <div className="text-sm text-muted-foreground">Loading prescriptions...</div>
                                 </div>
                             ) : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Patient</TableHead>
-                                        <TableHead>Medication</TableHead>
-                                        <TableHead>Dosage & Frequency</TableHead>
-                                        <TableHead>Doctor</TableHead>
-                                        <TableHead>Quantity</TableHead>
-                                        <TableHead>Refills</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Pharmacy</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredPrescriptions.map((prescription: any) => {
-                                        const StatusIcon = getStatusIcon(prescription.status);
-                                        return (
-                                            <TableRow key={prescription.id}>
-                                                <TableCell>
-                                                    <div>
-                                                        <p className="font-medium">{prescription.patientName}</p>
-                                                        <p className="text-sm text-muted-foreground">{prescription.patientId}</p>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div>
-                                                        <p className="font-medium">{prescription.medication}</p>
-                                                        <p className="text-sm text-muted-foreground">{prescription.dosage}</p>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div>
-                                                        <p>{prescription.frequency}</p>
-                                                        <p className="text-sm text-muted-foreground">for {prescription.duration}</p>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>{prescription.doctorName}</TableCell>
-                                                <TableCell>{prescription.quantity}</TableCell>
-                                                <TableCell>{prescription.refills}</TableCell>
-                                                <TableCell>
-                                                    <Badge className={getStatusColor(prescription.status)}>
-                                                        <StatusIcon className="h-3 w-3 mr-1"/>
-                                                        {prescription.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>{prescription.pharmacy}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Button variant="ghost" size="sm">
-                                                            <Eye className="h-4 w-4"/>
-                                                        </Button>
-                                                        <Button variant="ghost" size="sm">
-                                                            <Edit className="h-4 w-4"/>
-                                                        </Button>
-                                                        <Button variant="ghost" size="sm">
-                                                            <Printer className="h-4 w-4"/>
-                                                        </Button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                </TableBody>
-                            </Table>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Patient</TableHead>
+                                            <TableHead>Medication</TableHead>
+                                            <TableHead>Dosage & Frequency</TableHead>
+                                            <TableHead>Doctor</TableHead>
+                                            <TableHead>Quantity</TableHead>
+                                            <TableHead>Refills</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Pharmacy</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredPrescriptions.map((prescription: any) => {
+                                            const StatusIcon = getStatusIcon(prescription.status);
+                                            return (
+                                                <TableRow key={prescription.id}>
+                                                    <TableCell>
+                                                        <div>
+                                                            <p className="font-medium">{prescription.patientName}</p>
+                                                            <p className="text-sm text-muted-foreground">{prescription.patientId}</p>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div>
+                                                            <p className="font-medium">{prescription.medication}</p>
+                                                            <p className="text-sm text-muted-foreground">{prescription.dosage}</p>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div>
+                                                            <p>{prescription.frequency}</p>
+                                                            <p className="text-sm text-muted-foreground">for {prescription.duration}</p>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>{prescription.doctorName}</TableCell>
+                                                    <TableCell>{prescription.quantity}</TableCell>
+                                                    <TableCell>{prescription.refills}</TableCell>
+                                                    <TableCell>
+                                                        <Badge className={getStatusColor(prescription.status)}>
+                                                            <StatusIcon className="h-3 w-3 mr-1"/>
+                                                            {prescription.status}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>{prescription.pharmacy}</TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Button variant="ghost" size="sm">
+                                                                <Eye className="h-4 w-4"/>
+                                                            </Button>
+                                                            <Button variant="ghost" size="sm">
+                                                                <Edit className="h-4 w-4"/>
+                                                            </Button>
+                                                            <Button variant="ghost" size="sm">
+                                                                <Printer className="h-4 w-4"/>
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
                             )}
                             {mockPrescriptions.length === 0 && !medicalLoading && (
                                 <div className="text-center py-8 text-muted-foreground">
@@ -574,7 +574,8 @@ export function PrescriptionSystem() {
                                                 <p className="text-sm text-muted-foreground">Generic: {medication.genericName}</p>
                                                 <div className="flex items-center space-x-4 mt-2">
                                                     <Badge variant="outline">{medication.category}</Badge>
-                                                    <span className="text-sm text-muted-foreground">{medication.form}</span>
+                                                    <span
+                                                        className="text-sm text-muted-foreground">{medication.form}</span>
                                                     <span className="text-sm text-muted-foreground">
                             Strengths: {medication.strength.join(', ')}
                           </span>

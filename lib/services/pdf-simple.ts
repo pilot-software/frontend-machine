@@ -3,49 +3,49 @@ import QRCode from 'qrcode';
 
 // Generate QR code data URL for patient identification
 const generatePatientQRCode = async (patient: Patient): Promise<string> => {
-  const patientData = {
-    type: 'HEALTHCARE_PATIENT_ID',
-    version: '1.0',
-    id: patient.id,
-    name: `${patient.firstName} ${patient.lastName}`,
-    dob: patient.dateOfBirth,
-    gender: patient.gender,
-    phone: patient.phone || '',
-    emergency: patient.emergencyContactPhone || '',
-    bloodType: (patient as any).bloodType || '',
-    allergies: (patient as any).allergies || '',
-    insurance: patient.insuranceProvider || '',
-    redirectUrl: `/patient/${patient.id}`,
-    timestamp: new Date().toISOString(),
-    facility: 'Healthcare Management System'
-  };
+    const patientData = {
+        type: 'HEALTHCARE_PATIENT_ID',
+        version: '1.0',
+        id: patient.id,
+        name: `${patient.firstName} ${patient.lastName}`,
+        dob: patient.dateOfBirth,
+        gender: patient.gender,
+        phone: patient.phone || '',
+        emergency: patient.emergencyContactPhone || '',
+        bloodType: (patient as any).bloodType || '',
+        allergies: (patient as any).allergies || '',
+        insurance: patient.insuranceProvider || '',
+        redirectUrl: `/patient/${patient.id}`,
+        timestamp: new Date().toISOString(),
+        facility: 'Healthcare Management System'
+    };
 
-  const qrData = JSON.stringify(patientData);
+    const qrData = JSON.stringify(patientData);
 
-  try {
-    // Generate QR code as data URL
-    const qrCodeDataURL = await QRCode.toDataURL(qrData, {
-      width: 120,
-      margin: 2,
-      color: {
-        dark: '#030213',
-        light: '#FFFFFF'
-      },
-      errorCorrectionLevel: 'M'
-    });
-    return qrCodeDataURL;
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-    // Fallback to external service
-    return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrData)}`;
-  }
+    try {
+        // Generate QR code as data URL
+        const qrCodeDataURL = await QRCode.toDataURL(qrData, {
+            width: 120,
+            margin: 2,
+            color: {
+                dark: '#030213',
+                light: '#FFFFFF'
+            },
+            errorCorrectionLevel: 'M'
+        });
+        return qrCodeDataURL;
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        // Fallback to external service
+        return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrData)}`;
+    }
 };
 
 // Simple HTML to PDF conversion using browser's print functionality
 export const generatePatientHTML = async (patient: Patient, assignedDoctor: Doctor | null): Promise<string> => {
-  const currentDate = new Date();
+    const currentDate = new Date();
 
-  return `
+    return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -388,50 +388,50 @@ export const generatePatientHTML = async (patient: Patient, assignedDoctor: Doct
 };
 
 export const downloadPatientPDF = async (
-  patient: Patient,
-  assignedDoctor: Doctor | null
+    patient: Patient,
+    assignedDoctor: Doctor | null
 ): Promise<void> => {
-  try {
-    const htmlContent = await generatePatientHTML(patient, assignedDoctor);
+    try {
+        const htmlContent = await generatePatientHTML(patient, assignedDoctor);
 
-    // Create a new window with the HTML content
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      throw new Error('Unable to open print window. Please check popup blocker settings.');
+        // Create a new window with the HTML content
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            throw new Error('Unable to open print window. Please check popup blocker settings.');
+        }
+
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+
+        // Wait for content to load, then trigger print
+        printWindow.onload = () => {
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        };
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        throw error;
     }
-
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-
-    // Wait for content to load, then trigger print
-    printWindow.onload = () => {
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 500);
-    };
-
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw error;
-  }
 };
 
 // Alternative: Direct HTML download
 export const downloadPatientHTML = async (
-  patient: Patient,
-  assignedDoctor: Doctor | null
+    patient: Patient,
+    assignedDoctor: Doctor | null
 ): Promise<void> => {
-  const htmlContent = await generatePatientHTML(patient, assignedDoctor);
-  const blob = new Blob([htmlContent], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
+    const htmlContent = await generatePatientHTML(patient, assignedDoctor);
+    const blob = new Blob([htmlContent], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
 
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `Patient-Report-${patient.firstName}-${patient.lastName}-${new Date().toISOString().split('T')[0]}.html`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Patient-Report-${patient.firstName}-${patient.lastName}-${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-  URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
 };

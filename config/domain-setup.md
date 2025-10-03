@@ -3,6 +3,7 @@
 ## Localhost Development
 
 ### Option 1: Using hosts file (Recommended)
+
 Add to `/etc/hosts` (Mac/Linux) or `C:\Windows\System32\drivers\etc\hosts` (Windows):
 
 ```
@@ -12,11 +13,13 @@ Add to `/etc/hosts` (Mac/Linux) or `C:\Windows\System32\drivers\etc\hosts` (Wind
 ```
 
 Then access:
+
 - `http://clinic.localhost:3000` - Small clinic config
 - `http://hospital.localhost:3000` - Standard hospital config
 - `http://enterprise.localhost:3000` - Big hospital config
 
 ### Option 2: Using ConfigSwitcher
+
 The ConfigSwitcher component appears only on localhost for development testing.
 
 ## Production Domains

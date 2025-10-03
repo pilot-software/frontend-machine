@@ -1,1 +1,1 @@
-export { TemporaryPermissionModal } from './TemporaryPermissionModal';
+export {TemporaryPermissionModal} from './TemporaryPermissionModal';

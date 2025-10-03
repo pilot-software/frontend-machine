@@ -3,25 +3,25 @@ import {Inter} from 'next/font/google'
 import './globals.css'
 import {Providers} from '@/components/Providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({subsets: ['latin']})
 
 export const metadata: Metadata = {
-  title: 'Healthcare Management System',
-  description: 'Comprehensive healthcare management platform',
+    title: 'Healthcare Management System',
+    description: 'Comprehensive healthcare management platform',
 }
 
 export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
+                                       children,
+                                   }: {
+    children: React.ReactNode
 }) {
-  return (
-    <html lang="en">
-      <body className={inter.className} suppressHydrationWarning={true}>
+    return (
+        <html lang="en">
+        <body className={inter.className} suppressHydrationWarning={true}>
         <Providers>
-          {children}
+            {children}
         </Providers>
-      </body>
-    </html>
-  )
+        </body>
+        </html>
+    )
 }
