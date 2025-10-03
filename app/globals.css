@@ -244,8 +244,32 @@ html {
     }
 }
 
+@keyframes liquid-drop {
+    0% {
+        clip-path: circle(0% at 50% 50%);
+        opacity: 0;
+    }
+    50% {
+        clip-path: circle(75% at 50% 50%);
+        opacity: 1;
+    }
+    100% {
+        clip-path: circle(100% at 50% 50%);
+        opacity: 1;
+    }
+}
+
 .animate-wave {
     animation: wave 0.6s ease-in-out;
+}
+
+.animate-liquid-drop {
+    animation: liquid-drop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Liquid transition easing */
+.transition-liquid {
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Responsive utilities */

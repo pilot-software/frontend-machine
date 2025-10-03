@@ -27,6 +27,7 @@ import {
   Cpu,
   Heart,
 } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -188,12 +189,12 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
           <div className="w-full max-w-md">
             <div className="mb-8">
               <div className="flex items-center mb-4">
-                <Shield className="h-8 w-8 text-primary mr-3" />
+                <Stethoscope className="h-8 w-8 text-primary mr-3" />
                 <h1 className="text-3xl font-bold text-foreground">
                   HealthCare System
                 </h1>
               </div>
-              <p className="text-muted-foreground text-lg">
+              <p className="text-muted-foreground text-lg ml-11">
                 Sign in to your account
               </p>
             </div>
