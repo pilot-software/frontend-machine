@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from './ui/card';
+import {StatsCard, StatsCardGrid} from './ui/stats-card';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {Label} from './ui/label';
@@ -381,24 +382,36 @@ export function PrescriptionSystem() {
             </div>
 
             {/* Prescription Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-                {prescriptionStats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card key={index}>
-                            <CardContent className="p-3 md:p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs md:text-sm text-muted-foreground">{stat.label}</p>
-                                        <p className="text-lg md:text-2xl font-semibold text-foreground mt-1">{stat.value}</p>
-                                    </div>
-                                    <Icon className={`h-6 w-6 md:h-8 md:w-8 ${stat.color}`}/>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
-            </div>
+            <StatsCardGrid>
+                <StatsCard
+                    title="Active Prescriptions"
+                    value="1,234"
+                    icon={PillBottle}
+                    color="text-blue-600"
+                    bgGradient="from-blue-500/10 to-blue-600/5"
+                />
+                <StatsCard
+                    title="Pending Approval"
+                    value="23"
+                    icon={Clock}
+                    color="text-orange-600"
+                    bgGradient="from-orange-500/10 to-orange-600/5"
+                />
+                <StatsCard
+                    title="Filled Today"
+                    value="89"
+                    icon={CheckCircle2}
+                    color="text-green-600"
+                    bgGradient="from-green-500/10 to-green-600/5"
+                />
+                <StatsCard
+                    title="Refill Requests"
+                    value="45"
+                    icon={AlertTriangle}
+                    color="text-purple-600"
+                    bgGradient="from-purple-500/10 to-purple-600/5"
+                />
+            </StatsCardGrid>
 
             {/* Prescription Management Tabs */}
             <Tabs defaultValue="active" className="w-full">

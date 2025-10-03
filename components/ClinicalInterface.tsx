@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {StatsCard, StatsCardGrid} from "./ui/stats-card";
 import {Button} from "./ui/button";
 import {Label} from "./ui/label";
 import {Textarea} from "./ui/textarea";
@@ -237,28 +238,18 @@ export function ClinicalInterface() {
 
             {/* Clinical Stats - Only show for non-patient users */}
             {user?.role !== "patient" && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-                    {clinicalStats.map((stat, index) => {
-                        const Icon = stat.icon;
-                        return (
-                            <Card key={index}>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">
-                                                {stat.label}
-                                            </p>
-                                            <p className="text-2xl font-semibold text-foreground mt-1">
-                                                {stat.value}
-                                            </p>
-                                        </div>
-                                        <Icon className={`h-8 w-8 ${stat.color}`}/>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-                </div>
+                <StatsCardGrid>
+                    {clinicalStats.map((stat, index) => (
+                        <StatsCard
+                            key={index}
+                            title={stat.label}
+                            value={stat.value}
+                            icon={stat.icon}
+                            color={stat.color}
+                            bgGradient={`from-${stat.color.replace('text-', '')}/10 to-${stat.color.replace('text-', '')}/5`}
+                        />
+                    ))}
+                </StatsCardGrid>
             )}
 
             {/* Patient Selection - Only show for non-patient users */}

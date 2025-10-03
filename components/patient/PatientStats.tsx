@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardContent} from '../ui/card';
+import {StatsCard, StatsCardGrid} from '../ui/stats-card';
 import {AlertTriangle, CheckCircle2, Plus, UserPlus} from 'lucide-react';
 
 interface PatientStatsProps {
@@ -12,68 +12,44 @@ interface PatientStatsProps {
 }
 
 export function PatientStats({stats}: PatientStatsProps) {
-    const quickStats = [
-        {
-            label: "Total Patients",
-            value: stats?.totalPatients?.toString() || "0",
-            change: "+12%",
-            icon: UserPlus,
-            color: "text-blue-600",
-        },
-        {
-            label: "New This Month",
-            value: stats?.newPatientsThisMonth?.toString() || "0",
-            change: "+23%",
-            icon: Plus,
-            color: "text-green-600",
-        },
-        {
-            label: "Critical Cases",
-            value: stats?.criticalCases?.toString() || "0",
-            change: "-8%",
-            icon: AlertTriangle,
-            color: "text-red-600",
-        },
-        {
-            label: "Discharged Today",
-            value: stats?.dischargedToday?.toString() || "0",
-            change: "+2%",
-            icon: CheckCircle2,
-            color: "text-emerald-600",
-        },
-    ];
-
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-            {quickStats.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                    <Card key={index}>
-                        <CardContent className="p-3 md:p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs md:text-sm text-muted-foreground">
-                                        {stat.label}
-                                    </p>
-                                    <p className="text-lg md:text-2xl font-semibold text-foreground mt-1">
-                                        {stat.value}
-                                    </p>
-                                    <p
-                                        className={`text-sm mt-1 ${
-                                            stat.change.startsWith("+")
-                                                ? "text-green-600"
-                                                : "text-red-600"
-                                        }`}
-                                    >
-                                        {stat.change} from last month
-                                    </p>
-                                </div>
-                                <Icon className={`h-6 w-6 md:h-8 md:w-8 ${stat.color}`}/>
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            })}
-        </div>
+        <StatsCardGrid>
+            <StatsCard
+                title="Total Patients"
+                value={stats?.totalPatients?.toString() || "0"}
+                icon={UserPlus}
+                color="text-blue-600"
+                bgGradient="from-blue-500/10 to-blue-600/5"
+                change="+12%"
+                trend="up"
+            />
+            <StatsCard
+                title="New This Month"
+                value={stats?.newPatientsThisMonth?.toString() || "0"}
+                icon={Plus}
+                color="text-green-600"
+                bgGradient="from-green-500/10 to-green-600/5"
+                change="+23%"
+                trend="up"
+            />
+            <StatsCard
+                title="Critical Cases"
+                value={stats?.criticalCases?.toString() || "0"}
+                icon={AlertTriangle}
+                color="text-red-600"
+                bgGradient="from-red-500/10 to-red-600/5"
+                change="-8%"
+                trend="down"
+            />
+            <StatsCard
+                title="Discharged Today"
+                value={stats?.dischargedToday?.toString() || "0"}
+                icon={CheckCircle2}
+                color="text-emerald-600"
+                bgGradient="from-emerald-500/10 to-emerald-600/5"
+                change="+2%"
+                trend="up"
+            />
+        </StatsCardGrid>
     );
 }

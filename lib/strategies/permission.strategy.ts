@@ -10,7 +10,8 @@ import {
     Shield,
     Stethoscope,
     User,
-    Users
+    Users,
+    Pill
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -165,6 +166,15 @@ export class PermissionStrategy {
                 icon: ClipboardList,
                 label: "Clinical",
                 path: "/clinical",
+                permission: 'MEDICAL_RECORDS_READ'
+            });
+        }
+
+        if (permissionNames.some(p => p.startsWith('MEDICAL_RECORDS_') || p.startsWith('APPOINTMENTS_'))) {
+            menuItems.push({
+                icon: Pill,
+                label: "Prescriptions",
+                path: "/prescriptions",
                 permission: 'MEDICAL_RECORDS_READ'
             });
         }

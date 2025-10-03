@@ -4,6 +4,7 @@ import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {LoadingState} from './ui/loading-state';
 import {StatusBadge} from './ui/status-badge';
+import {StatsCard, StatsCardGrid} from './ui/stats-card';
 import {AppointmentFormModal} from './AppointmentFormModal';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from './ui/tabs';
 import {ApiAppointment, appointmentService} from '../lib/services/appointment';
@@ -110,24 +111,36 @@ export function AppointmentSystem() {
             </div>
 
             {/* Today's Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-                {todayStats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card key={index}>
-                            <CardContent className="p-3 md:p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs md:text-sm text-muted-foreground">{stat.label}</p>
-                                        <p className="text-lg md:text-2xl font-semibold text-foreground mt-1">{stat.value}</p>
-                                    </div>
-                                    <Icon className={`h-6 w-6 md:h-8 md:w-8 ${stat.color}`}/>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
-            </div>
+            <StatsCardGrid>
+                <StatsCard
+                    title="Total Appointments"
+                    value="24"
+                    icon={CalendarIcon}
+                    color="text-blue-600"
+                    bgGradient="from-blue-500/10 to-blue-600/5"
+                />
+                <StatsCard
+                    title="Direct Visits"
+                    value="16"
+                    icon={User}
+                    color="text-green-600"
+                    bgGradient="from-green-500/10 to-green-600/5"
+                />
+                <StatsCard
+                    title="Phone Consultations"
+                    value="6"
+                    icon={Phone}
+                    color="text-purple-600"
+                    bgGradient="from-purple-500/10 to-purple-600/5"
+                />
+                <StatsCard
+                    title="Video Calls"
+                    value="2"
+                    icon={Video}
+                    color="text-orange-600"
+                    bgGradient="from-orange-500/10 to-orange-600/5"
+                />
+            </StatsCardGrid>
 
             {/* Appointment Management Tabs */}
             <Tabs defaultValue="today" className="w-full">

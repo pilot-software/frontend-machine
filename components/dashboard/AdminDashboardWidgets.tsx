@@ -1,19 +1,47 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Progress } from '../ui/progress';
-import { 
-  Bed, Users, Clock, Activity, DollarSign, Package, 
-  AlertTriangle, TrendingUp, Calendar, UserCheck, FileText, 
-  Pill, TestTube, UserPlus 
-} from 'lucide-react';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
+import {
+  Bed,
+  Users,
+  Clock,
+  Activity,
+  DollarSign,
+  Package,
+  AlertTriangle,
+  TrendingUp,
+  Calendar,
+  UserCheck,
+  FileText,
+  Pill,
+  TestTube,
+  UserPlus,
+} from "lucide-react";
 
-export function AdminDashboardWidgets() {
+interface AdminDashboardWidgetsProps {
+  onNavigate?: (path: string) => void;
+}
+
+export function AdminDashboardWidgets({
+  onNavigate,
+}: AdminDashboardWidgetsProps) {
   const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
   const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
-  const erStatus = { waiting: 12, inTreatment: 8, avgWait: '18 min' };
+  const erStatus = { waiting: 12, inTreatment: 8, avgWait: "18 min" };
   const staff = { doctors: 45, nurses: 120, technicians: 35, onDuty: 200 };
+
+  const handleQuickAction = (action: string) => {
+    const routes: Record<string, string> = {
+      "View Patients": "/patients",
+      "View Schedules": "/appointments",
+      "View Prescriptions": "/prescriptions",
+    };
+    if (onNavigate && routes[action]) {
+      onNavigate(routes[action]);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -28,12 +56,24 @@ export function AdminDashboardWidgets() {
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { icon: UserPlus, label: 'New Patient', color: 'bg-blue-500' },
-              { icon: Calendar, label: 'Schedule', color: 'bg-purple-500' },
-              { icon: Pill, label: 'Prescribe', color: 'bg-green-500' },
-              { icon: TestTube, label: 'Lab Order', color: 'bg-orange-500' },
-              { icon: FileText, label: 'Reports', color: 'bg-pink-500' },
-              { icon: Bed, label: 'Bed Mgmt', color: 'bg-indigo-500' },
+              { icon: UserPlus, label: "View Patients", color: "bg-blue-500" },
+              {
+                icon: Calendar,
+                label: "View Schedules",
+                color: "bg-purple-500",
+              },
+              {
+                icon: Pill,
+                label: "View Prescriptions",
+                color: "bg-green-500",
+              },
+              {
+                icon: TestTube,
+                label: "View Lab Order",
+                color: "bg-orange-500",
+              },
+              { icon: FileText, label: "View Reports", color: "bg-pink-500" },
+              { icon: Bed, label: "View Bed Mgmt", color: "bg-indigo-500" },
             ].map((action, idx) => {
               const Icon = action.icon;
               return (
@@ -41,8 +81,11 @@ export function AdminDashboardWidgets() {
                   key={idx}
                   variant="outline"
                   className="h-24 flex flex-col items-center justify-center gap-2 hover:shadow-lg transition-all duration-300 group rounded-xl"
+                  onClick={() => handleQuickAction(action.label)}
                 >
-                  <div className={`${action.color} p-3 rounded-xl text-white group-hover:scale-110 transition-transform duration-300`}>
+                  <div
+                    className={`${action.color} p-3 rounded-xl text-white group-hover:scale-110 transition-transform duration-300`}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
                   <span className="text-xs font-medium">{action.label}</span>
@@ -76,8 +119,12 @@ export function AdminDashboardWidgets() {
             <div className="pt-4 border-t">
               <p className="text-sm font-medium mb-2">ICU Status</p>
               <div className="flex justify-between text-sm mb-2">
-                <span>Occupied: {icuStatus.occupied}/{icuStatus.total}</span>
-                <Badge variant={icuStatus.rate > 85 ? 'destructive' : 'default'}>
+                <span>
+                  Occupied: {icuStatus.occupied}/{icuStatus.total}
+                </span>
+                <Badge
+                  variant={icuStatus.rate > 85 ? "destructive" : "default"}
+                >
                   {icuStatus.rate}%
                 </Badge>
               </div>

@@ -25,6 +25,8 @@ import {
   Heart,
   DollarSign,
   UserCog,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { NotificationDropdown } from "./NotificationDropdown";
@@ -47,6 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
 
   if (!user) {
     router.replace("/login");
@@ -325,8 +328,39 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:block w-64 bg-card border-r border-border min-h-[calc(100vh-73px)]">
-          <NavigationContent />
+        <aside className={`hidden md:block bg-card border-r border-border min-h-[calc(100vh-73px)] transition-all duration-300 ${desktopSidebarCollapsed ? 'w-16' : 'w-64'}`}>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
+              className="absolute -right-3 top-4 z-10 h-6 w-6 rounded-full border bg-card p-0 shadow-md hover:shadow-lg"
+            >
+              {desktopSidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
+            {desktopSidebarCollapsed ? (
+              <nav className="p-2 space-y-2">
+                {menuItems.map((item) => {
+                  const ItemIcon = item.icon;
+                  const isActive = pathname === item.path;
+                  return (
+                    <Button
+                      key={item.path}
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-center p-2 transition-all duration-300 ${isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'}`}
+                      onClick={() => router.push(item.path)}
+                      title={item.label}
+                    >
+                      <ItemIcon className="h-5 w-5" />
+                    </Button>
+                  );
+                })}
+              </nav>
+            ) : (
+              <NavigationContent />
+            )}
+          </div>
         </aside>
 
         {/* Main Content */}

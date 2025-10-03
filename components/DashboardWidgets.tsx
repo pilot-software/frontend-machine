@@ -3,17 +3,23 @@ import { useAuth } from './AuthContext';
 import { AdminDashboardWidgets } from './dashboard/AdminDashboardWidgets';
 import { DoctorDashboardWidgets } from './dashboard/DoctorDashboardWidgets';
 import { PatientDashboardWidgets } from './dashboard/PatientDashboardWidgets';
+import { useRouter } from 'next/navigation';
 
 export function DashboardWidgets() {
   const { user } = useAuth();
+  const router = useRouter();
 
   if (!user) return null;
+
+  const handleNavigate = (path: string) => {
+    router.push(path);
+  };
 
   // Render role-specific dashboard widgets
   if (user.role === 'admin') {
     return (
       <div className="mt-6">
-        <AdminDashboardWidgets />
+        <AdminDashboardWidgets onNavigate={handleNavigate} />
       </div>
     );
   }

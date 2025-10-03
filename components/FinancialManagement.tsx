@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
+import {StatsCard, StatsCardGrid} from "./ui/stats-card";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "./ui/select";
@@ -226,47 +227,44 @@ export function FinancialManagement() {
             {loading ? (
                 <FinancialStatsSkeleton/>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-                    {financialStats.map((stat, index) => {
-                        const Icon = stat.icon;
-                        const TrendIcon = stat.trend === "up" ? TrendingUp : TrendingDown;
-                        return (
-                            <Card key={index}>
-                                <CardContent className="p-3 md:p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-xs md:text-sm text-muted-foreground">
-                                                {stat.label}
-                                            </p>
-                                            <p className="text-lg md:text-2xl font-semibold text-foreground mt-1">
-                                                {stat.value}
-                                            </p>
-                                            <div className="flex items-center mt-1">
-                                                <TrendIcon
-                                                    className={`h-3 w-3 mr-1 ${
-                                                        stat.trend === "up"
-                                                            ? "text-green-600"
-                                                            : "text-red-600"
-                                                    }`}
-                                                />
-                                                <p
-                                                    className={`text-sm ${
-                                                        stat.trend === "up"
-                                                            ? "text-green-600"
-                                                            : "text-red-600"
-                                                    }`}
-                                                >
-                                                    {stat.change} from last month
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <Icon className={`h-6 w-6 md:h-8 md:w-8 ${stat.color}`}/>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-                </div>
+                <StatsCardGrid>
+                    <StatsCard
+                        title="Total Revenue"
+                        value="$45,230"
+                        icon={DollarSign}
+                        color="text-green-600"
+                        bgGradient="from-green-500/10 to-green-600/5"
+                        change="+12%"
+                        trend="up"
+                    />
+                    <StatsCard
+                        title="Outstanding Bills"
+                        value="$12,450"
+                        icon={FileText}
+                        color="text-orange-600"
+                        bgGradient="from-orange-500/10 to-orange-600/5"
+                        change="-5%"
+                        trend="down"
+                    />
+                    <StatsCard
+                        title="Collected Today"
+                        value="$3,200"
+                        icon={CreditCard}
+                        color="text-blue-600"
+                        bgGradient="from-blue-500/10 to-blue-600/5"
+                        change="+18%"
+                        trend="up"
+                    />
+                    <StatsCard
+                        title="Insurance Claims"
+                        value="$28,900"
+                        icon={Receipt}
+                        color="text-purple-600"
+                        bgGradient="from-purple-500/10 to-purple-600/5"
+                        change="+8%"
+                        trend="up"
+                    />
+                </StatsCardGrid>
             )}
 
             {/* Financial Management Tabs */}
