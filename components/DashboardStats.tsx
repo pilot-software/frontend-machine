@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslations} from 'next-intl';
 import {Card, CardContent} from './ui/card';
 import {Activity, Calendar, DollarSign, Users, Heart, Clock, AlertTriangle, Stethoscope, UserCheck} from 'lucide-react';
 import {useAuth} from './AuthContext';
@@ -10,6 +11,7 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStats({stats, loading}: DashboardStatsProps) {
+    const t = useTranslations('common');
     const {user} = useAuth();
 
     if (loading) {
@@ -38,7 +40,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
             case 'admin':
                 return [
                     {
-                        title: 'Total Patients',
+                        title: t('totalPatients'),
                         value: statsData?.totalPatients || 1247,
                         icon: Users,
                         color: 'text-blue-600',
@@ -47,7 +49,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: 'Active Staff',
+                        title: t('activeStaff'),
                         value: statsData?.activeStaff || 89,
                         icon: UserCheck,
                         color: 'text-green-600',
@@ -56,7 +58,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: 'Critical Cases',
+                        title: t('criticalCases'),
                         value: statsData?.criticalCases || 7,
                         icon: AlertTriangle,
                         color: 'text-red-600',
@@ -65,7 +67,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'down'
                     },
                     {
-                        title: 'Monthly Revenue',
+                        title: t('monthlyRevenue'),
                         value: `$${(statsData?.revenue?.monthly || 342100).toLocaleString()}`,
                         icon: DollarSign,
                         color: 'text-emerald-600',
@@ -77,7 +79,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
             case 'doctor':
                 return [
                     {
-                        title: 'My Patients',
+                        title: t('myPatients'),
                         value: statsData?.myPatients || 34,
                         icon: Users,
                         color: 'text-blue-600',
@@ -86,7 +88,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: "Today's Appointments",
+                        title: t('todaysAppointments'),
                         value: statsData?.todayAppointments || 12,
                         icon: Calendar,
                         color: 'text-purple-600',
@@ -95,7 +97,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: 'Pending Reviews',
+                        title: t('pendingReviews'),
                         value: statsData?.pendingReviews || 8,
                         icon: Clock,
                         color: 'text-orange-600',
@@ -104,7 +106,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'down'
                     },
                     {
-                        title: 'Consultations',
+                        title: t('consultations'),
                         value: statsData?.consultations || 156,
                         icon: Stethoscope,
                         color: 'text-green-600',
@@ -116,7 +118,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
             case 'patient':
                 return [
                     {
-                        title: 'Next Appointment',
+                        title: t('nextAppointment'),
                         value: 'Tomorrow 2PM',
                         icon: Calendar,
                         color: 'text-blue-600',
@@ -125,7 +127,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'neutral'
                     },
                     {
-                        title: 'Health Score',
+                        title: t('healthScore'),
                         value: '92/100',
                         icon: Heart,
                         color: 'text-green-600',
@@ -134,7 +136,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: 'Medications',
+                        title: t('medications'),
                         value: '3 Active',
                         icon: Activity,
                         color: 'text-purple-600',
@@ -143,7 +145,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'neutral'
                     },
                     {
-                        title: 'Last Visit',
+                        title: t('lastVisit'),
                         value: '5 days ago',
                         icon: Clock,
                         color: 'text-orange-600',
@@ -155,7 +157,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
             default:
                 return [
                     {
-                        title: 'Total Patients',
+                        title: t('totalPatients'),
                         value: statsData?.totalPatients || 0,
                         icon: Users,
                         color: 'text-blue-600',
@@ -164,7 +166,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: 'New This Month',
+                        title: t('newThisMonth'),
                         value: statsData?.newPatientsThisMonth || 0,
                         icon: Activity,
                         color: 'text-green-600',
@@ -173,7 +175,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: "Today's Appointments",
+                        title: t('todaysAppointments'),
                         value: statsData?.todayAppointments || 0,
                         icon: Calendar,
                         color: 'text-purple-600',
@@ -182,7 +184,7 @@ export function DashboardStats({stats, loading}: DashboardStatsProps) {
                         trend: 'up'
                     },
                     {
-                        title: 'Active Cases',
+                        title: t('activeCases'),
                         value: statsData?.activeCases || 0,
                         icon: Stethoscope,
                         color: 'text-orange-600',

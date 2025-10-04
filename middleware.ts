@@ -1,14 +1,10 @@
-import type {NextRequest} from 'next/server';
-import {NextResponse} from 'next/server';
+import createMiddleware from 'next-intl/middleware';
 
-export function middleware(request: NextRequest) {
-    // For now, we'll let the client-side handle authentication
-    // In a real app, you'd check for valid session/token here
-    return NextResponse.next();
-}
+export default createMiddleware({
+  locales: ['en', 'es', 'fr', 'hi'],
+  defaultLocale: 'en'
+});
 
 export const config = {
-    matcher: [
-        '/(dashboard|patients|appointments|clinical|prescriptions|financial)/:path*'
-    ]
+  matcher: ['/', '/(en|es|fr|hi)/:path*', '/((?!_next|_vercel|api|.*\\..*).*)']
 };

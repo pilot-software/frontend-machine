@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import {useTranslations} from 'next-intl';
 
 // Add floating animation styles
 const floatingStyles = `
@@ -17,6 +18,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import {
   Eye,
   EyeOff,
@@ -43,6 +45,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onForgotPassword }: LoginFormProps) {
+  const t = useTranslations('common');
   const { login, isLoading, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,7 +84,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
     setError("");
 
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError(t('fillAllFields'));
       return;
     }
 
@@ -89,7 +92,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       selectedConfig === "hospital" ? "hospital_org1" : "hospital_org2";
     const success = await login(email, password, orgId);
     if (!success) {
-      setError("Invalid email or password");
+      setError(t('invalidCredentials'));
     }
   };
 
@@ -188,14 +191,17 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
         <div className="flex-1 flex items-center justify-center relative z-20 p-6 lg:p-12">
           <div className="w-full max-w-md">
             <div className="mb-8">
-              <div className="flex items-center mb-4">
-                <Stethoscope className="h-8 w-8 text-primary mr-3" />
-                <h1 className="text-3xl font-bold text-foreground">
-                  HealthCare System
-                </h1>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <Stethoscope className="h-8 w-8 text-primary mr-3" />
+                  <h1 className="text-3xl font-bold text-foreground">
+                    {t('healthcareSystem')}
+                  </h1>
+                </div>
+                <LanguageSwitcher />
               </div>
               <p className="text-muted-foreground text-lg ml-11">
-                Sign in to your account
+                {t('signInToAccount')}
               </p>
             </div>
 
@@ -210,7 +216,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="config" className="text-base font-medium">
-                      Healthcare Configuration
+                      {t('healthcareConfiguration')}
                     </Label>
                     <Select
                       value={selectedConfig}
@@ -239,14 +245,14 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-base font-medium">
-                      Email
+                      {t('email')}
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
+                      placeholder={t('enterEmail')}
                       className="h-12 text-base"
                       required
                     />
@@ -254,7 +260,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-base font-medium">
-                      Password
+                      {t('password')}
                     </Label>
                     <div className="relative">
                       <Input
@@ -262,7 +268,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
+                        placeholder={t('enterPassword')}
                         className="h-12 text-base pr-12"
                         required
                       />
@@ -289,7 +295,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                       className="p-0 h-auto text-base"
                       onClick={onForgotPassword}
                     >
-                      Forgot password?
+                      {t('forgotPassword')}
                     </Button>
                   </div>
 
@@ -301,10 +307,10 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                     {isLoading ? (
                       <>
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Signing in...
+                        {t('signingIn')}
                       </>
                     ) : (
-                      "Sign in"
+                      t('signIn')
                     )}
                   </Button>
                 </form>
@@ -315,7 +321,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
             <Card className="mt-8 bg-accent/50 border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-foreground">
-                  Demo Credentials
+                  {t('demoCredentials')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -337,7 +343,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                   </div>
                 ))}
                 <p className="text-sm text-muted-foreground mt-3">
-                  Tap any role above to auto-fill credentials
+                  {t('tapToAutoFill')}
                 </p>
               </CardContent>
             </Card>

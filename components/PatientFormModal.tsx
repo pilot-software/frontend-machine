@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import {useTranslations} from 'next-intl';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "./ui/dialog";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
@@ -64,6 +65,7 @@ export function PatientFormModal({
                                      patientId,
                                      mode,
                                  }: PatientFormModalProps) {
+    const t = useTranslations('common');
     const {user} = useAuth();
     const {refetch} = useAppData();
     const dispatch = useAppDispatch();
@@ -388,18 +390,18 @@ export function PatientFormModal({
                         <User className="h-5 w-5 text-blue-600"/>
                         <span>
               {isAdding
-                  ? "Add New Patient"
+                  ? t('addNewPatient')
                   : isEditing
-                      ? "Edit Patient Information"
-                      : "Patient Information"}
+                      ? t('editPatientInformation')
+                      : t('patientInformation')}
             </span>
                     </DialogTitle>
                     <DialogDescription>
                         {isAdding
-                            ? "Enter patient details and medical information"
+                            ? t('enterPatientDetails')
                             : isEditing
-                                ? "Update patient information and medical records"
-                                : "Complete patient information and medical history"}
+                                ? t('updatePatientInfo')
+                                : t('completePatientInfo')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -461,32 +463,32 @@ export function PatientFormModal({
                                 className="flex items-center space-x-2"
                             >
                                 <User className="h-4 w-4"/>
-                                <span>Basic Info</span>
+                                <span>{t('basicInfo')}</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="conditions"
                                 className="flex items-center space-x-2"
                             >
                                 <Heart className="h-4 w-4"/>
-                                <span>Conditions</span>
+                                <span>{t('conditions')}</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="prescriptions"
                                 className="flex items-center space-x-2"
                             >
                                 <PillBottle className="h-4 w-4"/>
-                                <span>Prescriptions</span>
+                                <span>{t('prescriptions')}</span>
                             </TabsTrigger>
                             <TabsTrigger
                                 value="vitals"
                                 className="flex items-center space-x-2"
                             >
                                 <Thermometer className="h-4 w-4"/>
-                                <span>Vitals</span>
+                                <span>{t('vitals')}</span>
                             </TabsTrigger>
                             <TabsTrigger value="labs" className="flex items-center space-x-2">
                                 <Activity className="h-4 w-4"/>
-                                <span>Lab Results</span>
+                                <span>{t('labResults')}</span>
                             </TabsTrigger>
                         </TabsList>
 
@@ -505,7 +507,7 @@ export function PatientFormModal({
                                     <TabsContent value="basic" className="space-y-4 mt-4">
                                         <Card>
                                             <CardHeader>
-                                                <CardTitle>Personal Information</CardTitle>
+                                                <CardTitle>{t('personalInformation')}</CardTitle>
                                                 <CardDescription>
                                                     Basic patient demographics and contact information
                                                 </CardDescription>
@@ -513,7 +515,7 @@ export function PatientFormModal({
                                             <CardContent className="space-y-4">
                                                 <div className="grid grid-cols-3 gap-4">
                                                     <div>
-                                                        <Label htmlFor="firstName">First Name *</Label>
+                                                        <Label htmlFor="firstName">{t('firstName')} *</Label>
                                                         <Input
                                                             id="firstName"
                                                             value={patientData.firstName}
@@ -525,7 +527,7 @@ export function PatientFormModal({
                                                         />
                                                     </div>
                                                     <div>
-                                                        <Label htmlFor="lastName">Last Name *</Label>
+                                                        <Label htmlFor="lastName">{t('lastName')} *</Label>
                                                         <Input
                                                             id="lastName"
                                                             value={patientData.lastName}
@@ -537,7 +539,7 @@ export function PatientFormModal({
                                                         />
                                                     </div>
                                                     <div>
-                                                        <Label htmlFor="gender">Gender *</Label>
+                                                        <Label htmlFor="gender">{t('gender')} *</Label>
                                                         <Select
                                                             value={patientData.gender}
                                                             onValueChange={(value) =>
@@ -562,7 +564,7 @@ export function PatientFormModal({
 
                                                 <div className="grid grid-cols-3 gap-4">
                                                     <div>
-                                                        <Label htmlFor="email">Email Address *</Label>
+                                                        <Label htmlFor="email">{t('emailAddress')} *</Label>
                                                         <div className="relative">
                                                             <Mail
                                                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"/>
@@ -580,7 +582,7 @@ export function PatientFormModal({
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <Label htmlFor="phone">Phone Number *</Label>
+                                                        <Label htmlFor="phone">{t('phoneNumber')} *</Label>
                                                         <div className="relative">
                                                             <Phone
                                                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"/>
@@ -597,7 +599,7 @@ export function PatientFormModal({
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                                                        <Label htmlFor="dateOfBirth">{t('dateOfBirth')} *</Label>
                                                         <div className="relative">
                                                             <Calendar
                                                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"/>
@@ -701,7 +703,7 @@ export function PatientFormModal({
 
                                                 <div className="grid grid-cols-3 gap-4">
                                                     <div>
-                                                        <Label htmlFor="bloodType">Blood Type</Label>
+                                                        <Label htmlFor="bloodType">{t('bloodType')}</Label>
                                                         <Select
                                                             value={patientData.bloodType}
                                                             onValueChange={(value) =>
@@ -726,7 +728,7 @@ export function PatientFormModal({
                                                     </div>
                                                     <div>
                                                         <Label htmlFor="insuranceProvider">
-                                                            Insurance Provider
+                                                            {t('insuranceProvider')}
                                                         </Label>
                                                         <Select
                                                             value={patientData.insuranceProvider}
@@ -752,7 +754,7 @@ export function PatientFormModal({
                                                     </div>
                                                     <div>
                                                         <Label htmlFor="insurancePolicyNumber">
-                                                            Policy Number
+                                                            {t('policyNumber')}
                                                         </Label>
                                                         <Input
                                                             id="insurancePolicyNumber"
@@ -774,7 +776,7 @@ export function PatientFormModal({
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <Label htmlFor="assignedDoctor">
-                                                            Assigned Doctor
+                                                            {t('assignedDoctor')}
                                                         </Label>
                                                         <Select
                                                             value={patientData.assignedDoctor}
@@ -802,7 +804,7 @@ export function PatientFormModal({
                                                         </Select>
                                                     </div>
                                                     <div>
-                                                        <Label htmlFor="allergies">Allergies</Label>
+                                                        <Label htmlFor="allergies">{t('allergies')}</Label>
                                                         <Textarea
                                                             id="allergies"
                                                             value={patientData.allergies}
@@ -818,7 +820,7 @@ export function PatientFormModal({
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <Label htmlFor="chronicConditions">
-                                                            Chronic Conditions
+                                                            {t('chronicConditions')}
                                                         </Label>
                                                         <Textarea
                                                             id="chronicConditions"
@@ -835,7 +837,7 @@ export function PatientFormModal({
                                                     </div>
                                                     <div>
                                                         <Label htmlFor="currentMedications">
-                                                            Current Medications
+                                                            {t('currentMedications')}
                                                         </Label>
                                                         <Textarea
                                                             id="currentMedications"
@@ -1195,7 +1197,7 @@ export function PatientFormModal({
 
                 <div className="flex justify-between items-center pt-4 border-t mt-4">
                     <Button variant="outline" onClick={onClose}>
-                        Cancel
+                        {t('cancel')}
                     </Button>
                     {!isReadOnly && (
                         <Button
@@ -1205,12 +1207,12 @@ export function PatientFormModal({
                             {isSubmitting || loading.updating ? (
                                 <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"/>
-                                    {isAdding ? "Creating..." : "Saving..."}
+                                    {isAdding ? t('creating') : t('saving')}
                                 </>
                             ) : (
                                 <>
                                     <Save className="h-4 w-4 mr-2"/>
-                                    {isAdding ? "Create Patient" : "Save Changes"}
+                                    {isAdding ? t('createPatient') : t('saveChanges')}
                                 </>
                             )}
                         </Button>

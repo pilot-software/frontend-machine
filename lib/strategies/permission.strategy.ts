@@ -146,16 +146,16 @@ export class PermissionStrategy {
         const menuItems: MenuItem[] = [];
 
         // Main routes without dashboard prefix
-        menuItems.push({icon: Activity, label: "Dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'});
+        menuItems.push({icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'});
 
         if (permissionNames.some(p => p.startsWith('PATIENTS_'))) {
-            menuItems.push({icon: User, label: "Patients", path: "/patients", permission: 'PATIENTS_VIEW'});
+            menuItems.push({icon: User, label: "patients", path: "/patients", permission: 'PATIENTS_VIEW'});
         }
 
         if (permissionNames.some(p => p.startsWith('APPOINTMENTS_'))) {
             menuItems.push({
                 icon: Calendar,
-                label: "Appointments",
+                label: "appointments",
                 path: "/appointments",
                 permission: 'APPOINTMENTS_VIEW'
             });
@@ -164,7 +164,7 @@ export class PermissionStrategy {
         if (permissionNames.some(p => p.startsWith('MEDICAL_RECORDS_'))) {
             menuItems.push({
                 icon: ClipboardList,
-                label: "Clinical",
+                label: "clinical",
                 path: "/clinical",
                 permission: 'MEDICAL_RECORDS_READ'
             });
@@ -173,7 +173,7 @@ export class PermissionStrategy {
         if (permissionNames.some(p => p.startsWith('MEDICAL_RECORDS_') || p.startsWith('APPOINTMENTS_'))) {
             menuItems.push({
                 icon: Pill,
-                label: "Prescriptions",
+                label: "prescriptions",
                 path: "/prescriptions",
                 permission: 'MEDICAL_RECORDS_READ'
             });
@@ -182,24 +182,24 @@ export class PermissionStrategy {
         if (permissionNames.some(p => p.startsWith('BILLING_'))) {
             menuItems.push({
                 icon: BarChart3,
-                label: "Financial",
+                label: "financial",
                 path: "/financial",
                 permission: 'BILLING_VIEW_INVOICES'
             });
         }
 
         if (permissionNames.some(p => p.startsWith('USERS_'))) {
-            menuItems.push({icon: Users, label: "User Management", path: "/users", permission: 'USERS_VIEW'});
+            menuItems.push({icon: Users, label: "userManagement", path: "/users", permission: 'USERS_VIEW'});
         }
 
         if (permissionNames.includes('SYSTEM_MANAGE_ROLES')) {
-            menuItems.push({icon: Lock, label: "Security", path: "/security", permission: 'SYSTEM_MANAGE_ROLES'});
+            menuItems.push({icon: Lock, label: "security", path: "/security", permission: 'SYSTEM_MANAGE_ROLES'});
         }
 
         if (permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS')) {
             menuItems.push({
                 icon: Settings,
-                label: "Settings",
+                label: "settings",
                 path: "/settings",
                 permission: 'SYSTEM_HOSPITAL_SETTINGS'
             });
@@ -208,14 +208,14 @@ export class PermissionStrategy {
         if (permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
             menuItems.push({
                 icon: Shield,
-                label: "Permissions",
+                label: "permissions",
                 path: "/permissions",
                 permission: 'USERS_MANAGE_PERMISSIONS'
             });
         }
 
         if (permissionNames.includes('QUEUES_ADMIN_ALL')) {
-            menuItems.push({icon: Activity, label: "Analytics", path: "/analytics", permission: 'QUEUES_ADMIN_ALL'});
+            menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'QUEUES_ADMIN_ALL'});
         }
 
         return menuItems;

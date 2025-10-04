@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import {useTranslations} from 'next-intl';
 import { useAuth } from "./AuthContext";
 import { useFeatures, useText } from "../lib/useFeatures";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +43,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const t = useTranslations('common');
   const { user, logout, permissions } = useAuth();
   const features = useFeatures();
   const text = useText();
@@ -109,7 +112,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             }}
           >
             <ItemIcon className="h-4 w-4 mr-2" />
-            {item.label}
+            {t(item.label)}
           </Button>
         );
       })}
@@ -174,6 +177,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Branch Selector - Hidden on small screens */}
             <div className="hidden sm:block">
               <BranchSelector />
+            </div>
+
+            {/* Language Switcher */}
+            <div className="relative z-50">
+              <LanguageSwitcher />
             </div>
 
             {/* Theme Toggle */}
@@ -302,14 +310,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="cursor-pointer group"
                 >
                   <User className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
-                  Profile
+                  {t('profile')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => router.push("/settings")}
                   className="cursor-pointer group"
                 >
                   <Settings className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-90" />
-                  Settings
+                  {t('settings')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -317,7 +325,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="text-destructive cursor-pointer group"
                 >
                   <LogOut className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-                  {text.buttons.logout}
+                  {t('logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
               </DropdownMenu>
@@ -374,7 +382,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     className={`w-full transition-all duration-200 ${desktopSidebarCollapsed ? 'justify-center px-0 h-12' : 'justify-start px-3 h-11'} ${isActive ? 'bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-600 font-medium shadow-sm' : 'hover:bg-muted/50'}`}
                   >
                     <ItemIcon className={`${desktopSidebarCollapsed ? 'h-5 w-5' : 'h-4 w-4 mr-3'} ${isActive ? 'text-blue-600' : ''}`} />
-                    {!desktopSidebarCollapsed && <span className="truncate">{item.label}</span>}
+                    {!desktopSidebarCollapsed && <span className="truncate">{t(item.label)}</span>}
                   </Button>
                 );
               })}
