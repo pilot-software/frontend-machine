@@ -1,18 +1,18 @@
 'use client';
 
 import React, {useEffect, useState} from 'react';
-import {AuthGuard} from '@/components/AuthGuard';
+import {AuthGuard} from '@/components/shared/guards/AuthGuard';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {Card, CardContent, CardHeader, CardTitle} from '../../../components/ui/card';
-import {Button} from '../../../components/ui/button';
-import {Input} from '../../../components/ui/input';
-import {Badge} from '../../../components/ui/badge';
-import {Avatar, AvatarFallback} from '../../../components/ui/avatar';
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../../../components/ui/table';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../../../components/ui/select';
-import {Dialog, DialogContent, DialogHeader, DialogTitle} from '../../../components/ui/dialog';
-import {Label} from '../../../components/ui/label';
-import {Checkbox} from '../../../components/ui/checkbox';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback} from '@/components/ui/avatar';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@/components/ui/dialog';
+import {Label} from '@/components/ui/label';
+import {Checkbox} from '@/components/ui/checkbox';
 import {
     Activity,
     AlertTriangle,
@@ -26,7 +26,7 @@ import {
     UserCheck,
     Users
 } from 'lucide-react';
-import {api} from '../../../lib/api';
+import {api} from '@/lib/api';
 
 interface User {
     id: string;

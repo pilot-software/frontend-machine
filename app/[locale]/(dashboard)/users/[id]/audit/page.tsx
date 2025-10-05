@@ -2,14 +2,14 @@
 
 import React, {useEffect, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
-import {Card, CardContent, CardHeader, CardTitle} from '../../../../../components/ui/card';
-import {Button} from '../../../../../components/ui/button';
-import {Input} from '../../../../../components/ui/input';
-import {Badge} from '../../../../../components/ui/badge';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../../../../../components/ui/select';
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../../../../../components/ui/table';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Badge} from '@/components/ui/badge';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {ArrowLeft, FileText, RefreshCw, Search} from 'lucide-react';
-import {api} from '../../../../../lib/api';
+import {api} from '@/lib/api';
 
 interface AuditLog {
     id: string;
@@ -27,7 +27,7 @@ export default function UserAuditPage() {
     const params = useParams();
 
     const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchAuditLogs();
@@ -113,7 +113,7 @@ export default function UserAuditPage() {
         return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
     };
 
-    const getActionIcon = (action: string) => {
+    const getActionIcon = (_action: string) => {
         // Return appropriate icon based on action type
         return <FileText className="h-4 w-4"/>;
     };
@@ -143,7 +143,7 @@ export default function UserAuditPage() {
                                 <Input
                                     placeholder="Search audit logs..."
                                     value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                                     className="pl-10"
                                 />
                             </div>

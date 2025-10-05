@@ -39,7 +39,7 @@ export function TemporaryPermissionModal({isOpen, onClose, userId, onSuccess}: T
         try {
             setLoading(true);
             const [groups, permissions] = await Promise.all([
-                api.getPermissionGroups(),
+                Promise.resolve([]),
                 api.get('/api/permissions/all')
             ]);
             setPermissionGroups(groups || []);

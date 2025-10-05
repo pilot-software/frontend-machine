@@ -1,5 +1,5 @@
 import {useMemo} from "react";
-import {useAuth} from "@/components/AuthContext";
+import {useAuth} from "@/components/providers/AuthContext";
 
 export function useFilteredData<T extends Record<string, any>>(
     data: T[],

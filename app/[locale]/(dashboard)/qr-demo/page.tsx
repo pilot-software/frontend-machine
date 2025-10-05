@@ -4,7 +4,7 @@ import {useState} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import QRScanner from '@/components/QRScanner';
+import QRScanner from '@/components/shared/utils/QRScanner';
 import {downloadPatientHTML, downloadPatientPDF} from '@/lib/services/pdf-simple';
 import {Doctor, Patient} from '@/lib/types';
 import {Download, FileText, QrCode, User} from 'lucide-react';

@@ -2,16 +2,16 @@
 
 import React, {useEffect, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {Card, CardContent, CardHeader, CardTitle} from '../../../../components/ui/card';
-import {Button} from '../../../../components/ui/button';
-import {Input} from '../../../../components/ui/input';
-import {Badge} from '../../../../components/ui/badge';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '../../../../components/ui/select';
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '../../../../components/ui/table';
-import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from '../../../../components/ui/dialog';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from '../../../../components/ui/tabs';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Badge} from '@/components/ui/badge';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {ArrowLeft, Building, Edit, Plus, Search, Trash2} from 'lucide-react';
-import {api} from '../../../../lib/api';
+import {api} from '@/lib/api';
 
 interface Branch {
     id: string;

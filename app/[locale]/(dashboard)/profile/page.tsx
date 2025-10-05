@@ -1,6 +1,6 @@
 'use client';
 
-import {useAuth} from '@/components/AuthContext';
+import {useAuth} from '@/components/providers/AuthContext';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';

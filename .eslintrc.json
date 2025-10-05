@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -14,6 +11,16 @@
     "@typescript-eslint/no-explicit-any": "warn",
     "react-hooks/exhaustive-deps": "warn",
     "prefer-const": "error",
-    "no-var": "error"
+    "no-var": "error",
+    // Limit files to 300 lines, excluding blank lines and comments
+    "max-lines": [
+      "warn",
+      { "max": 300, "skipBlankLines": true, "skipComments": true }
+    ]
+    // Limit functions to 100 lines, excluding blank lines and comments
+    // "max-lines-per-function": [
+    //   "warn",
+    //   { "max": 200, "skipBlankLines": true, "skipComments": true }
+    // ]
   }
 }

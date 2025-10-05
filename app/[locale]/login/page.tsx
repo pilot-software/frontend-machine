@@ -1,7 +1,7 @@
 'use client';
 
-import {AuthProvider} from '@/components/AuthContext';
-import {LoginForm} from '@/components/LoginForm';
+import {AuthProvider} from '@/components/providers/AuthContext';
+import {LoginForm} from '@/components/features/auth/LoginForm';
 import {useRouter} from 'next/navigation';
 import {useLocale} from 'next-intl';
 

@@ -2,15 +2,15 @@
 
 import React, {useEffect, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
-import {Card, CardContent, CardHeader, CardTitle} from '../../../../../components/ui/card';
-import {Button} from '../../../../../components/ui/button';
-import {Input} from '../../../../../components/ui/input';
-import {Label} from '../../../../../components/ui/label';
-import {Badge} from '../../../../../components/ui/badge';
-import {Avatar, AvatarFallback} from '../../../../../components/ui/avatar';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from '../../../../../components/ui/tabs';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback} from '@/components/ui/avatar';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {ArrowLeft, Clock, Edit, FileText, Shield} from 'lucide-react';
-import {api} from '../../../../../lib/api';
+import {api} from '@/lib/api';
 
 interface User {
     id: string;

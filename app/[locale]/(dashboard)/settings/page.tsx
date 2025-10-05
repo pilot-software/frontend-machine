@@ -6,7 +6,7 @@ import {Switch} from "@/components/ui/switch";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
 import {Label} from "@/components/ui/label";
 import {Bell, Database, Palette, Shield} from "lucide-react";
-import {useTheme} from "@/components/ThemeProvider";
+import {useTheme} from "@/components/providers/ThemeProvider";
 
 export default function SettingsPage() {
     const {theme, toggleTheme} = useTheme();

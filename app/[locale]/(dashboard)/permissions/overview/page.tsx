@@ -2,9 +2,9 @@
 
 import React from 'react';
 import {useRouter} from 'next/navigation';
-import {Card, CardContent, CardHeader, CardTitle} from '../../../../components/ui/card';
-import {Button} from '../../../../components/ui/button';
-import {Badge} from '../../../../components/ui/badge';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
 import {ArrowRight, Building, Eye, FileText, Settings, Shield, Users} from 'lucide-react';
 
 export default function PermissionsOverviewPage() {

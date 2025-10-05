@@ -2,14 +2,14 @@
 
 import React, {useEffect, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
-import {Card, CardContent, CardHeader, CardTitle} from '../../../../../components/ui/card';
-import {Button} from '../../../../../components/ui/button';
-import {Switch} from '../../../../../components/ui/switch';
-import {Label} from '../../../../../components/ui/label';
-import {Badge} from '../../../../../components/ui/badge';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Switch} from '@/components/ui/switch';
+import {Label} from '@/components/ui/label';
+import {Badge} from '@/components/ui/badge';
 import {ArrowLeft, Clock, Minus, Plus, Save, Shield} from 'lucide-react';
-import {api} from '../../../../../lib/api';
-import {TemporaryPermissionModal} from '../../../../../components/permissions';
+import {api} from '@/lib/api';
+import {TemporaryPermissionModal} from '@/components/permissions/TemporaryPermissionModal';
 
 const PERMISSION_MODULES = [
     {name: 'Users', key: 'users', special: ['Manage Roles', 'Delete Users']},
@@ -34,7 +34,7 @@ export default function UserPermissionsPage() {
     const params = useParams();
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
     const [showTempPermModal, setShowTempPermModal] = useState(false);
 
     useEffect(() => {
@@ -147,7 +147,7 @@ export default function UserPermissionsPage() {
                                             <Switch
                                                 id={`${module.key}-create`}
                                                 checked={perm.create}
-                                                onCheckedChange={(checked) => updatePermission(module.key, 'create', checked)}
+                                                onCheckedChange={(checked: boolean) => updatePermission(module.key, 'create', checked)}
                                             />
                                             <Label htmlFor={`${module.key}-create`}>Create</Label>
                                         </div>
@@ -155,7 +155,7 @@ export default function UserPermissionsPage() {
                                             <Switch
                                                 id={`${module.key}-read`}
                                                 checked={perm.read}
-                                                onCheckedChange={(checked) => updatePermission(module.key, 'read', checked)}
+                                                onCheckedChange={(checked: boolean) => updatePermission(module.key, 'read', checked)}
                                             />
                                             <Label htmlFor={`${module.key}-read`}>Read</Label>
                                         </div>
@@ -163,7 +163,7 @@ export default function UserPermissionsPage() {
                                             <Switch
                                                 id={`${module.key}-update`}
                                                 checked={perm.update}
-                                                onCheckedChange={(checked) => updatePermission(module.key, 'update', checked)}
+                                                onCheckedChange={(checked: boolean) => updatePermission(module.key, 'update', checked)}
                                             />
                                             <Label htmlFor={`${module.key}-update`}>Update</Label>
                                         </div>
@@ -171,7 +171,7 @@ export default function UserPermissionsPage() {
                                             <Switch
                                                 id={`${module.key}-delete`}
                                                 checked={perm.delete}
-                                                onCheckedChange={(checked) => updatePermission(module.key, 'delete', checked)}
+                                                onCheckedChange={(checked: boolean) => updatePermission(module.key, 'delete', checked)}
                                             />
                                             <Label htmlFor={`${module.key}-delete`}>Delete</Label>
                                         </div>

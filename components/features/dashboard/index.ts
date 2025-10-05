@@ -1,0 +1,12 @@
+export { DashboardLayout } from '@/components/features/dashboard/DashboardLayout';
+export { DashboardStats } from '@/components/features/dashboard/DashboardStats';
+export { DashboardWidgets } from '@/components/features/dashboard/DashboardWidgets';
+export { HealthcareDashboard } from '@/components/features/dashboard/HealthcareDashboard';
+export { RoleDashboards } from '@/components/features/dashboard/RoleDashboards';
+export { AdminDashboardWidgets } from './AdminDashboardWidgets';
+export { DoctorDashboardWidgets } from './DoctorDashboardWidgets';
+export { PatientDashboardWidgets } from './PatientDashboardWidgets';
+export { DashboardSearch } from './DashboardSearch';
+export { DashboardTabs } from './DashboardTabs';
+export { DoctorFormModal } from '@/components/features/dashboard/DoctorFormModal';
+export { DoctorTable } from './DoctorTable';

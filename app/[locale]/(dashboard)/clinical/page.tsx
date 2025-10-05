@@ -1,7 +1,7 @@
 'use client';
 
-import {ClinicalInterface} from '@/components/ClinicalInterface';
-import {AuthGuard} from '@/components/AuthGuard';
+import {ClinicalInterface} from '@/components/features/clinical/ClinicalInterface';
+import {AuthGuard} from '@/components/shared/guards/AuthGuard';
 
 export default function ClinicalPage() {
     return (

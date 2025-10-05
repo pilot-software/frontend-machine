@@ -1,7 +1,7 @@
 'use client';
 
-import {PatientManagement} from '@/components/PatientManagement';
-import {AuthGuard} from '@/components/AuthGuard';
+import {PatientManagement} from '@/components/features/patients/PatientManagement';
+import {AuthGuard} from '@/components/shared/guards/AuthGuard';
 
 export default function PatientsPage() {
     return (

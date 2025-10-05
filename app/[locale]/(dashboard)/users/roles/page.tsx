@@ -1,14 +1,14 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {Card, CardContent, CardHeader, CardTitle,} from "../../../../components/ui/card";
-import {Button} from "../../../../components/ui/button";
-import {Badge} from "../../../../components/ui/badge";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "../../../../components/ui/table";
-import {Switch} from "../../../../components/ui/switch";
-import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "../../../../components/ui/dialog";
+import {Card, CardContent, CardHeader, CardTitle,} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import {Switch} from "@/components/ui/switch";
+import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
 import {Edit, Settings, Shield, Users} from "lucide-react";
-import {apiClient} from "../../../../lib/api";
+import {apiClient} from "@/lib/api";
 
 const ROLES = ["ADMIN", "DOCTOR", "NURSE", "FINANCE", "RECEPTIONIST"];
 const MODULES = [
@@ -31,8 +31,8 @@ interface RolePermission {
 }
 
 export default function RolesPage() {
-    const [rolePermissions, setRolePermissions] = useState<RolePermission[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [_rolePermissions, setRolePermissions] = useState<RolePermission[]>([]);
+    const [_loading, setLoading] = useState(true);
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -267,8 +267,6 @@ function RoleEditModal({
     role: string | null;
     onSuccess: () => void;
 }) {
-    if (!role) return null;
-
     // Permission shape used in system
     interface Permission {
         id?: string;
@@ -370,6 +368,8 @@ function RoleEditModal({
     const availablePermissions = allPermissions.filter(
         (p) => !assigned.includes(p.name)
     );
+
+    if (!role) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
