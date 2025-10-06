@@ -4,6 +4,7 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import {User, UserRole} from "@/lib/types";
 import {storageService} from "@/lib/services/storage.service";
 import {Permission, permissionService} from "@/lib/services/permission";
+import {DashboardSkeleton} from "@/components/skeletons/DashboardSkeleton";
 
 interface AuthContextType {
     user: User | null;
@@ -25,6 +26,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
         const initializeAuth = async () => {
@@ -68,10 +70,10 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         initializeAuth();
     }, []);
 
-    if (isLoading) {
+    if (isLoading && !isLoggingOut) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                Loading...
+            <div className="min-h-screen p-6">
+                <DashboardSkeleton />
             </div>
         );
     }
@@ -146,6 +148,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     };
 
     const logout = async () => {
+        setIsLoggingOut(true);
         try {
             const {authService} = await import('@/lib/services/auth');
             await authService.logout();

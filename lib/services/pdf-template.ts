@@ -274,7 +274,7 @@ export const generatePatientPDF = async (
 
     try {
         const pdf = await generate({
-            template,
+            template: template as any,
             inputs,
             plugins,
         });
@@ -293,7 +293,7 @@ export const downloadPatientPDF = async (
     try {
         const pdfBytes = await generatePatientPDF(patient, assignedDoctor);
 
-        const blob = new Blob([pdfBytes], {type: 'application/pdf'});
+        const blob = new Blob([pdfBytes as any], {type: 'application/pdf'});
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');

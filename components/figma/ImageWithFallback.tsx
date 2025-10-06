@@ -24,7 +24,7 @@ export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElemen
             </div>
         </div>
     ) : (
-        <Image src={src || ''} alt={alt || ''} className={className} style={style} width={0} height={0}
+        <Image src={typeof src === 'string' ? src : ''} alt={alt || ''} className={className} style={style} width={0} height={0}
                sizes="100vw" {...rest} onError={handleError}/>
     )
 }
