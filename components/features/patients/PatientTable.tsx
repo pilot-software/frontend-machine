@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -25,6 +25,8 @@ import {
   MoreHorizontal,
   Phone,
   Printer,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { printService } from "@/lib/utils/printService";
@@ -59,6 +61,55 @@ export function PatientTable({
 }: PatientTableProps) {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const sortedPatients = useMemo(() => {
+    if (!sortField) return patients;
+    
+    return [...patients].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+      
+      if (sortField === "patient") {
+        aValue = `${a.firstName} ${a.lastName}`;
+        bValue = `${b.firstName} ${b.lastName}`;
+      }
+      
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [patients, sortField, sortDirection]);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const SortableHeader = ({ field, children, className }: { field: string; children: React.ReactNode; className?: string }) => (
+    <TableHead className={className}>
+      <Button
+        variant="ghost"
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+        onClick={() => handleSort(field)}
+      >
+        {children}
+        {sortField === field && (
+          sortDirection === "asc" ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />
+        )}
+      </Button>
+    </TableHead>
+  );
 
   const handleOpenInNewTab = (patientId: string) => {
     window.open(`/patient/${patientId}`, "_blank", "noopener,noreferrer");
@@ -68,7 +119,7 @@ export function PatientTable({
   if (isMobile) {
     return (
       <div className="space-y-3">
-        {patients.map((patient, index) => (
+        {sortedPatients.map((patient, index) => (
           <Card
             key={patient.id || `patient-${index}`}
             className="overflow-hidden"
@@ -197,25 +248,25 @@ export function PatientTable({
         <TableHeader>
           <TableRow>
             {isColumnVisible("patients", "patient") && (
-              <TableHead className="min-w-[200px]">Patient</TableHead>
+              <SortableHeader field="patient" className="min-w-[200px]">Patient</SortableHeader>
             )}
             {isColumnVisible("patients", "caseNumber") && (
-              <TableHead className="min-w-[100px]">Case #</TableHead>
+              <SortableHeader field="caseNumber" className="min-w-[100px]">Case #</SortableHeader>
             )}
             {isColumnVisible("patients", "contact") && (
               <TableHead className="min-w-[200px]">Contact</TableHead>
             )}
             {isColumnVisible("patients", "doctor") && (
-              <TableHead className="min-w-[150px]">Doctor</TableHead>
+              <SortableHeader field="assignedDoctor" className="min-w-[150px]">Doctor</SortableHeader>
             )}
             {isColumnVisible("patients", "department") && (
-              <TableHead className="min-w-[120px]">Department</TableHead>
+              <SortableHeader field="department" className="min-w-[120px]">Department</SortableHeader>
             )}
             {isColumnVisible("patients", "status") && (
-              <TableHead className="min-w-[100px]">Status</TableHead>
+              <SortableHeader field="status" className="min-w-[100px]">Status</SortableHeader>
             )}
             {isColumnVisible("patients", "lastVisit") && (
-              <TableHead className="min-w-[120px]">Last Visit</TableHead>
+              <SortableHeader field="lastVisit" className="min-w-[120px]">Last Visit</SortableHeader>
             )}
             {isColumnVisible("patients", "actions") && (
               <TableHead className="min-w-[150px]">Actions</TableHead>
@@ -223,7 +274,7 @@ export function PatientTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {patients.map((patient, index) => (
+          {sortedPatients.map((patient, index) => (
             <TableRow key={patient.id || `patient-${index}`}>
               {isColumnVisible("patients", "patient") && (
                 <TableCell>
