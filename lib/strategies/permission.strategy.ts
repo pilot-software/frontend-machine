@@ -137,9 +137,19 @@ const PERMISSION_MENU_MAP: Record<string, MenuItem> = {
 
 export class PermissionStrategy {
     static getMenuItems(userPermissions: Permission[]): MenuItem[] {
-        // Handle case where userPermissions might not be an array
-        if (!Array.isArray(userPermissions)) {
-            return [{icon: Activity, label: "Dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'}];
+        // Handle case where userPermissions might not be an array or is empty
+        if (!Array.isArray(userPermissions) || userPermissions.length === 0) {
+            // Return default menu items when no permissions are loaded
+            return [
+                {icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'},
+                {icon: User, label: "patients", path: "/patients", permission: 'PATIENTS_VIEW'},
+                {icon: Calendar, label: "appointments", path: "/appointments", permission: 'APPOINTMENTS_VIEW'},
+                {icon: ClipboardList, label: "clinical", path: "/clinical", permission: 'MEDICAL_RECORDS_READ'},
+                {icon: Pill, label: "prescriptions", path: "/prescriptions", permission: 'MEDICAL_RECORDS_READ'},
+                {icon: BarChart3, label: "financial", path: "/financial", permission: 'BILLING_VIEW_INVOICES'},
+                {icon: Users, label: "userManagement", path: "/users", permission: 'USERS_VIEW'},
+                {icon: Settings, label: "settings", path: "/settings", permission: 'SYSTEM_HOSPITAL_SETTINGS'},
+            ];
         }
 
         const permissionNames = userPermissions.map(p => p.name);
