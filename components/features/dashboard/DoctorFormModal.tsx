@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { useTranslations } from "next-intl";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -36,6 +37,7 @@ export function DoctorFormModal({
                                     doctorId,
                                     mode,
                                 }: DoctorFormModalProps) {
+  const t = useTranslations('common');
     const [isLoading, setIsLoading] = useState(false);
     const [doctorData, setDoctorData] = useState<DoctorFormData>({
         name: "",
@@ -163,9 +165,7 @@ export function DoctorFormModal({
                                                     <Badge
                                                         variant="outline"
                                                         className="bg-green-50 text-green-700 border-green-200"
-                                                    >
-                                                        Active
-                                                    </Badge>
+                                                    >{t("active")}</Badge>
                                                 </div>
                                                 <div
                                                     className="flex items-center text-sm text-muted-foreground space-x-4">
@@ -298,9 +298,7 @@ export function DoctorFormModal({
                         variant="outline"
                         onClick={onClose}
                         className="bg-background/80 backdrop-blur-sm border-border hover:bg-muted"
-                    >
-                        Cancel
-                    </Button>
+                    >{t("cancel")}</Button>
                     {!isReadOnly && (
                         <Button
                             onClick={handleSubmit}

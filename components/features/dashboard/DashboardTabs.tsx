@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import {Tabs} from '@/components/ui/tabs';
 
 interface DashboardTabsProps {
@@ -12,6 +13,7 @@ export function DashboardTabs({
                                   onTabChange,
                                   children,
                               }: DashboardTabsProps) {
+  const t = useTranslations('common');
     return (
         <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
             {children}

@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { useTranslations } from "next-intl";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Label} from '@/components/ui/label';
@@ -13,7 +14,7 @@ import {useModal} from '@/lib/hooks/useModal';
 import {transformPatientToDisplay} from '@/lib/utils/data-transformers';
 import {PatientStats} from "./PatientStats";
 import {PatientSearch} from "./PatientSearch";
-import {PatientList} from "./PatientList";
+import {PatientDataTable} from "./PatientDataTable";
 import {Activity, Plus, Stethoscope, Thermometer} from "lucide-react";
 import {Patient} from "@/lib/types";
 
@@ -218,9 +219,7 @@ function VisitDetailsModal({isOpen, onClose, visit}: VisitDetailsModalProps) {
                 </div>
 
                 <div className="flex justify-end pt-4 border-t">
-                    <Button variant="outline" onClick={onClose}>
-                        Close
-                    </Button>
+                    <Button variant="outline" onClick={onClose}>Close</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -228,6 +227,7 @@ function VisitDetailsModal({isOpen, onClose, visit}: VisitDetailsModalProps) {
 }
 
 export function PatientManagement() {
+  const t = useTranslations('common');
     const {isOpen, mode, selectedId, openModal, closeModal} = useModal();
     const [searchTerm, setSearchTerm] = useState("");
     const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
@@ -499,23 +499,29 @@ export function PatientManagement() {
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-6">
-                    <PatientSearch
-                        searchTerm={searchTerm}
-                        onSearchChange={(term: string) => {
-                            setSearchTerm(term);
-                            handleSearch(term);
-                        }}
-                        activeFilters={activeFilters}
-                        onFilterChange={setActiveFilters}
-                        onClearFilters={() => setActiveFilters({})}
-                    />
-
-                    <PatientList
-                        patients={recentPatients}
-                        loading={loading.patients || loading.stats}
-                        onViewPatient={(id: string) => openModal("view", id)}
-                        onEditPatient={(id: string) => openModal("edit", id)}
-                    />
+                    <Card>
+                        <CardContent className="p-0">
+                            <PatientDataTable
+                                patients={allPatients.map(p => ({
+                                    id: p.id,
+                                    firstName: p.name.split(' ')[0] || '',
+                                    lastName: p.name.split(' ').slice(1).join(' ') || '',
+                                    email: p.email,
+                                    phone: p.phone,
+                                    dateOfBirth: p.dateOfBirth || 'N/A',
+                                    gender: p.gender || 'N/A',
+                                    status: p.status,
+                                    caseNumber: p.caseNumber,
+                                    assignedDoctor: p.assignedDoctor,
+                                    department: p.department,
+                                    lastVisit: p.lastVisit,
+                                    avatar: p.avatar,
+                                }))}
+                                onViewPatient={(patient, origin) => openModal("view", patient.id)}
+                                onEditPatient={(id) => openModal("edit", id)}
+                            />
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 <TabsContent value="admissions">

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
 import { AdminDashboardWidgets } from "./AdminDashboardWidgets";
 import { DoctorDashboardWidgets } from "./DoctorDashboardWidgets";
@@ -13,6 +14,7 @@ import {
 import { ROLES } from "@/lib/constants";
 
 export function DashboardWidgets() {
+  const t = useTranslations('common');
   const { user } = useAuth();
   const router = useRouter();
   const dispatch = useAppDispatch();

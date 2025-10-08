@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {BranchBadge} from '@/components/shared/navigation/BranchBadge';
 import {usePatients} from '@/lib/hooks/useBranchData';
@@ -14,6 +15,7 @@ interface Patient {
 }
 
 export function PatientListWithBranches() {
+  const t = useTranslations('common');
     const {data: patients, isLoading, error} = usePatients();
 
     if (isLoading) {
@@ -35,7 +37,7 @@ export function PatientListWithBranches() {
             <TableHeader>
                 <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
+                    <TableHead>{t("email")}</TableHead>
                     <TableHead>Branch</TableHead>
                 </TableRow>
             </TableHeader>

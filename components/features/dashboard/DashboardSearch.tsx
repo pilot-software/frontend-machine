@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -48,6 +49,7 @@ export function DashboardSearch({
   filteredCounts,
   filterOptions,
 }: DashboardSearchProps) {
+  const t = useTranslations("common");
   const { user } = useAuth();
   const features = useFeatures();
 
@@ -124,7 +126,7 @@ export function DashboardSearch({
                 onClick={() => onViewChange("patients")}
               >
                 <Users className="h-4 w-4 mr-2" aria-hidden="true" />
-                {user?.role === ROLES.DOCTOR ? "My Patients" : "Patients"} (
+                {user?.role === ROLES.DOCTOR ? "My Patients" : t("patients")} (
                 {filteredCounts.patients})
               </Button>
 

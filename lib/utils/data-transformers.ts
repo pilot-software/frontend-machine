@@ -12,6 +12,11 @@ export interface PatientDisplay {
     condition: string;
     department: string;
     avatar: string;
+    email: string;
+    phone: string;
+    dateOfBirth: string;
+    gender: string;
+    assignedDoctor: string;
 }
 
 export interface AppointmentDisplay {
@@ -41,7 +46,12 @@ export const transformPatientToDisplay = (patient: Patient, doctors: Doctor[] = 
         doctor: assignedDoctor?.name || 'Dr. Assigned',
         condition: patient.chronicConditions || 'General Care',
         department: patient.department || 'General',
-        avatar: patient.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`
+        avatar: patient.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`,
+        email: patient.email || '',
+        phone: patient.phone || '',
+        dateOfBirth: patient.dateOfBirth,
+        gender: patient.gender,
+        assignedDoctor: assignedDoctor?.name || 'Dr. Assigned',
     };
 };
 

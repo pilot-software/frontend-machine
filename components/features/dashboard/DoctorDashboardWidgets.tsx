@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export function DoctorDashboardWidgets() {
+  const t = useTranslations('common');
   const vitalsOverview = [
     { patient: 'Alice Brown', room: '105', bp: '120/80', hr: 72, spo2: 98, status: 'stable' },
     { patient: 'Bob Wilson', room: '203', bp: '145/95', hr: 88, spo2: 95, status: 'monitor' },
@@ -57,7 +59,7 @@ export function DoctorDashboardWidgets() {
                 <p className="font-semibold text-sm">Ward Rounds</p>
                 <p className="text-xs text-muted-foreground">5:00 PM - 6:00 PM</p>
               </div>
-              <Badge variant="outline">Pending</Badge>
+              <Badge variant="outline">{t("pending")}</Badge>
             </div>
           </CardContent>
         </Card>

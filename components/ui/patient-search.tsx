@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useEffect, useRef, useState} from 'react';
+import { useTranslations } from "next-intl";
 import {Search, User} from 'lucide-react';
 import {Input} from './input';
 import {Card} from './card';
@@ -28,6 +29,7 @@ export function PatientSearch({
                                   placeholder = "Search patients by name or case number...",
                                   selectedPatientId
                               }: PatientSearchProps) {
+  const t = useTranslations('common');
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);

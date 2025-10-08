@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useTranslations } from "next-intl";
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {PatientFormModal} from '@/components/features/patients/PatientFormModal';
@@ -8,6 +9,7 @@ import {BillingFormModal} from '@/components/features/financial/BillingFormModal
 import {Calendar, CreditCard, DollarSign, Stethoscope, User} from 'lucide-react';
 
 export function FormExamples() {
+  const t = useTranslations('common');
     const [patientModalOpen, setPatientModalOpen] = useState(false);
     const [appointmentModalOpen, setAppointmentModalOpen] = useState(false);
     const [doctorModalOpen, setDoctorModalOpen] = useState(false);

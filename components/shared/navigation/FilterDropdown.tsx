@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useTranslations } from "next-intl";
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
@@ -21,6 +22,7 @@ interface FilterDropdownProps {
 }
 
 export function FilterDropdown({filters, activeFilters, onFilterChange, onClearFilters}: FilterDropdownProps) {
+  const t = useTranslations('common');
     const [isOpen, setIsOpen] = useState(false);
 
     const handleFilterChange = (key: string, value: string) => {

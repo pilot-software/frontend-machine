@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useTranslations } from "next-intl";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -157,6 +158,7 @@ const mockAppointments: Appointment[] = [
 ];
 
 export function AppointmentSystemEnhanced() {
+  const t = useTranslations('common');
     const {user} = useAuth();
     const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'schedule' | 'reschedule' | 'view'>('schedule');
@@ -424,7 +426,7 @@ export function AppointmentSystemEnhanced() {
                                         <SelectContent>
                                             <SelectItem value="all">All Types</SelectItem>
                                             <SelectItem value="direct">Direct</SelectItem>
-                                            <SelectItem value="phone">Phone</SelectItem>
+                                            <SelectItem value="phone">{t("phone")}</SelectItem>
                                             <SelectItem value="video">Video</SelectItem>
                                         </SelectContent>
                                     </Select>
@@ -437,8 +439,8 @@ export function AppointmentSystemEnhanced() {
                                             <SelectItem value="all">All Status</SelectItem>
                                             <SelectItem value="scheduled">Scheduled</SelectItem>
                                             <SelectItem value="confirmed">Confirmed</SelectItem>
-                                            <SelectItem value="completed">Completed</SelectItem>
-                                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                                            <SelectItem value="completed">{t("completed")}</SelectItem>
+                                            <SelectItem value="cancelled">{t("cancelled")}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <Button variant="outline" size="sm">
@@ -597,8 +599,8 @@ export function AppointmentSystemEnhanced() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Date & Time</TableHead>
-                                        <TableHead>Patient</TableHead>
-                                        <TableHead>Doctor</TableHead>
+                                        <TableHead>{t("patient")}</TableHead>
+                                        <TableHead>{t("doctor")}</TableHead>
                                         <TableHead>Type</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Priority</TableHead>
@@ -729,7 +731,7 @@ export function AppointmentSystemEnhanced() {
                                             <div>
                                                 <div className="flex items-center space-x-2">
                                                     <h3>{appointment.patientName}</h3>
-                                                    <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                                                    <Badge className="bg-green-100 text-green-800">{t("completed")}</Badge>
                                                 </div>
                                                 <p>
                                                     {appointment.doctorName} • {appointment.department}
@@ -776,7 +778,7 @@ export function AppointmentSystemEnhanced() {
                                         <span>156</span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span>Completed</span>
+                                        <span>{t("completed")}</span>
                                         <span className="text-green-600">142 (91%)</span>
                                     </div>
                                     <div className="flex items-center justify-between">
@@ -784,7 +786,7 @@ export function AppointmentSystemEnhanced() {
                                         <span className="text-red-600">8 (5%)</span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span>Cancelled</span>
+                                        <span>{t("cancelled")}</span>
                                         <span className="text-orange-600">6 (4%)</span>
                                     </div>
                                 </div>

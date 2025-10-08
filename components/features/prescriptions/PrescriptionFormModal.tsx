@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ const mockMedications = [
 ];
 
 export function PrescriptionFormModal({ isOpen, onClose, prescriptionId, mode }: PrescriptionFormModalProps) {
+  const t = useTranslations('common');
   const [selectedMedication, setSelectedMedication] = useState('');
 
   return (
@@ -33,7 +35,7 @@ export function PrescriptionFormModal({ isOpen, onClose, prescriptionId, mode }:
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="patient">Patient</Label>
+              <Label htmlFor="patient">{t("patient")}</Label>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="Select patient" />
@@ -62,7 +64,7 @@ export function PrescriptionFormModal({ isOpen, onClose, prescriptionId, mode }:
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="medication">Medication</Label>
+              <Label htmlFor="medication">{t("medication")}</Label>
               <Select value={selectedMedication} onValueChange={setSelectedMedication}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select medication" />
@@ -182,7 +184,7 @@ export function PrescriptionFormModal({ isOpen, onClose, prescriptionId, mode }:
           )}
 
           <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
             <Button variant="outline">
               <Printer className="h-4 w-4 mr-2" />
               Print Preview

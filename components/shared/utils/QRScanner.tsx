@@ -2,6 +2,7 @@
 
 import {useState} from 'react';
 import {useRouter} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Badge} from '@/components/ui/badge';
@@ -29,6 +30,7 @@ interface QRScannerProps {
 }
 
 export default function QRScanner({onPatientScanned}: QRScannerProps) {
+    const t = useTranslations('common');
     const router = useRouter();
     const [scannedData, setScannedData] = useState<PatientQRData | null>(null);
     const [error, setError] = useState<string>('');
@@ -140,27 +142,23 @@ export default function QRScanner({onPatientScanned}: QRScannerProps) {
                                     </div>
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 flex items-center">
-                                            <Calendar className="h-4 w-4 mr-1"/>
-                                            Date of Birth
-                                        </p>
+                                            <Calendar className="h-4 w-4 mr-1"/>{t("dateOfBirth")}</p>
                                         <p>{scannedData.dob}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 flex items-center">
-                                            <Phone className="h-4 w-4 mr-1"/>
-                                            Phone
-                                        </p>
+                                            <Phone className="h-4 w-4 mr-1"/>{t("phone")}</p>
                                         <p>{scannedData.phone || 'Not provided'}</p>
                                     </div>
                                     {scannedData.bloodType && (
                                         <div>
-                                            <p className="text-sm font-medium text-red-600">Blood Type</p>
+                                            <p className="text-sm font-medium text-red-600">{t("bloodType")}</p>
                                             <p className="text-red-700 font-bold">{scannedData.bloodType}</p>
                                         </div>
                                     )}
                                     {scannedData.allergies && (
                                         <div>
-                                            <p className="text-sm font-medium text-orange-600">Allergies</p>
+                                            <p className="text-sm font-medium text-orange-600">{t("allergies")}</p>
                                             <p className="text-orange-700 font-medium">{scannedData.allergies}</p>
                                         </div>
                                     )}

@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import {Badge} from '@/components/ui/badge';
-import {useBranch} from '@/components/providers/BranchContext';
+import { Badge } from "@/components/ui/badge";
+import { useBranch } from "@/components/providers/BranchContext";
 
 interface BranchBadgeProps {
-    branchId: string;
-    className?: string;
+  branchId: string;
+  className?: string;
 }
 
-export function BranchBadge({branchId, className}: BranchBadgeProps) {
-    const {branches, hasBranches} = useBranch();
+export function BranchBadge({ branchId, className }: BranchBadgeProps) {
+  const { branches, hasBranches } = useBranch();
 
-    // Don't show badge for orgs without branches
-    if (!hasBranches || !branchId) return null;
+  // Don't show badge for orgs without branches
+  if (!hasBranches || !branchId) return null;
 
-    const branch = branches.find(b => b.id === branchId);
-    if (!branch) return null;
+  const branch = branches.find((b) => b.id === branchId);
+  if (!branch) return null;
 
-    return (
-        <Badge
-            variant={branch.isMain ? "default" : "secondary"}
-            className={className}
-        >
-            {branch.code}
-        </Badge>
-    );
+  return (
+    <Badge
+      variant={branch.isMain ? "default" : "secondary"}
+      className={className}
+    >
+      {branch.code}
+    </Badge>
+  );
 }

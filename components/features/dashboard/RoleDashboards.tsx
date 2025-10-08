@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
 import { HealthcareDashboard } from '@/components/features/dashboard/HealthcareDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -133,6 +134,7 @@ function FinanceDashboard() {
 }
 
 export function RoleDashboards() {
+  const t = useTranslations('common');
   const { user } = useAuth();
 
   if (!user) return null;

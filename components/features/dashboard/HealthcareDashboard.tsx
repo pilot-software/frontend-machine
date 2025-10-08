@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -24,7 +25,7 @@ import {
 import { usePatientData } from "@/lib/hooks/usePatientData";
 import { useFilteredData } from "@/lib/hooks/useFilteredData";
 import { useAppData } from "@/lib/hooks/useAppData";
-import { PatientTable } from "@/components/features/patients/PatientTable";
+import { PatientDataTable } from "@/components/features/patients/PatientDataTable";
 import { DoctorTable } from "@/components/features/dashboard/DoctorTable";
 import { DashboardSearch } from "@/components/features/dashboard/DashboardSearch";
 import { DashboardTabs } from "@/components/features/dashboard/DashboardTabs";
@@ -43,6 +44,7 @@ import { PrescriptionFormModal } from "@/components/features/prescriptions/Presc
 import { ROLES } from "@/lib/constants";
 
 export function HealthcareDashboard() {
+  const t = useTranslations("common");
   const { user } = useAuth();
   const features = useFeatures();
   const [searchTerm, setSearchTerm] = useState("");
@@ -183,30 +185,30 @@ export function HealthcareDashboard() {
         return [
           {
             key: "status",
-            label: "Status",
+            label: t("status"),
             options: [
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
-              { value: "critical", label: "Critical" },
+              { value: "active", label: t("active") },
+              { value: "inactive", label: t("inactive") },
+              { value: "critical", label: t("critical") },
             ],
           },
           {
             key: "gender",
-            label: "Gender",
+            label: t("gender"),
             options: [
-              { value: "male", label: "Male" },
-              { value: "female", label: "Female" },
-              { value: "other", label: "Other" },
+              { value: "male", label: t("male") },
+              { value: "female", label: t("female") },
+              { value: "other", label: t("other") },
             ],
           },
           {
             key: "department",
-            label: "Department",
+            label: t("department"),
             options: [
-              { value: "General", label: "General" },
-              { value: "Cardiology", label: "Cardiology" },
-              { value: "Emergency", label: "Emergency" },
-              { value: "Orthopedics", label: "Orthopedics" },
+              { value: "General", label: t("general") },
+              { value: "Cardiology", label: t("cardiology") },
+              { value: "Emergency", label: t("emergency") },
+              { value: "Orthopedics", label: t("orthopedics") },
             ],
           },
         ];
@@ -214,31 +216,31 @@ export function HealthcareDashboard() {
         return [
           {
             key: "specialization",
-            label: "Specialization",
+            label: t("specialization"),
             options: [
-              { value: "General", label: "General" },
-              { value: "Cardiology", label: "Cardiology" },
-              { value: "Emergency Medicine", label: "Emergency Medicine" },
-              { value: "Orthopedics", label: "Orthopedics" },
+              { value: "General", label: t("general") },
+              { value: "Cardiology", label: t("cardiology") },
+              { value: "Emergency Medicine", label: t("emergencyMedicine") },
+              { value: "Orthopedics", label: t("orthopedics") },
             ],
           },
           {
             key: "department",
-            label: "Department",
+            label: t("department"),
             options: [
-              { value: "General", label: "General" },
-              { value: "Cardiology", label: "Cardiology" },
-              { value: "Emergency", label: "Emergency" },
-              { value: "Orthopedics", label: "Orthopedics" },
+              { value: "General", label: t("general") },
+              { value: "Cardiology", label: t("cardiology") },
+              { value: "Emergency", label: t("emergency") },
+              { value: "Orthopedics", label: t("orthopedics") },
             ],
           },
           {
             key: "availability",
-            label: "Availability",
+            label: t("availability"),
             options: [
-              { value: "available", label: "Available" },
-              { value: "busy", label: "Busy" },
-              { value: "off-duty", label: "Off Duty" },
+              { value: "available", label: t("available") },
+              { value: "busy", label: t("busy") },
+              { value: "off-duty", label: t("offDuty") },
             ],
           },
         ];
@@ -246,11 +248,11 @@ export function HealthcareDashboard() {
         return [
           {
             key: "status",
-            label: "Status",
+            label: t("status"),
             options: [
-              { value: "operational", label: "Operational" },
-              { value: "maintenance", label: "Maintenance" },
-              { value: "emergency", label: "Emergency" },
+              { value: "operational", label: t("operational") },
+              { value: "maintenance", label: t("maintenance") },
+              { value: "emergency", label: t("emergency") },
             ],
           },
         ];
@@ -261,49 +263,22 @@ export function HealthcareDashboard() {
 
   const renderDashboardContent = () => (
     <div className="spacing-responsive">
-      <DashboardSearch
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedView={selectedView}
-        onViewChange={setSelectedView}
-        activeFilters={activeFilters}
-        onFilterChange={setActiveFilters}
-        onAddPatient={handleAddPatient}
-        filteredCounts={{
-          patients: filteredPatients.length,
-          doctors: filteredDoctors.length,
-          departments: filteredDepartments.length,
-        }}
-        filterOptions={getFilterOptions()}
-      />
-
-      {selectedView === "patients" && (
+      {user?.role === ROLES.DOCTOR && (
         <Card className="overflow-hidden">
           <CardHeader className="px-6 pt-6 pb-2">
             <CardTitle className="heading-responsive">
-              {user?.role === ROLES.PATIENT
-                ? "My Medical Record"
-                : user?.role === ROLES.DOCTOR
-                ? "My Patient Records"
-                : "Patient Records"}
+              {t("myPatientRecords")}
             </CardTitle>
             <CardDescription className="text-responsive">
-              {user?.role === ROLES.PATIENT
-                ? "Your personal medical information and health records"
-                : user?.role === ROLES.DOCTOR
-                ? "Your assigned patients and their medical records"
-                : "Comprehensive list of all patients in the system"}
+              {t("assignedPatientsInfo")}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="table-responsive">
-              <PatientTable
-                patients={filteredPatients}
-                onViewPatient={handleViewPatient}
-                onEditPatient={handleEditPatient}
-                isColumnVisible={isColumnVisible}
-              />
-            </div>
+            <PatientDataTable
+              patients={filteredPatients}
+              onViewPatient={handleViewPatient}
+              onEditPatient={handleEditPatient}
+            />
           </CardContent>
         </Card>
       )}
@@ -314,10 +289,10 @@ export function HealthcareDashboard() {
           <Card className="overflow-hidden">
             <CardHeader className="px-6 pt-6 pb-2">
               <CardTitle className="heading-responsive">
-                Medical Staff Directory
+                {t("medicalStaffDirectory")}
               </CardTitle>
               <CardDescription className="text-responsive">
-                Complete directory of all medical professionals
+                {t("completeMedicalDirectory")}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">

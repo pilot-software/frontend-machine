@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useTranslations } from "next-intl";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -34,6 +35,7 @@ interface BillingFormModalProps {
 }
 
 export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: BillingFormModalProps) {
+  const t = useTranslations('common');
     const {user} = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [patients, setPatients] = useState<any[]>([]);
@@ -293,9 +295,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                 <div
                     className="flex justify-between items-center pt-6 border-t border-border bg-gradient-to-r from-muted/50 to-green-50/30 -mx-6 px-6 pb-6 mt-6 rounded-b-xl">
                     <Button variant="outline" onClick={onClose}
-                            className="bg-background/80 backdrop-blur-sm border-border hover:bg-muted">
-                        Cancel
-                    </Button>
+                            className="bg-background/80 backdrop-blur-sm border-border hover:bg-muted">{t("cancel")}</Button>
                     <Button onClick={handleSubmit} disabled={isSubmitting}
                             className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg">
                         {isSubmitting ? (

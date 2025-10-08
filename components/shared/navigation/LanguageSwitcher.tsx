@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import {useLocale} from 'next-intl';
-import {usePathname, useRouter} from 'next/navigation';
-import {Button} from '@/components/ui/button';
-import {Globe} from 'lucide-react';
+import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Globe } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {useTransition} from 'react';
+} from "@/components/ui/dropdown-menu";
+import { useTransition } from "react";
 
 const languages = [
-  {code: 'en', name: 'English'},
-  {code: 'es', name: 'Español'},
-  {code: 'fr', name: 'Français'},
-  {code: 'hi', name: 'हिन्दी'},
+  { code: "en", name: "English" },
+  { code: "es", name: "Español" },
+  { code: "fr", name: "Français" },
+  { code: "hi", name: "हिन्दी" },
 ];
 
 export function LanguageSwitcher() {
@@ -26,9 +26,9 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   const switchLocale = (newLocale: string) => {
-    const segments = pathname.split('/').filter(Boolean);
+    const segments = pathname.split("/").filter(Boolean);
     segments[0] = newLocale;
-    const newPath = '/' + segments.join('/');
+    const newPath = "/" + segments.join("/");
     startTransition(() => {
       router.replace(newPath);
       router.refresh();
@@ -49,7 +49,7 @@ export function LanguageSwitcher() {
             onClick={() => switchLocale(lang.code)}
             disabled={locale === lang.code}
           >
-            {lang.name} {locale === lang.code && '✓'}
+            {lang.name} {locale === lang.code && "✓"}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

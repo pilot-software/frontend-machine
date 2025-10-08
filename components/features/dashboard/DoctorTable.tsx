@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from "next-intl";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Badge} from '@/components/ui/badge';
@@ -31,6 +32,7 @@ const getStatusColor = (status: string) => {
 };
 
 export function DoctorTable({doctors, onViewDoctor, onEditDoctor}: DoctorTableProps) {
+  const t = useTranslations('common');
     const {user} = useAuth();
     const isMobile = useIsMobile();
 
@@ -133,11 +135,11 @@ export function DoctorTable({doctors, onViewDoctor, onEditDoctor}: DoctorTablePr
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Doctor</TableHead>
+                        <TableHead>{t("doctor")}</TableHead>
                         <TableHead>Specialization</TableHead>
                         <TableHead>Department</TableHead>
                         <TableHead>Contact</TableHead>
-                        <TableHead>Patients</TableHead>
+                        <TableHead>{t("patients")}</TableHead>
                         <TableHead>Availability</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>

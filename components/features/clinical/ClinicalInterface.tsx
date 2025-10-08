@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -57,6 +58,7 @@ const mockVitals: VitalSigns = {
 };
 
 export function ClinicalInterface() {
+  const t = useTranslations('common');
   const { user } = useAuth();
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [medicalData, setMedicalData] = useState<any>(null);
@@ -96,25 +98,25 @@ export function ClinicalInterface() {
       return [
         {
           label: "My Patients",
-          value: String(myPatientsCount || 0),
+          value: myPatientsCount || 0,
           icon: Activity,
           color: "text-blue-600",
         },
         {
           label: "Critical Cases",
-          value: "1",
+          value: 1,
           icon: AlertTriangle,
           color: "text-red-600",
         },
         {
           label: "Pending Lab Results",
-          value: "3",
+          value: 3,
           icon: TestTube,
           color: "text-purple-600",
         },
         {
           label: "Procedures Today",
-          value: "2",
+          value: 2,
           icon: Stethoscope,
           color: "text-green-600",
         },
@@ -125,25 +127,25 @@ export function ClinicalInterface() {
     return [
       {
         label: "Active Patients",
-        value: "156",
+        value: 156,
         icon: Activity,
         color: "text-blue-600",
       },
       {
         label: "Critical Cases",
-        value: "8",
+        value: 8,
         icon: AlertTriangle,
         color: "text-red-600",
       },
       {
         label: "Pending Lab Results",
-        value: "23",
+        value: 23,
         icon: TestTube,
         color: "text-purple-600",
       },
       {
         label: "Procedures Today",
-        value: "12",
+        value: 12,
         icon: Stethoscope,
         color: "text-green-600",
       },
@@ -242,7 +244,7 @@ export function ClinicalInterface() {
             {user?.role === ROLES.PATIENT ? "My Vital Signs" : "Vital Signs"}
           </TabsTrigger>
           <TabsTrigger value="labs">
-            {user?.role === ROLES.PATIENT ? "My Lab Results" : "Lab Results"}
+            {user?.role === ROLES.PATIENT ? "My Lab Results" : t("labResults")}
           </TabsTrigger>
           {user?.role !== "patient" && (
             <TabsTrigger value="assessment">Assessment</TabsTrigger>

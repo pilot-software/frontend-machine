@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useEffect, useState} from 'react';
+import { useTranslations } from "next-intl";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from '../ui/dialog';
 import {Button} from '../ui/button';
 import {Input} from '../ui/input';
@@ -19,6 +20,7 @@ interface TemporaryPermissionModalProps {
 
 
 export function TemporaryPermissionModal({isOpen, onClose, userId, onSuccess}: TemporaryPermissionModalProps) {
+  const t = useTranslations('common');
     const [permissionType, setPermissionType] = useState<'group' | 'individual'>('group');
     const [selectedGroup, setSelectedGroup] = useState('');
     const [selectedPermission, setSelectedPermission] = useState('');
@@ -141,7 +143,7 @@ export function TemporaryPermissionModal({isOpen, onClose, userId, onSuccess}: T
                                 </SelectTrigger>
                                 <SelectContent>
                                     {loading ? (
-                                        <SelectItem value="loading" disabled>Loading...</SelectItem>
+                                        <SelectItem value="loading" disabled>{t("loading")}</SelectItem>
                                     ) : (
                                         permissionGroups.map(group => (
                                             <SelectItem key={group.value || group.name}
@@ -166,7 +168,7 @@ export function TemporaryPermissionModal({isOpen, onClose, userId, onSuccess}: T
                                 </SelectTrigger>
                                 <SelectContent>
                                     {loading ? (
-                                        <SelectItem value="loading" disabled>Loading...</SelectItem>
+                                        <SelectItem value="loading" disabled>{t("loading")}</SelectItem>
                                     ) : (
                                         individualPermissions.map(permission => (
                                             <SelectItem key={permission.name || permission}
@@ -212,9 +214,7 @@ export function TemporaryPermissionModal({isOpen, onClose, userId, onSuccess}: T
                     </div>
 
                     <div className="flex gap-2 pt-4">
-                        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-                            Cancel
-                        </Button>
+                        <Button type="button" variant="outline" onClick={onClose} className="flex-1">{t("cancel")}</Button>
                         <Button type="submit" disabled={!isValid || isSubmitting} className="flex-1">
                             {isSubmitting ? 'Granting...' : 'Grant Permission'}
                         </Button>

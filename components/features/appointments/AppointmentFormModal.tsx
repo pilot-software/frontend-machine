@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -70,6 +71,7 @@ export function AppointmentFormModal({
   preSelectedPatientId,
   onSuccess,
 }: AppointmentFormModalProps) {
+  const t = useTranslations('common');
   const { user } = useAuth();
   const dispatch = useAppDispatch();
   const { patients, doctors, loading } = useAppSelector((state) => state.app);
@@ -618,9 +620,7 @@ export function AppointmentFormModal({
         </div>
 
         <div className="flex justify-between items-center pt-4 border-t">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
+          <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
 
           {!isReadOnly && (
             <Button onClick={handleSubmit} disabled={isSubmitting}>

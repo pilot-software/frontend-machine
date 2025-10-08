@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useTranslations } from "next-intl";
 import {useAuth} from '@/components/providers/AuthContext';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -12,6 +13,7 @@ interface ForgotPasswordProps {
 }
 
 export function ForgotPassword({onBackToLogin}: ForgotPasswordProps) {
+  const t = useTranslations('common');
     const {resetPassword} = useAuth();
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');

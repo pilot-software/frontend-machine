@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
 import {
   Card,
@@ -40,6 +41,7 @@ interface SecurityEvent {
 }
 
 export function SecurityLog() {
+  const t = useTranslations("common");
   const { user } = useAuth();
   const [events, setEvents] = useState<SecurityEvent[]>([]);
 
@@ -146,7 +148,7 @@ export function SecurityLog() {
       case "login":
         return "Successful Login";
       case "logout":
-        return "Logout";
+        return "logout";
       case "failed_login":
         return "Failed Login Attempt";
       case "session_expired":

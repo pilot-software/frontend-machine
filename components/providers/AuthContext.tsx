@@ -1,10 +1,12 @@
 'use client';
 
 import React, {createContext, useContext, useEffect, useState} from "react";
+import { useTranslations } from "next-intl";
 import {User, UserRole} from "@/lib/types";
 import {storageService} from "@/lib/services/storage.service";
 import {Permission, permissionService} from "@/lib/services/permission";
 import {DashboardSkeleton} from "@/components/skeletons/DashboardSkeleton";
+import {usePathname} from "next/navigation";
 
 interface AuthContextType {
     user: User | null;
@@ -22,6 +24,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
+  const t = useTranslations('common');
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -70,7 +73,10 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         initializeAuth();
     }, []);
 
-    if (isLoading && !isLoggingOut) {
+    const pathname = usePathname();
+    const isAuthPage = pathname?.includes('/login') || pathname?.includes('/forgot-password');
+
+    if (isLoading && !isLoggingOut && !isAuthPage) {
         return (
             <div className="min-h-screen p-6">
                 <DashboardSkeleton />

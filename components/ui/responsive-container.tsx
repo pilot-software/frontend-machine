@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from "next-intl";
 import {cn} from '@/lib/utils';
 
 interface ResponsiveContainerProps {
@@ -14,6 +15,7 @@ export function ResponsiveContainer({
                                         maxWidth = 'full',
                                         padding = 'md'
                                     }: ResponsiveContainerProps) {
+  const t = useTranslations('common');
     const maxWidthClasses = {
         sm: 'max-w-screen-sm',
         md: 'max-w-screen-md',

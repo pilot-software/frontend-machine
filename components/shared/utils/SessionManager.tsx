@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { useTranslations } from "next-intl";
 import {useAuth} from '@/components/providers/AuthContext';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
@@ -10,6 +11,7 @@ interface SessionManagerProps {
 }
 
 export function SessionManager({children}: SessionManagerProps) {
+  const t = useTranslations('common');
     const {user, logout} = useAuth();
     const [sessionWarning, setSessionWarning] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);

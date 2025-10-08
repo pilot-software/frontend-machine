@@ -6,7 +6,7 @@ import { ROUTES, ROLES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { LanguageSwitcher } from "@/components/shared/navigation/LanguageSwitcher";
 import {
   DropdownMenu,
@@ -140,6 +140,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-64 p-0">
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex items-center space-x-3 p-4 border-b">
                     <Shield className="h-6 w-6 text-blue-600" />
                     <div>
@@ -347,7 +348,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Navigation */}
           <nav
-            className={`h-full overflow-y-auto overflow-x-hidden ${
+            className={`h-full max-h-[calc(100vh-73px)] overflow-hidden ${
               desktopSidebarCollapsed ? "px-2 py-4" : "px-3 pt-14 pb-4"
             }`}
           >

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from "next-intl";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
@@ -15,6 +16,7 @@ interface PatientListProps {
 }
 
 export function PatientList({patients, loading, onViewPatient, onEditPatient}: PatientListProps) {
+  const t = useTranslations('common');
     if (loading) {
         return <LoadingState message="Loading patients..."/>;
     }

@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useTranslations } from "next-intl";
 import {useAuth} from '@/components/providers/AuthContext';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
@@ -7,6 +8,7 @@ import {Alert, AlertDescription} from '@/components/ui/alert';
 import {Loader2, Shield, Smartphone} from 'lucide-react';
 
 export function TwoFactorAuth() {
+  const t = useTranslations('common');
     const {verifyTwoFactor, isLoading, logout} = useAuth();
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
