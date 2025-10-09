@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
-// Add floating animation styles
 const floatingStyles = `
   @keyframes float {
     0%, 100% { transform: translateY(0px) scale(1); }
     50% { transform: translateY(-20px) scale(1.05); }
   }
-  .animate-float {
-    animation: float 4s ease-in-out infinite;
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8); }
   }
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+  .animate-float { animation: float 4s ease-in-out infinite; }
+  .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 `;
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
@@ -168,16 +175,10 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
     <>
       <style dangerouslySetInnerHTML={{ __html: floatingStyles }} />
       <div className="min-h-screen flex relative">
-        {/* Unified Background with Medical Tech Image */}
-        <div className="absolute inset-0 z-0 bg-background" />
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 via-green-50 to-purple-50 dark:from-blue-950 dark:via-green-950 dark:to-purple-950" />
         <div className="hidden lg:block absolute inset-0 z-0 lg:right-0 lg:left-1/2">
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-            style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')`,
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-blue-500/10 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-green-100/30 to-purple-100/30 dark:from-blue-900/30 dark:via-green-900/30 dark:to-purple-900/30 animate-pulse" />
         </div>
 
         {/* Animated Color Orbs */}
@@ -350,39 +351,47 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
           </div>
         </div>
 
-        {/* Right Side - Healthcare Theme */}
+        {/* Right Side - Floating Medical Icons */}
         <div className="hidden lg:flex flex-1 relative z-20">
           <div className="flex items-center justify-center h-full w-full">
-            <div className="text-center max-w-md -mt-16">
-              <div className="mb-8">
-                <div className="relative flex justify-center items-center space-x-4">
-                  <div className="relative">
-                    <Monitor className="h-16 w-16 text-blue-600" />
-                    <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl" />
-                  </div>
-                  <div className="relative">
-                    <Stethoscope className="h-18 w-18 text-green-600" />
-                    <div className="absolute inset-0 bg-green-500/20 rounded-full blur-xl" />
-                  </div>
-                  <div className="relative">
-                    <Cpu className="h-14 w-14 text-blue-500" />
-                    <div className="absolute inset-0 bg-blue-400/20 rounded-full blur-xl" />
-                  </div>
-                </div>
-                <div className="flex justify-center mt-4">
-                  <Heart className="h-12 w-12 text-red-500 animate-pulse" />
+            <div className="text-center max-w-md relative">
+              {/* Floating Medical Icons */}
+              <div className="absolute -top-20 -left-20 animate-float">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center shadow-lg">
+                  <Stethoscope className="h-8 w-8 text-blue-600" />
                 </div>
               </div>
+              <div className="absolute -top-10 right-10 animate-bounce-slow" style={{animationDelay: '0.5s'}}>
+                <div className="w-14 h-14 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center shadow-lg">
+                  <Heart className="h-7 w-7 text-green-600 animate-pulse" />
+                </div>
+              </div>
+              <div className="absolute top-20 -right-20 animate-float" style={{animationDelay: '1s'}}>
+                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center shadow-lg">
+                  <Monitor className="h-8 w-8 text-purple-600" />
+                </div>
+              </div>
+              <div className="absolute bottom-10 -left-16 animate-bounce-slow" style={{animationDelay: '1.5s'}}>
+                <div className="w-14 h-14 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center shadow-lg">
+                  <Cpu className="h-7 w-7 text-red-600" />
+                </div>
+              </div>
+              <div className="absolute -bottom-10 right-20 animate-float" style={{animationDelay: '2s'}}>
+                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center shadow-lg">
+                  <Eye className="h-6 w-6 text-yellow-600" />
+                </div>
+              </div>
+
               <h2 className="text-4xl font-bold mb-6 text-foreground">
-                Advanced Healthcare Technology
+                Welcome to Healthcare System
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Digital healthcare solutions powered by cutting-edge technology
+                Comprehensive patient care with advanced medical technology
               </p>
-              <div className="mt-8 flex justify-center space-x-4">
+              <div className="mt-8 flex justify-center space-x-3">
                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse delay-100" />
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse delay-200" />
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
               </div>
             </div>
           </div>
