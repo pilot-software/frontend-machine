@@ -97,7 +97,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <nav className="p-4 space-y-2">
       {menuItems.map((item) => {
         const ItemIcon = item.icon;
-        const isActive = pathname.endsWith(item.path);
+        const isActive = pathname.includes(item.path);
         return (
           <Button
             key={item.path}
@@ -382,7 +382,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="space-y-1">
               {menuItems.map((item) => {
                 const ItemIcon = item.icon;
-                const isActive = pathname.endsWith(item.path);
+                const isActive = pathname.includes(item.path);
                 return (
                   <Button
                     key={item.path}

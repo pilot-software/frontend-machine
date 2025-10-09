@@ -34,11 +34,12 @@ import {
   Video,
   XCircle,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function AppointmentSystem() {
-  const t = useTranslations('common');
-  const { isOpen, mode, selectedId, openModal, closeModal } =
-    useModal<string>("schedule");
+  const t = useTranslations("common");
+  const { isOpen, mode, selectedId, closeModal } = useModal<string>("schedule");
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const {
@@ -62,28 +63,6 @@ export function AppointmentSystem() {
   const displayAppointments: AppointmentDisplay[] = (
     Array.isArray(appointmentsList) ? appointmentsList : []
   ).map(transformAppointmentToDisplay);
-
-  const todayStats = [
-    {
-      label: "Total Appointments",
-      value: "24",
-      icon: CalendarIcon,
-      color: "text-blue-600",
-    },
-    {
-      label: "Direct Visits",
-      value: "16",
-      icon: User,
-      color: "text-green-600",
-    },
-    {
-      label: "Phone Consultations",
-      value: "6",
-      icon: Phone,
-      color: "text-purple-600",
-    },
-    { label: "Video Calls", value: "2", icon: Video, color: "text-orange-600" },
-  ];
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -116,27 +95,6 @@ export function AppointmentSystem() {
     }
   };
 
-  const _timeSlots = [
-    "08:00",
-    "08:30",
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "17:30",
-  ];
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -149,7 +107,7 @@ export function AppointmentSystem() {
             Schedule and manage patient appointments - Direct, Phone &amp; Video
           </p>
         </div>
-        <Button onClick={() => openModal("schedule")}>
+        <Button onClick={() => router.push("/en/appointments/add")}>
           <Plus className="h-4 w-4 mr-2" />
           Schedule Appointment
         </Button>
@@ -220,7 +178,9 @@ export function AppointmentSystem() {
                     Direct
                   </Button>
                   <Button variant="outline" size="sm">
-                    <Phone className="h-4 w-4 mr-2" />{t("phone")}</Button>
+                    <Phone className="h-4 w-4 mr-2" />
+                    {t("phone")}
+                  </Button>
                   <Button variant="outline" size="sm">
                     <Video className="h-4 w-4 mr-2" />
                     Video

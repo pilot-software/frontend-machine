@@ -26,15 +26,15 @@ export function DashboardWidgets() {
   };
 
   const handleAddPatient = () => {
-    dispatch(openPatientModal({ mode: "add" }));
+    router.push('/en/patients/add');
   };
 
   const handleAddAppointment = () => {
-    dispatch(openAppointmentModal({ mode: "add" }));
+    router.push('/en/appointments/add');
   };
 
   const handleAddPrescription = () => {
-    dispatch(openPrescriptionModal({ mode: "add" }));
+    router.push('/en/prescriptions/add');
   };
 
   // Render role-specific dashboard widgets

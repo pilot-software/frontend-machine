@@ -11,9 +11,13 @@ export function LoadingState({
   className = "",
 }: LoadingStateProps) {
   const t = useTranslations("common");
+  
+  // Try to translate, fallback to raw message if translation doesn't exist
+  const displayMessage = message.includes(' ') ? message : t(message);
+  
   return (
     <div className={`flex items-center justify-center py-8 ${className}`}>
-      <div className="text-sm text-muted-foreground">{t(message)}</div>
+      <div className="text-sm text-muted-foreground">{displayMessage}</div>
     </div>
   );
 }
