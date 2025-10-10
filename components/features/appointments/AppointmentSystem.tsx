@@ -147,12 +147,14 @@ export function AppointmentSystem() {
 
       {/* Appointment Management Tabs */}
       <Tabs defaultValue="today" className="w-full">
-        <TabsList>
-          <TabsTrigger value="today">Today&apos;s Schedule</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto">
+          <TabsList className="inline-flex w-auto min-w-full bg-muted p-1">
+            <TabsTrigger value="today" className="whitespace-nowrap">Today&apos;s Schedule</TabsTrigger>
+            <TabsTrigger value="upcoming" className="whitespace-nowrap">Upcoming</TabsTrigger>
+            <TabsTrigger value="calendar" className="whitespace-nowrap">Calendar View</TabsTrigger>
+            <TabsTrigger value="history" className="whitespace-nowrap">History</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="today" className="space-y-6">
           {/* Search and Filters */}

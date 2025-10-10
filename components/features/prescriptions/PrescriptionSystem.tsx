@@ -282,12 +282,14 @@ export function PrescriptionSystem() {
 
       {/* Prescription Management Tabs */}
       <Tabs defaultValue="active" className="w-full">
-        <TabsList>
-          <TabsTrigger value="active">Active Prescriptions</TabsTrigger>
-          <TabsTrigger value="pending">Pending Approval</TabsTrigger>
-          <TabsTrigger value="medications">Medication Database</TabsTrigger>
-          <TabsTrigger value="interactions">Drug Interactions</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto">
+          <TabsList className="inline-flex w-auto min-w-full bg-muted p-1">
+            <TabsTrigger value="active" className="whitespace-nowrap">Active Prescriptions</TabsTrigger>
+            <TabsTrigger value="pending" className="whitespace-nowrap">Pending Approval</TabsTrigger>
+            <TabsTrigger value="medications" className="whitespace-nowrap">Medication Database</TabsTrigger>
+            <TabsTrigger value="interactions" className="whitespace-nowrap">Drug Interactions</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="active" className="space-y-6">
           {/* Patient Selection and Search */}

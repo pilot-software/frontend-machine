@@ -472,12 +472,14 @@ export function PatientManagement() {
 
       {/* Patient Management Tabs */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList>
-          <TabsTrigger value="overview">Patient Overview</TabsTrigger>
-          <TabsTrigger value="admissions">Admissions</TabsTrigger>
-          <TabsTrigger value="discharge">Discharge Planning</TabsTrigger>
-          <TabsTrigger value="records">Medical Records</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto">
+          <TabsList className="inline-flex w-auto min-w-full bg-muted p-1">
+            <TabsTrigger value="overview" className="whitespace-nowrap">Patient Overview</TabsTrigger>
+            <TabsTrigger value="admissions" className="whitespace-nowrap">Admissions</TabsTrigger>
+            <TabsTrigger value="discharge" className="whitespace-nowrap">Discharge Planning</TabsTrigger>
+            <TabsTrigger value="records" className="whitespace-nowrap">Medical Records</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
@@ -498,9 +500,10 @@ export function PatientManagement() {
                   lastVisit: p.lastVisit,
                   avatar: p.avatar,
                 }))}
-                onViewPatient={(patient, origin) =>
-                  openModal("view", patient.id)
-                }
+                onViewPatient={(patient, origin) => {
+                  const locale = window.location.pathname.split('/')[1] || 'en';
+                  window.open(`/${locale}/patient/${patient.id}`, '_blank');
+                }}
                 onEditPatient={(id) => openModal("edit", id)}
               />
             </CardContent>

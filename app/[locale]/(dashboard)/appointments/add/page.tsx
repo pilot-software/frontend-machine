@@ -116,7 +116,7 @@ export default function AddAppointmentPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -126,11 +126,11 @@ export default function AddAppointmentPage() {
             <p className="text-muted-foreground mt-1">Create a new appointment for a patient</p>
           </div>
         </div>
-        <div className="flex space-x-4">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+        <div className="flex space-x-2 w-full sm:w-auto">
+          <Button type="button" variant="outline" onClick={() => router.back()} className="flex-1 sm:flex-none">
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting} onClick={handleSubmit}>
+          <Button type="submit" disabled={isSubmitting} onClick={handleSubmit} className="flex-1 sm:flex-none">
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
@@ -155,7 +155,7 @@ export default function AddAppointmentPage() {
                 <CardDescription>Basic appointment details and scheduling</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="patient">Patient *</Label>
                 <Select value={appointmentData.patientId} onValueChange={(value) => handleInputChange('patientId', value)}>
@@ -189,7 +189,7 @@ export default function AddAppointmentPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <Label>Date *</Label>
                 <Popover>
@@ -238,7 +238,7 @@ export default function AddAppointmentPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="chiefComplaint">Chief Complaint *</Label>
                 <Textarea

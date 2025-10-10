@@ -102,18 +102,21 @@ export function PatientDataTable({
   const t = useTranslations("common");
   const { user } = useAuth();
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
-    patient: true,
-    caseNumber: true,
-    gender: true,
-    assignedDoctor: true,
-    department: true,
-    lastVisit: true,
-    dateOfBirth: false,
-    phone: false,
-    status: false,
-  });
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({
+      patient: true,
+      caseNumber: true,
+      gender: true,
+      assignedDoctor: true,
+      department: true,
+      lastVisit: true,
+      dateOfBirth: false,
+      phone: false,
+      status: false,
+    });
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
@@ -146,7 +149,9 @@ export function PatientDataTable({
                 <div className="font-medium">
                   {patient.firstName} {patient.lastName}
                 </div>
-                <div className="text-sm text-muted-foreground">{patient.email}</div>
+                <div className="text-sm text-muted-foreground">
+                  {patient.email}
+                </div>
               </div>
             </div>
           );
@@ -288,34 +293,26 @@ export function PatientDataTable({
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      onViewPatient(patient, {
-                        x: rect.left + rect.width / 2,
-                        y: rect.top + rect.height / 2,
-                      });
-                    }}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </DropdownMenuItem>
-                  {(user?.role === ROLES.ADMIN || user?.role === ROLES.DOCTOR) && (
+                  {(user?.role === ROLES.ADMIN ||
+                    user?.role === ROLES.DOCTOR) && (
                     <>
-                      <DropdownMenuItem onClick={() => onEditPatient(patient.id)}>
+                      <DropdownMenuItem
+                        onClick={() => onEditPatient(patient.id)}
+                      >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Patient
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() =>
-                          window.open(`/patient/${patient.id}`, "_blank")
-                        }
+                        onClick={() => {
+                          const locale =
+                            window.location.pathname.split("/")[1] || "en";
+                          window.open(
+                            `/${locale}/patient/${patient.id}`,
+                            "_blank"
+                          );
+                        }}
                       >
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Open in New Tab
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
                         <FileText className="h-4 w-4 mr-2" />
                         Medical Records
                       </DropdownMenuItem>
@@ -344,22 +341,27 @@ export function PatientDataTable({
     [onViewPatient, onEditPatient, user?.role]
   );
 
-  const globalFilterFn = React.useCallback((row: any, columnId: string, filterValue: string) => {
-    const search = filterValue.toLowerCase();
-    const patient = row.original;
-    return (
-      `${patient.firstName} ${patient.lastName}`.toLowerCase().includes(search) ||
-      patient.email.toLowerCase().includes(search) ||
-      patient.phone.toLowerCase().includes(search) ||
-      patient.caseNumber.toLowerCase().includes(search) ||
-      patient.status.toLowerCase().includes(search) ||
-      patient.assignedDoctor.toLowerCase().includes(search) ||
-      patient.department.toLowerCase().includes(search) ||
-      patient.dateOfBirth.toLowerCase().includes(search) ||
-      patient.gender.toLowerCase().includes(search) ||
-      patient.lastVisit.toLowerCase().includes(search)
-    );
-  }, []);
+  const globalFilterFn = React.useCallback(
+    (row: any, columnId: string, filterValue: string) => {
+      const search = filterValue.toLowerCase();
+      const patient = row.original;
+      return (
+        `${patient.firstName} ${patient.lastName}`
+          .toLowerCase()
+          .includes(search) ||
+        patient.email.toLowerCase().includes(search) ||
+        patient.phone.toLowerCase().includes(search) ||
+        patient.caseNumber.toLowerCase().includes(search) ||
+        patient.status.toLowerCase().includes(search) ||
+        patient.assignedDoctor.toLowerCase().includes(search) ||
+        patient.department.toLowerCase().includes(search) ||
+        patient.dateOfBirth.toLowerCase().includes(search) ||
+        patient.gender.toLowerCase().includes(search) ||
+        patient.lastVisit.toLowerCase().includes(search)
+      );
+    },
+    []
+  );
 
   const table = useReactTable({
     data: patients,
@@ -496,9 +498,14 @@ export function PatientDataTable({
       </div>
       <div className="flex items-center justify-between space-x-2 py-4 px-6">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
+          Showing{" "}
+          {table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize +
+            1}{" "}
+          to{" "}
           {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+            (table.getState().pagination.pageIndex + 1) *
+              table.getState().pagination.pageSize,
             table.getFilteredRowModel().rows.length
           )}{" "}
           of {table.getFilteredRowModel().rows.length} patient(s)

@@ -147,7 +147,7 @@ export default function AddPatientPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -157,11 +157,11 @@ export default function AddPatientPage() {
             <p className="text-muted-foreground mt-1">Enter comprehensive patient information</p>
           </div>
         </div>
-        <div className="flex space-x-4">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+        <div className="flex space-x-2 w-full sm:w-auto">
+          <Button type="button" variant="outline" onClick={() => router.back()} className="flex-1 sm:flex-none">
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting} onClick={handleSubmit}>
+          <Button type="submit" disabled={isSubmitting} onClick={handleSubmit} className="flex-1 sm:flex-none">
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
@@ -187,7 +187,7 @@ export default function AddPatientPage() {
             <CardDescription>Basic patient demographics and contact information</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="firstName">{t('firstName')} *</Label>
                 <Input
@@ -224,7 +224,7 @@ export default function AddPatientPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="email">{t('emailAddress')} *</Label>
                 <div className="relative">
@@ -282,7 +282,7 @@ export default function AddPatientPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <Label htmlFor="city">City</Label>
                 <Input
@@ -323,7 +323,7 @@ export default function AddPatientPage() {
 
             <Separator />
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
                 <Input
@@ -359,7 +359,7 @@ export default function AddPatientPage() {
 
             <Separator />
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="bloodType">{t('bloodType')}</Label>
                 <Select value={patientData.bloodType} onValueChange={(value) => handleInputChange('bloodType', value)}>
@@ -406,7 +406,7 @@ export default function AddPatientPage() {
 
             <Separator />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="assignedDoctor">{t('assignedDoctor')}</Label>
                 <Select value={patientData.assignedDoctor} onValueChange={(value) => handleInputChange('assignedDoctor', value)}>
@@ -434,7 +434,7 @@ export default function AddPatientPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="chronicConditions">{t('chronicConditions')}</Label>
                 <Textarea

@@ -239,23 +239,25 @@ export function ClinicalInterface() {
 
       {/* Clinical Data Tabs */}
       <Tabs defaultValue="vitals" className="w-full">
-        <TabsList>
-          <TabsTrigger value="vitals">
-            {user?.role === ROLES.PATIENT ? "My Vital Signs" : "Vital Signs"}
-          </TabsTrigger>
-          <TabsTrigger value="labs">
-            {user?.role === ROLES.PATIENT ? "My Lab Results" : t("labResults")}
-          </TabsTrigger>
-          {user?.role !== "patient" && (
-            <TabsTrigger value="assessment">Assessment</TabsTrigger>
-          )}
-          <TabsTrigger value="procedures">
-            {user?.role === ROLES.PATIENT ? "My Procedures" : "Procedures"}
-          </TabsTrigger>
-          <TabsTrigger value="imaging">
-            {user?.role === ROLES.PATIENT ? "My Imaging" : "Imaging"}
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto">
+          <TabsList className="inline-flex w-auto min-w-full bg-muted p-1">
+            <TabsTrigger value="vitals" className="whitespace-nowrap">
+              {user?.role === ROLES.PATIENT ? "My Vital Signs" : "Vital Signs"}
+            </TabsTrigger>
+            <TabsTrigger value="labs" className="whitespace-nowrap">
+              {user?.role === ROLES.PATIENT ? "My Lab Results" : t("labResults")}
+            </TabsTrigger>
+            {user?.role !== "patient" && (
+              <TabsTrigger value="assessment" className="whitespace-nowrap">Assessment</TabsTrigger>
+            )}
+            <TabsTrigger value="procedures" className="whitespace-nowrap">
+              {user?.role === ROLES.PATIENT ? "My Procedures" : "Procedures"}
+            </TabsTrigger>
+            <TabsTrigger value="imaging" className="whitespace-nowrap">
+              {user?.role === ROLES.PATIENT ? "My Imaging" : "Imaging"}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="vitals" className="space-y-6">
           {/* Current Vitals */}

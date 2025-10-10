@@ -300,12 +300,14 @@ export function FinancialManagement() {
 
       {/* Financial Management Tabs */}
       <Tabs defaultValue="billing" className="w-full">
-        <TabsList>
-          <TabsTrigger value="billing">Billing & Invoices</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-          <TabsTrigger value="insurance">Insurance Claims</TabsTrigger>
-          <TabsTrigger value="reports">Financial Reports</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto">
+          <TabsList className="inline-flex w-auto min-w-full bg-muted p-1">
+            <TabsTrigger value="billing" className="whitespace-nowrap">Billing & Invoices</TabsTrigger>
+            <TabsTrigger value="payments" className="whitespace-nowrap">Payments</TabsTrigger>
+            <TabsTrigger value="insurance" className="whitespace-nowrap">Insurance Claims</TabsTrigger>
+            <TabsTrigger value="reports" className="whitespace-nowrap">Financial Reports</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="billing" className="space-y-6">
           {/* Search and Filters */}
