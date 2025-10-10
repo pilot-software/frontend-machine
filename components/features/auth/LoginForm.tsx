@@ -43,7 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HospitalType, setLocalConfig } from "@/lib/runtimeConfig";
+import { HospitalType, setLocalConfig, getHospitalOrgId, isSubdomainMode, getBranding } from "@/lib/runtimeConfig";
 import hospitalFlags from "@/config/hospital-flags.json";
 import { ROUTES } from "@/lib/constants";
 
@@ -60,6 +60,14 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedConfig, setSelectedConfig] =
     useState<HospitalType>("hospital");
+  const [isSubdomain, setIsSubdomain] = useState(false);
+  const [branding, setBranding] = useState({
+    systemName: "Healthcare System",
+    loginTitle: "Healthcare System",
+    loginSubtitle: "Sign in to your account",
+    welcomeMessage: "Welcome to Healthcare System",
+    welcomeDescription: "Comprehensive patient care with advanced medical technology"
+  });
   const router = useRouter();
 
   const handleConfigChange = (value: string) => {
@@ -70,9 +78,21 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const currentConfig =
-        (localStorage.getItem("hospitalType") as HospitalType) || "hospital";
-      setSelectedConfig(currentConfig);
+      const subdomain = isSubdomainMode();
+      setIsSubdomain(subdomain);
+      setBranding(getBranding());
+      
+      // Set config based on subdomain
+      const hostname = window.location.host;
+      if (hostname.startsWith('clinic.localhost')) {
+        setSelectedConfig('clinic');
+      } else if (hostname.startsWith('hospital.localhost')) {
+        setSelectedConfig('hospital');
+      } else {
+        const currentConfig =
+          (localStorage.getItem("hospitalType") as HospitalType) || "hospital";
+        setSelectedConfig(currentConfig);
+      }
     }
   }, []);
 
@@ -95,17 +115,27 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       return;
     }
 
-    const orgId =
-      selectedConfig === "hospital" ? "hospital_org1" : "hospital_org2";
+    const orgId = isSubdomainMode() 
+      ? getHospitalOrgId()
+      : selectedConfig === "hospital" ? "hospital_org1" : "hospital_org2";
     const success = await login(email, password, orgId);
     if (!success) {
       setError(t("invalidCredentials"));
     }
   };
 
-  // Demo credentials based on selected configuration
+  // Demo credentials based on subdomain or selected configuration
+  const getConfigType = () => {
+    if (typeof window !== "undefined") {
+      const hostname = window.location.host;
+      if (hostname.startsWith('clinic.localhost')) return 'clinic';
+      if (hostname.startsWith('hospital.localhost')) return 'hospital';
+    }
+    return selectedConfig;
+  };
+
   const demoCredentials =
-    selectedConfig === "hospital"
+    getConfigType() === "hospital"
       ? [
           {
             role: "Admin",
@@ -196,13 +226,13 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                 <div className="flex items-center">
                   <Stethoscope className="h-8 w-8 text-primary mr-3" />
                   <h1 className="text-3xl font-bold text-foreground">
-                    {t("healthcareSystem")}
+                    {branding.systemName}
                   </h1>
                 </div>
                 <LanguageSwitcher />
               </div>
               <p className="text-muted-foreground text-lg ml-11">
-                {t("signInToAccount")}
+                {branding.loginSubtitle}
               </p>
             </div>
 
@@ -215,6 +245,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                     </Alert>
                   )}
 
+                  {!isSubdomain && (
                   <div className="space-y-2">
                     <Label htmlFor="config" className="text-base font-medium">
                       {t("healthcareConfiguration")}
@@ -243,6 +274,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                       }
                     </p>
                   </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-base font-medium">
@@ -383,10 +415,10 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
               </div>
 
               <h2 className="text-4xl font-bold mb-6 text-foreground">
-                Welcome to Healthcare System
+                {branding.welcomeMessage}
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Comprehensive patient care with advanced medical technology
+                {branding.welcomeDescription}
               </p>
               <div className="mt-8 flex justify-center space-x-3">
                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />

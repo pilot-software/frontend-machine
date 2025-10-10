@@ -1,0 +1,22 @@
+{
+  "hospital": {
+    "systemName": "City General Hospital",
+    "systemShortName": "CGH",
+    "tagline": "Comprehensive Healthcare Excellence",
+    "loginTitle": "Hospital Management System",
+    "loginSubtitle": "Sign in to access patient care",
+    "welcomeMessage": "Welcome to City General Hospital",
+    "welcomeDescription": "Comprehensive patient care with advanced medical technology",
+    "organizationId": "hospital_org1"
+  },
+  "clinic": {
+    "systemName": "Pediatric Care Clinic",
+    "systemShortName": "PCC",
+    "tagline": "Caring for Children's Health",
+    "loginTitle": "Clinic Management System",
+    "loginSubtitle": "Sign in to your account",
+    "welcomeMessage": "Welcome to Pediatric Care Clinic",
+    "welcomeDescription": "Specialized pediatric care for your little ones",
+    "organizationId": "hospital_org2"
+  }
+}

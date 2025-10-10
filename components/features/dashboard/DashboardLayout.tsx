@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useFeatures, useText } from "@/lib/useFeatures";
+import { getBranding } from "@/lib/runtimeConfig";
 import { ROUTES, ROLES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,6 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout, permissions } = useAuth();
   const features = useFeatures();
   const text = useText();
+  const branding = getBranding();
   const router = useRouter();
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
@@ -145,10 +147,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Shield className="h-6 w-6 text-blue-600" />
                     <div>
                       <h2 className="text-sm font-semibold text-foreground">
-                        {text.systemName}
+                        {branding.systemName}
                       </h2>
                       <p className="text-xs text-muted-foreground">
-                        {text.systemDescription}
+                        {branding.tagline}
                       </p>
                     </div>
                   </div>
@@ -165,10 +167,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Shield className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-blue-600" />
               <div className="hidden sm:block">
                 <h1 className="text-sm sm:text-lg md:text-xl font-semibold text-foreground">
-                  {text.systemName}
+                  {branding.systemName}
                 </h1>
                 <p className="text-xs md:text-sm text-muted-foreground">
-                  {text.systemDescription}
+                  {branding.tagline}
                 </p>
               </div>
             </div>

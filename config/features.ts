@@ -1,4 +1,5 @@
 export interface FeatureConfig {
+    type: 'hospital' | 'clinic';
     // Core Features
     patientManagement: boolean;
     appointmentSystem: boolean;
@@ -46,6 +47,7 @@ export interface TextConfig {
 
 // Default configuration for hospitals
 export const hospitalConfig: FeatureConfig = {
+    type: 'hospital',
     patientManagement: true,
     appointmentSystem: true,
     clinicalInterface: true,
@@ -76,6 +78,7 @@ export const hospitalConfig: FeatureConfig = {
 
 // Configuration for small clinics
 export const clinicConfig: FeatureConfig = {
+    type: 'clinic',
     patientManagement: true,
     appointmentSystem: true,
     clinicalInterface: true,
@@ -107,5 +110,6 @@ export const clinicConfig: FeatureConfig = {
 // Configuration for big hospitals
 export const bigHospitalConfig: FeatureConfig = {
     ...hospitalConfig,
+    type: 'hospital',
     // All features enabled for big hospitals
 };
