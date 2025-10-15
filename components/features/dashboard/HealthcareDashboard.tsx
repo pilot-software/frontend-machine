@@ -54,9 +54,7 @@ export function HealthcareDashboard() {
   const dispatch = useAppDispatch();
   const { patientModal, doctorModal, appointmentModal, prescriptionModal } =
     useAppSelector((state) => state.modal);
-  const [activeTab, setActiveTab] = useState(
-    user?.role === ROLES.PATIENT ? "clinical" : "dashboard"
-  );
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
     {}
   );
@@ -312,23 +310,29 @@ export function HealthcareDashboard() {
   return (
     <div className="spacing-responsive">
       <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab}>
-        {user?.role !== "patient" && (
-          <TabsContent value="dashboard" className="mt-4 sm:mt-6">
-            <div className="spacing-responsive">
-              {loading.stats ? (
-                <DashboardStatsSkeleton />
-              ) : (
-                <DashboardStats stats={statsData} loading={loading.stats} />
-              )}
-              <DashboardWidgets />
-              {loading.patients || loading.doctors ? (
-                <DashboardTableSkeleton />
-              ) : (
-                renderDashboardContent()
-              )}
-            </div>
-          </TabsContent>
-        )}
+        <TabsContent value="dashboard" className="mt-4 sm:mt-6">
+          <div className="spacing-responsive">
+            {user?.role !== ROLES.PATIENT && (
+              <>
+                {loading.stats ? (
+                  <DashboardStatsSkeleton />
+                ) : (
+                  <DashboardStats stats={statsData} loading={loading.stats} />
+                )}
+              </>
+            )}
+            <DashboardWidgets />
+            {user?.role !== ROLES.PATIENT && (
+              <>
+                {loading.patients || loading.doctors ? (
+                  <DashboardTableSkeleton />
+                ) : (
+                  renderDashboardContent()
+                )}
+              </>
+            )}
+          </div>
+        </TabsContent>
 
         {features.patientManagement &&
           (user?.role === ROLES.ADMIN || features.roles.nurse) && (
