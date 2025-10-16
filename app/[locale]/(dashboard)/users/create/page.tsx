@@ -36,10 +36,7 @@ export default function CreateUserPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" onClick={() => router.back()}>
-                    <ArrowLeft className="h-4 w-4"/>
-                </Button>
+            <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Create New User</h1>
             </div>
 
@@ -124,12 +121,12 @@ export default function CreateUserPage() {
                         </div>
 
                         <div className="flex gap-2 pt-4">
+                            <Button type="button" variant="outline" size="icon" onClick={() => router.back()}>
+                                <ArrowLeft className="h-5 w-5"/>
+                            </Button>
                             <Button type="submit" className="flex items-center gap-2">
                                 <Save className="h-4 w-4"/>
                                 Create User
-                            </Button>
-                            <Button type="button" variant="outline" onClick={() => router.push('/users')}>
-                                Cancel
                             </Button>
                         </div>
                     </form>

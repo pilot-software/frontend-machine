@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { AlertTriangle, Printer, Send } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Printer, Send } from 'lucide-react';
 
 interface PrescriptionFormModalProps {
   isOpen: boolean;
@@ -183,16 +183,20 @@ export function PrescriptionFormModal({ isOpen, onClose, prescriptionId, mode }:
             </div>
           )}
 
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
-            <Button variant="outline">
-              <Printer className="h-4 w-4 mr-2" />
-              Print Preview
+          <div className="flex justify-between space-x-2 pt-4">
+            <Button variant="outline" size="icon" onClick={onClose}>
+              <ArrowLeft className="h-5 w-5" />
             </Button>
-            <Button onClick={onClose}>
-              <Send className="h-4 w-4 mr-2" />
-              Send to Pharmacy
-            </Button>
+            <div className="flex space-x-2">
+              <Button variant="outline">
+                <Printer className="h-4 w-4 mr-2" />
+                Print Preview
+              </Button>
+              <Button onClick={onClose}>
+                <Send className="h-4 w-4 mr-2" />
+                Send to Pharmacy
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>

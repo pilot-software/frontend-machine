@@ -25,6 +25,7 @@ import { useModal } from "@/lib/hooks/useModal";
 import { transformPatientToDisplay } from "@/lib/utils/data-transformers";
 import { PatientStats } from "./PatientStats";
 import { PatientDataTable } from "./PatientDataTable";
+import { AnimatedAddPrompt } from "@/components/ui/animated-add-prompt";
 import { Activity, Plus, Stethoscope, Thermometer } from "lucide-react";
 import { Patient } from "@/lib/types";
 
@@ -461,10 +462,10 @@ export function PatientManagement() {
             Comprehensive patient care and record management
           </p>
         </div>
-        <Button onClick={() => router.push("/en/patients/add")}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Patient
-        </Button>
+        <AnimatedAddPrompt
+          text="Add New Patient"
+          onClick={() => router.push("/en/patients/add")}
+        />
       </div>
 
       <PatientStats stats={stats || {}} />

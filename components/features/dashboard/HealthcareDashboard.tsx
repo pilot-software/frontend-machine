@@ -261,26 +261,6 @@ export function HealthcareDashboard() {
 
   const renderDashboardContent = () => (
     <div className="spacing-responsive">
-      {user?.role === ROLES.DOCTOR && (
-        <Card className="overflow-hidden">
-          <CardHeader className="px-6 pt-6 pb-2">
-            <CardTitle className="heading-responsive">
-              {t("myPatientRecords")}
-            </CardTitle>
-            <CardDescription className="text-responsive">
-              {t("assignedPatientsInfo")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <PatientDataTable
-              patients={filteredPatients}
-              onViewPatient={handleViewPatient}
-              onEditPatient={handleEditPatient}
-            />
-          </CardContent>
-        </Card>
-      )}
-
       {selectedView === "doctors" &&
         user?.role !== "doctor" &&
         features.roles.nurse && (

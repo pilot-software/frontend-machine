@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AnimatedAddPrompt } from "@/components/ui/animated-add-prompt";
 import { Input } from "@/components/ui/input";
 import { LoadingState } from "@/components/ui/loading-state";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -107,10 +108,10 @@ export function AppointmentSystem() {
             Schedule and manage patient appointments - Direct, Phone &amp; Video
           </p>
         </div>
-        <Button onClick={() => router.push("/en/appointments/add")}>
-          <Plus className="h-4 w-4 mr-2" />
-          Schedule Appointment
-        </Button>
+        <AnimatedAddPrompt
+          text="Schedule Appointment"
+          onClick={() => router.push("/en/appointments/add")}
+        />
       </div>
 
       {/* Today's Stats */}

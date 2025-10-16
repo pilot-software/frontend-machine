@@ -30,6 +30,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   AlertCircle,
+  ArrowLeft,
   Calendar as CalendarIcon,
   Clock,
   Save,
@@ -620,7 +621,9 @@ export function AppointmentFormModal({
         </div>
 
         <div className="flex justify-between items-center pt-4 border-t">
-          <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
+          <Button variant="outline" size="icon" onClick={onClose}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
 
           {!isReadOnly && (
             <Button onClick={handleSubmit} disabled={isSubmitting}>

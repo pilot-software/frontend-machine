@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
 import { Button } from "@/components/ui/button";
+import { AnimatedAddPrompt } from "@/components/ui/animated-add-prompt";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -242,10 +243,10 @@ export function PrescriptionSystem() {
             Manage prescriptions, medications, and pharmacy orders
           </p>
         </div>
-        <Button onClick={() => router.push('/en/prescriptions/add')}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Prescription
-        </Button>
+        <AnimatedAddPrompt
+          text="New Prescription"
+          onClick={() => router.push('/en/prescriptions/add')}
+        />
       </div>
 
       {/* Prescription Stats */}

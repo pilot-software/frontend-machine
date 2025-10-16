@@ -64,18 +64,13 @@ export default function AddPrescriptionPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h2 className="text-2xl font-semibold text-foreground">Create New Prescription</h2>
-            <p className="text-muted-foreground mt-1">Write a new prescription for a patient</p>
-          </div>
+        <div>
+          <h2 className="text-2xl font-semibold text-foreground">Create New Prescription</h2>
+          <p className="text-muted-foreground mt-1">Write a new prescription for a patient</p>
         </div>
         <div className="flex space-x-2 w-full sm:w-auto">
-          <Button type="button" variant="outline" onClick={() => router.back()} className="flex-1 sm:flex-none">
-            Cancel
+          <Button type="button" variant="outline" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <Button type="submit" disabled={isSubmitting} onClick={handleSubmit} className="flex-1 sm:flex-none">
             {isSubmitting ? (
