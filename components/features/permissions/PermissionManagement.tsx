@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { permissionService } from "@/lib/services/permission";
-import { Shield, Search, Lock } from "lucide-react";
+import { Shield, Search, Lock, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface PermissionItem {
   id: string;
@@ -79,6 +81,8 @@ export function PermissionManagement() {
     );
   }
 
+  const router = useRouter();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -88,10 +92,16 @@ export function PermissionManagement() {
             Manage system permissions and access control
           </p>
         </div>
-        <Badge variant="secondary" className="gap-2">
-          <Shield className="h-4 w-4" />
-          {permissions.length} Permissions
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button onClick={() => router.push('/permissions/roles')} className="gap-2">
+            <Settings className="h-4 w-4" />
+            Manage Roles
+          </Button>
+          <Badge variant="secondary" className="gap-2">
+            <Shield className="h-4 w-4" />
+            {permissions.length} Permissions
+          </Badge>
+        </div>
       </div>
 
       <div className="relative">
