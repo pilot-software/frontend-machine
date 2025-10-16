@@ -5,7 +5,8 @@ import {useRouter} from 'next/navigation';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import {ArrowRight, Building, Eye, FileText, Settings, Shield, Users} from 'lucide-react';
+import {ArrowRight, Building, Eye, FileText, Settings, Shield, Users, UserCog, Layers, Building2} from 'lucide-react';
+import {StatsCard} from '@/components/ui/stats-card';
 
 export default function PermissionsOverviewPage() {
     const router = useRouter();
@@ -94,22 +95,35 @@ export default function PermissionsOverviewPage() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {quickStats.map((stat, index) => (
-                    <Card key={index}>
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                                    <p className="text-2xl font-bold">{stat.value}</p>
-                                </div>
-                                <div className="text-muted-foreground">
-                                    {stat.icon}
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <StatsCard
+                    title="Total Users"
+                    value={45}
+                    icon={Users}
+                    color="text-blue-600"
+                    bgGradient="from-blue-500/10 to-blue-600/5"
+                />
+                <StatsCard
+                    title="Active Roles"
+                    value={5}
+                    icon={UserCog}
+                    color="text-green-600"
+                    bgGradient="from-green-500/10 to-green-600/5"
+                />
+                <StatsCard
+                    title="Permission Groups"
+                    value={3}
+                    icon={Layers}
+                    color="text-purple-600"
+                    bgGradient="from-purple-500/10 to-purple-600/5"
+                />
+                <StatsCard
+                    title="Branches"
+                    value={4}
+                    icon={Building2}
+                    color="text-orange-600"
+                    bgGradient="from-orange-500/10 to-orange-600/5"
+                />
             </div>
 
             {/* Permission Modules */}

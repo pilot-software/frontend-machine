@@ -76,17 +76,16 @@ export function StatsCard({
           </div>
           {displayChange && (
             <div
-              className={`flex items-center gap-1 px-2 py-1 rounded-full ${
-                trend === "up"
-                  ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                  : trend === "down"
+              className={`flex items-center gap-1 px-2 py-1 rounded-full ${trend === "up"
+                ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                : trend === "down"
                   ? "bg-red-500/10 text-red-600 dark:text-red-400"
                   : "bg-muted text-muted-foreground"
-              }`}
+                }`}
             >
               {trend !== "neutral" && (
                 <TrendingUp
-                  className={`h-3 w-3 ${trend === "down" ? "rotate-180" : ""}`}
+                  className={`h-3 w-3 ${trend === "down" ? "rotate-60" : ""}`}
                 />
               )}
               <span className="text-xs font-semibold">{displayChange}</span>
@@ -109,17 +108,16 @@ export function StatsCard({
         <div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:[animation:border-sweep_1.5s_ease-out_forwards]"
           style={{
-            borderImage: `linear-gradient(90deg, transparent 0%, ${
-              color.includes("blue")
-                ? "#3b82f6"
-                : color.includes("orange")
+            borderImage: `linear-gradient(90deg, transparent 0%, ${color.includes("blue")
+              ? "#3b82f6"
+              : color.includes("orange")
                 ? "#f97316"
                 : color.includes("green")
-                ? "#10b981"
-                : color.includes("purple")
-                ? "#a855f7"
-                : "#3b82f6"
-            } 50%, transparent 100%) 1`,
+                  ? "#10b981"
+                  : color.includes("purple")
+                    ? "#a855f7"
+                    : "#3b82f6"
+              } 50%, transparent 100%) 1`,
             borderWidth: "2px",
             borderStyle: "solid",
             borderRadius: "0.75rem",
