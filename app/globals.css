@@ -7,6 +7,7 @@
     --background: #ffffff;
     --foreground: oklch(0.145 0 0);
     --card: #ffffff;
+    --card-border: rgba(0, 0, 0, 0.12);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
@@ -20,7 +21,7 @@
     --accent-foreground: #030213;
     --destructive: #d4183d;
     --destructive-foreground: #ffffff;
-    --border: rgba(0, 0, 0, 0.1);
+    --border: rgba(0, 0, 0, 0.15);
     --input: transparent;
     --input-background: #f3f3f5;
     --switch-background: #cbced4;
@@ -47,6 +48,7 @@
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
+    --card-border: oklch(0.269 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
@@ -60,7 +62,7 @@
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
+    --border: oklch(0.3 0 0);
     --input: oklch(0.269 0 0);
     --input-background: oklch(0.269 0 0);
     --switch-background: oklch(0.439 0 0);
@@ -100,6 +102,7 @@
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
     --color-border: var(--border);
+    --color-card-border: var(--card-border, var(--border));
     --color-input: var(--input);
     --color-input-background: var(--input-background);
     --color-switch-background: var(--switch-background);

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -99,7 +98,6 @@ export function PatientDataTable({
   onViewPatient,
   onEditPatient,
 }: PatientDataTableProps) {
-  const t = useTranslations("common");
   const { user } = useAuth();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

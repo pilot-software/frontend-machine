@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { ROLES } from "@/lib/constants";
 import { PatientFormModal } from "@/components/features/patients/PatientFormModal";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -470,94 +469,33 @@ export function PatientManagement() {
 
       <PatientStats stats={stats || {}} />
 
-      {/* Patient Management Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
-        <div className="w-full overflow-x-auto">
-          <TabsList className="inline-flex w-auto min-w-full bg-muted p-1">
-            <TabsTrigger value="overview" className="whitespace-nowrap">Patient Overview</TabsTrigger>
-            <TabsTrigger value="admissions" className="whitespace-nowrap">Admissions</TabsTrigger>
-            <TabsTrigger value="discharge" className="whitespace-nowrap">Discharge Planning</TabsTrigger>
-            <TabsTrigger value="records" className="whitespace-nowrap">Medical Records</TabsTrigger>
-          </TabsList>
-        </div>
-
-        <TabsContent value="overview" className="space-y-6">
-          <Card>
-            <CardContent className="p-0">
-              <PatientDataTable
-                patients={allPatients.map((p) => ({
-                  id: p.id,
-                  firstName: p.name.split(" ")[0] || "",
-                  lastName: p.name.split(" ").slice(1).join(" ") || "",
-                  email: p.email,
-                  phone: p.phone,
-                  dateOfBirth: p.dateOfBirth || "N/A",
-                  gender: p.gender || "N/A",
-                  status: p.status,
-                  caseNumber: p.caseNumber,
-                  assignedDoctor: p.assignedDoctor,
-                  department: p.department,
-                  lastVisit: p.lastVisit,
-                  avatar: p.avatar,
-                }))}
-                onViewPatient={(patient, origin) => {
-                  const locale = window.location.pathname.split('/')[1] || 'en';
-                  window.open(`/${locale}/patient/${patient.id}`, '_blank');
-                }}
-                onEditPatient={(id) => openModal("edit", id)}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="admissions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Patient Admissions</CardTitle>
-              <CardDescription>
-                Manage patient admissions and bed assignments
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600">
-                Admissions management interface will be displayed here.
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="discharge">
-          <Card>
-            <CardHeader>
-              <CardTitle>Discharge Planning</CardTitle>
-              <CardDescription>
-                Plan and coordinate patient discharges
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600">
-                Discharge planning interface will be displayed here.
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="records">
-          <Card>
-            <CardHeader>
-              <CardTitle>Medical Records</CardTitle>
-              <CardDescription>
-                Access and manage patient medical records
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600">
-                Medical records interface will be displayed here.
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Patient List */}
+      <Card>
+        <CardContent className="p-0">
+          <PatientDataTable
+            patients={allPatients.map((p) => ({
+              id: p.id,
+              firstName: p.name.split(" ")[0] || "",
+              lastName: p.name.split(" ").slice(1).join(" ") || "",
+              email: p.email,
+              phone: p.phone,
+              dateOfBirth: p.dateOfBirth || "N/A",
+              gender: p.gender || "N/A",
+              status: p.status,
+              caseNumber: p.caseNumber,
+              assignedDoctor: p.assignedDoctor,
+              department: p.department,
+              lastVisit: p.lastVisit,
+              avatar: p.avatar,
+            }))}
+            onViewPatient={(patient, origin) => {
+              const locale = window.location.pathname.split('/')[1] || 'en';
+              window.open(`/${locale}/patient/${patient.id}`, '_blank');
+            }}
+            onEditPatient={(id) => openModal("edit", id)}
+          />
+        </CardContent>
+      </Card>
 
       <PatientFormModal
         isOpen={isOpen}

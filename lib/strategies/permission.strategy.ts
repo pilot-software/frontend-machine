@@ -2,6 +2,7 @@ import {Permission} from '../services/permission';
 import {
     Activity,
     BarChart3,
+    Bed,
     Calendar,
     ClipboardList,
     Heart,
@@ -137,22 +138,12 @@ const PERMISSION_MENU_MAP: Record<string, MenuItem> = {
 
 export class PermissionStrategy {
     static getMenuItems(userPermissions: Permission[]): MenuItem[] {
-        // Handle case where userPermissions might not be an array or is empty
-        if (!Array.isArray(userPermissions) || userPermissions.length === 0) {
-            // Return default menu items when no permissions are loaded
-            return [
-                {icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'},
-                {icon: User, label: "patients", path: "/patients", permission: 'PATIENTS_VIEW'},
-                {icon: Calendar, label: "appointments", path: "/appointments", permission: 'APPOINTMENTS_VIEW'},
-                {icon: ClipboardList, label: "clinical", path: "/clinical", permission: 'MEDICAL_RECORDS_READ'},
-                {icon: Pill, label: "prescriptions", path: "/prescriptions", permission: 'MEDICAL_RECORDS_READ'},
-                {icon: BarChart3, label: "financial", path: "/financial", permission: 'BILLING_VIEW_INVOICES'},
-                {icon: Users, label: "userManagement", path: "/users", permission: 'USERS_VIEW'},
-                {icon: Settings, label: "settings", path: "/settings", permission: 'SYSTEM_HOSPITAL_SETTINGS'},
-            ];
+        // Handle case where userPermissions might not be an array
+        if (!Array.isArray(userPermissions)) {
+            return [{icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'}];
         }
 
-        const permissionNames = userPermissions.map(p => p.name);
+        const permissionNames = userPermissions.map(p => p.name).filter(Boolean);
         const menuItems: MenuItem[] = [];
 
         // Main routes without dashboard prefix
@@ -202,17 +193,19 @@ export class PermissionStrategy {
             menuItems.push({icon: Users, label: "userManagement", path: "/users", permission: 'USERS_VIEW'});
         }
 
-        if (permissionNames.includes('SYSTEM_MANAGE_ROLES')) {
-            menuItems.push({icon: Lock, label: "security", path: "/security", permission: 'SYSTEM_MANAGE_ROLES'});
+        // Show bed management for admins or users with bed permissions
+        if (permissionNames.some(p => p.includes('BED') || p.includes('BEDS')) || 
+            permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS') ||
+            permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
+            menuItems.push({icon: Bed, label: "bedManagement", path: "/beds", permission: 'BEDS_VIEW'});
         }
 
-        if (permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS')) {
-            menuItems.push({
-                icon: Settings,
-                label: "settings",
-                path: "/settings",
-                permission: 'SYSTEM_HOSPITAL_SETTINGS'
-            });
+        if (permissionNames.includes('QUEUES_ADMIN_ALL')) {
+            menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'QUEUES_ADMIN_ALL'});
+        }
+
+        if (permissionNames.includes('SYSTEM_MANAGE_ROLES')) {
+            menuItems.push({icon: Lock, label: "security", path: "/security", permission: 'SYSTEM_MANAGE_ROLES'});
         }
 
         if (permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
@@ -224,8 +217,13 @@ export class PermissionStrategy {
             });
         }
 
-        if (permissionNames.includes('QUEUES_ADMIN_ALL')) {
-            menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'QUEUES_ADMIN_ALL'});
+        if (permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS')) {
+            menuItems.push({
+                icon: Settings,
+                label: "settings",
+                path: "/settings",
+                permission: 'SYSTEM_HOSPITAL_SETTINGS'
+            });
         }
 
         return menuItems;

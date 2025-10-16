@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/components/providers/AuthContext';
+import { PermissionStrategy } from '@/lib/strategies/permission.strategy';
 import {
   Bed,
   Activity,
@@ -30,6 +32,7 @@ export function AdminDashboardWidgets({
   onAddPrescription,
 }: AdminDashboardWidgetsProps) {
   const t = useTranslations('common');
+  const { permissions } = useAuth();
   const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
   const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
   const erStatus = { waiting: 12, inTreatment: 8, avgWait: "18 min" };
@@ -53,62 +56,71 @@ export function AdminDashboardWidgets({
   return (
     <div className="space-y-6">
       {/* Quick Actions */}
-      <Card className="rounded-2xl">
+      <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Activity className="h-5 w-5 text-blue-600" />
-            {t('quickActions')}
+            Quick Actions
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {[
-              { icon: UserPlus, label: t('addPatients'), key: "Add Patients", color: "bg-blue-500" },
-              {
-                icon: Calendar,
-                label: t('scheduleAppointments'),
-                key: "Schedule Appointments",
-                color: "bg-purple-500",
-              },
-              {
-                icon: Pill,
-                label: t('newPrescriptions'),
-                key: "New Prescriptions",
-                color: "bg-green-500",
-              },
-              {
-                icon: TestTube,
-                label: t('viewLabOrder'),
-                key: "View Lab Order",
-                color: "bg-orange-500",
-              },
-              { icon: FileText, label: t('viewReports'), key: "View Reports", color: "bg-pink-500" },
-              { icon: Bed, label: t('viewBedMgmt'), key: "View Bed Mgmt", color: "bg-indigo-500" },
-            ].map((action, idx) => {
-              const Icon = action.icon;
-              return (
-                <Button
-                  key={idx}
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center gap-2 hover:shadow-lg transition-all duration-300 group rounded-xl"
-                  onClick={() => handleQuickAction(action.key)}
-                >
-                  <div
-                    className={`${action.color} p-3 rounded-xl text-white group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs font-medium">{action.label}</span>
-                </Button>
-              );
-            })}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+              onClick={onAddPatient}
+            >
+              <UserPlus className="h-6 w-6 text-blue-600" />
+              <span className="text-sm font-medium">Add Patient</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-purple-50 hover:border-purple-300 transition-colors"
+              onClick={onAddAppointment}
+            >
+              <Calendar className="h-6 w-6 text-purple-600" />
+              <span className="text-sm font-medium">Schedule Appointment</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-green-50 hover:border-green-300 transition-colors"
+              onClick={onAddPrescription}
+            >
+              <Pill className="h-6 w-6 text-green-600" />
+              <span className="text-sm font-medium">New Prescription</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-colors"
+            >
+              <TestTube className="h-6 w-6 text-orange-600" />
+              <span className="text-sm font-medium">Lab Orders</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-pink-50 hover:border-pink-300 transition-colors"
+            >
+              <FileText className="h-6 w-6 text-pink-600" />
+              <span className="text-sm font-medium">Reports</span>
+            </Button>
+            {(PermissionStrategy.hasAnyPermission(permissions, ['BEDS_VIEW', 'BEDS_MANAGE', 'SYSTEM_HOSPITAL_SETTINGS', 'USERS_MANAGE_PERMISSIONS']) || 
+              permissions.some(p => p?.name?.includes('BED') || p?.name?.includes('BEDS'))) && (
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                onClick={() => window.location.href = '/en/beds'}
+              >
+                <Bed className="h-6 w-6 text-indigo-600" />
+                <span className="text-sm font-medium">Bed Management</span>
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bed Occupancy */}
-        <Card className="rounded-2xl">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Bed className="h-5 w-5 text-blue-600" />
@@ -144,7 +156,7 @@ export function AdminDashboardWidgets({
         </Card>
 
         {/* Emergency Room Status */}
-        <Card className="rounded-2xl">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -168,7 +180,7 @@ export function AdminDashboardWidgets({
         </Card>
 
         {/* Staff Availability */}
-        <Card className="rounded-2xl">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <UserCheck className="h-5 w-5 text-green-600" />
@@ -198,7 +210,7 @@ export function AdminDashboardWidgets({
         </Card>
 
         {/* Financial Metrics */}
-        <Card className="rounded-2xl">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-emerald-600" />

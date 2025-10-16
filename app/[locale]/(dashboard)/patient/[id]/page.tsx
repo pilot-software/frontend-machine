@@ -2,7 +2,7 @@
 
 import {useParams, useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Badge} from '@/components/ui/badge';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Button} from '@/components/ui/button';
@@ -17,13 +17,11 @@ import {
     FileText,
     Heart,
     Mail,
-    MapPin,
     Phone,
     Pill,
     Printer,
     Stethoscope,
     TestTube,
-    TrendingUp,
     User
 } from 'lucide-react';
 import {useAppData} from '@/lib/hooks/useAppData';
@@ -284,6 +282,8 @@ export default function PatientDetailPage() {
                         <TabsTrigger value="prescriptions" className="whitespace-nowrap">Prescriptions</TabsTrigger>
                         <TabsTrigger value="labs" className="whitespace-nowrap">Lab Results</TabsTrigger>
                         <TabsTrigger value="conditions" className="whitespace-nowrap">Conditions</TabsTrigger>
+                        <TabsTrigger value="admissions" className="whitespace-nowrap">Admissions</TabsTrigger>
+                        <TabsTrigger value="discharge" className="whitespace-nowrap">Discharge Planning</TabsTrigger>
                         <TabsTrigger value="documents" className="whitespace-nowrap">Documents</TabsTrigger>
                     </TabsList>
                 </div>
@@ -526,6 +526,103 @@ export default function PatientDetailPage() {
                                     <p className="text-sm mt-2">Currently under management with medication and lifestyle modifications.</p>
                                 </div>
                             ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="admissions" className="space-y-4">
+                    <Card className="bg-card">
+                        <CardHeader>
+                            <CardTitle>Admission History</CardTitle>
+                            <CardDescription>Patient admission records and bed assignments</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="p-4 border rounded-lg">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h3 className="font-bold text-lg">Current Admission</h3>
+                                        <p className="text-sm text-muted-foreground">Admitted: {new Date().toLocaleDateString()}</p>
+                                    </div>
+                                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200">Active</Badge>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-muted-foreground">Ward:</span>
+                                        <span className="font-medium ml-2">General Ward - 3rd Floor</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground">Bed Number:</span>
+                                        <span className="font-medium ml-2">305-B</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground">Admission Type:</span>
+                                        <span className="font-medium ml-2">Planned</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground">Expected Discharge:</span>
+                                        <span className="font-medium ml-2">{new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-4 border rounded-lg">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h3 className="font-bold">Previous Admission</h3>
+                                        <p className="text-sm text-muted-foreground">June 10, 2024 - June 17, 2024</p>
+                                    </div>
+                                    <Badge variant="outline">Discharged</Badge>
+                                </div>
+                                <div className="text-sm">
+                                    <span className="text-muted-foreground">Reason:</span>
+                                    <span className="font-medium ml-2">Post-operative care - Knee replacement</span>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="discharge" className="space-y-4">
+                    <Card className="bg-card">
+                        <CardHeader>
+                            <CardTitle>Discharge Planning</CardTitle>
+                            <CardDescription>Coordinate patient discharge and follow-up care</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                                <h3 className="font-bold mb-2">Discharge Summary</h3>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Planned Discharge Date:</span>
+                                        <span className="font-medium">{new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Discharge Type:</span>
+                                        <span className="font-medium">Home with follow-up</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Transportation:</span>
+                                        <span className="font-medium">Family arranged</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-4 border rounded-lg">
+                                <h3 className="font-bold mb-2">Discharge Instructions</h3>
+                                <ul className="list-disc list-inside space-y-1 text-sm">
+                                    <li>Continue prescribed medications as directed</li>
+                                    <li>Follow-up appointment scheduled for {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}</li>
+                                    <li>Physical therapy sessions 3 times per week</li>
+                                    <li>Wound care instructions provided</li>
+                                    <li>Contact doctor if fever, increased pain, or swelling occurs</li>
+                                </ul>
+                            </div>
+                            <div className="p-4 border rounded-lg">
+                                <h3 className="font-bold mb-2">Home Care Requirements</h3>
+                                <div className="space-y-2 text-sm">
+                                    <p><span className="font-medium">Equipment:</span> Walker, raised toilet seat</p>
+                                    <p><span className="font-medium">Home Health:</span> Nurse visit scheduled for wound check</p>
+                                    <p><span className="font-medium">Medications:</span> Prescriptions sent to pharmacy</p>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>

@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { StatsCard } from "@/components/ui/stats-card";
 import {
   AlertTriangle,
   Clock,
@@ -200,47 +201,27 @@ export function SecurityLog() {
 
       {/* Security Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Total Logins Today
-                </p>
-                <p className="text-2xl font-semibold text-foreground mt-1">
-                  47
-                </p>
-              </div>
-              <LogIn className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Failed Attempts</p>
-                <p className="text-2xl font-semibold text-foreground mt-1">3</p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Sessions</p>
-                <p className="text-2xl font-semibold text-foreground mt-1">
-                  12
-                </p>
-              </div>
-              <Monitor className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Total Logins Today"
+          value="47"
+          icon={LogIn}
+          trend="up"
+          trendValue="+12%"
+        />
+        <StatsCard
+          title="Failed Attempts"
+          value="3"
+          icon={AlertTriangle}
+          trend="down"
+          trendValue="-25%"
+        />
+        <StatsCard
+          title="Active Sessions"
+          value="12"
+          icon={Monitor}
+          trend="up"
+          trendValue="+8%"
+        />
       </div>
 
       {/* Security Events */}

@@ -5,23 +5,26 @@ import { useCounterAnimation } from "@/hooks/useCounterAnimation";
 
 export interface StatsCardProps {
   title: string;
-  value: number;
+  value: number | string;
   icon: LucideIcon;
-  color: string;
-  bgGradient: string;
+  color?: string;
+  bgGradient?: string;
   change?: string;
   trend?: "up" | "down" | "neutral";
+  trendValue?: string;
 }
 
 export function StatsCard({
   title,
   value,
   icon: Icon,
-  color,
-  bgGradient,
+  color = "text-blue-600",
+  bgGradient = "from-blue-500 to-blue-600",
   change,
   trend = "neutral",
+  trendValue,
 }: StatsCardProps) {
+  const displayChange = change || trendValue;
   const t = useTranslations('common');
   const numericValue =
     typeof value === "number"
@@ -71,7 +74,7 @@ export function StatsCard({
               style={{ width: "24px", height: "24px" }}
             />
           </div>
-          {change && (
+          {displayChange && (
             <div
               className={`flex items-center gap-1 px-2 py-1 rounded-full ${
                 trend === "up"
@@ -86,7 +89,7 @@ export function StatsCard({
                   className={`h-3 w-3 ${trend === "down" ? "rotate-180" : ""}`}
                 />
               )}
-              <span className="text-xs font-semibold">{change}</span>
+              <span className="text-xs font-semibold">{displayChange}</span>
             </div>
           )}
         </div>

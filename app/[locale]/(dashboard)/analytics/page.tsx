@@ -6,6 +6,7 @@ import {AnalyticsPageSkeleton} from '@/components/skeletons';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Badge} from '@/components/ui/badge';
 import {Progress} from '@/components/ui/progress';
+import {StatsCard} from '@/components/ui/stats-card';
 import {
     Area,
     AreaChart,
@@ -80,12 +81,19 @@ export default function AnalyticsPage() {
         {month: 'Jun', revenue: 680000, expenses: 420000},
     ];
 
-    const vitalMetrics = [
+    const vitalMetrics: Array<{
+        title: string;
+        value: string;
+        change: string;
+        trend: 'up' | 'down' | 'neutral';
+        icon: any;
+        color: string;
+    }> = [
         {
             title: 'Total Patients',
             value: '3,547',
             change: '+12.5%',
-            trend: 'up',
+            trend: 'up' as const,
             icon: Users,
             color: 'text-blue-600',
         },
@@ -93,7 +101,7 @@ export default function AnalyticsPage() {
             title: 'Monthly Revenue',
             value: '$680K',
             change: '+8.2%',
-            trend: 'up',
+            trend: 'up' as const,
             icon: DollarSign,
             color: 'text-green-600',
         },
@@ -101,7 +109,7 @@ export default function AnalyticsPage() {
             title: 'Appointments Today',
             value: '127',
             change: '-2.1%',
-            trend: 'down',
+            trend: 'down' as const,
             icon: Calendar,
             color: 'text-purple-600',
         },
@@ -109,7 +117,7 @@ export default function AnalyticsPage() {
             title: 'Bed Occupancy',
             value: '89%',
             change: '+5.3%',
-            trend: 'up',
+            trend: 'up' as const,
             icon: Building2,
             color: 'text-orange-600',
         },
@@ -147,29 +155,16 @@ export default function AnalyticsPage() {
 
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {vitalMetrics.map((metric, index) => {
-                    const Icon = metric.icon;
-                    const TrendIcon = metric.trend === 'up' ? TrendingUp : TrendingDown;
-                    return (
-                        <Card key={index}>
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">{metric.title}</p>
-                                        <p className="text-2xl font-semibold text-foreground mt-1">{metric.value}</p>
-                                        <div className={`flex items-center mt-2 text-sm ${
-                                            metric.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                                        }`}>
-                                            <TrendIcon className="h-3 w-3 mr-1"/>
-                                            {metric.change} from last month
-                                        </div>
-                                    </div>
-                                    <Icon className={`h-8 w-8 ${metric.color}`}/>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                {vitalMetrics.map((metric, index) => (
+                    <StatsCard
+                        key={index}
+                        title={metric.title}
+                        value={metric.value}
+                        icon={metric.icon}
+                        trend={metric.trend}
+                        trendValue={metric.change}
+                    />
+                ))}
             </div>
 
             {/* Analytics Tabs */}

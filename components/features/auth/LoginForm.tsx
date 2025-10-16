@@ -236,7 +236,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
               </p>
             </div>
 
-            <Card className="border-0 shadow-none bg-card/80 backdrop-blur-sm">
+            <Card className="!border-0 shadow-none bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {error && (
@@ -351,7 +351,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
             </Card>
 
             {/* Demo credentials helper */}
-            <Card className="mt-8 bg-accent/50 border-border">
+            <Card className="mt-8 bg-accent/50 !border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base text-foreground">
                   {t("demoCredentials")}
