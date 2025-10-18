@@ -471,9 +471,7 @@ export function PatientManagement() {
       <PatientStats stats={stats || {}} />
 
       {/* Patient List */}
-      <Card>
-        <CardContent className="p-0">
-          <PatientDataTable
+      <PatientDataTable
             patients={allPatients.map((p) => ({
               id: p.id,
               firstName: p.name.split(" ")[0] || "",
@@ -495,8 +493,6 @@ export function PatientManagement() {
             }}
             onEditPatient={(id) => openModal("edit", id)}
           />
-        </CardContent>
-      </Card>
 
       <PatientFormModal
         isOpen={isOpen}

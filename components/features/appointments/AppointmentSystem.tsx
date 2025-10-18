@@ -121,28 +121,28 @@ export function AppointmentSystem() {
           value={24}
           icon={CalendarIcon}
           color="text-blue-600"
-          bgGradient="from-blue-500/10 to-blue-600/5"
+          bgGradient="from-blue-500 to-blue-600"
         />
         <StatsCard
           title="Direct Visits"
           value={16}
           icon={User}
           color="text-green-600"
-          bgGradient="from-green-500/10 to-green-600/5"
+          bgGradient="from-green-500 to-green-600"
         />
         <StatsCard
           title="Phone Consultations"
           value={6}
           icon={Phone}
           color="text-purple-600"
-          bgGradient="from-purple-500/10 to-purple-600/5"
+          bgGradient="from-purple-500 to-purple-600"
         />
         <StatsCard
           title="Video Calls"
           value={2}
           icon={Video}
           color="text-orange-600"
-          bgGradient="from-orange-500/10 to-orange-600/5"
+          bgGradient="from-orange-500 to-orange-600"
         />
       </StatsCardGrid>
 

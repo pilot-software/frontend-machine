@@ -21,7 +21,7 @@ export function PatientStats({ stats }: PatientStatsProps) {
         value={stats?.totalPatients || 0}
         icon={UserPlus}
         color="text-blue-600"
-        bgGradient="from-blue-500/10 to-blue-600/5"
+        bgGradient="from-blue-500 to-blue-600"
         change="+12%"
         trend="up"
       />
@@ -30,7 +30,7 @@ export function PatientStats({ stats }: PatientStatsProps) {
         value={stats?.newPatientsThisMonth || 0}
         icon={Plus}
         color="text-green-600"
-        bgGradient="from-green-500/10 to-green-600/5"
+        bgGradient="from-green-500 to-green-600"
         change="+23%"
         trend="up"
       />
@@ -39,7 +39,7 @@ export function PatientStats({ stats }: PatientStatsProps) {
         value={stats?.criticalCases || 0}
         icon={AlertTriangle}
         color="text-red-600"
-        bgGradient="from-red-500/10 to-red-600/5"
+        bgGradient="from-red-500 to-red-600"
         change="-8%"
         trend="down"
       />
@@ -48,7 +48,7 @@ export function PatientStats({ stats }: PatientStatsProps) {
         value={stats?.dischargedToday || 0}
         icon={CheckCircle2}
         color="text-emerald-600"
-        bgGradient="from-emerald-500/10 to-emerald-600/5"
+        bgGradient="from-emerald-500 to-emerald-600"
         change="+2%"
         trend="up"
       />

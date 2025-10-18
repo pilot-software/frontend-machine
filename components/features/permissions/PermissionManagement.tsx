@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { permissionService } from "@/lib/services/permission";
 import { Shield, Search, Lock, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
 
 interface PermissionItem {
   id: string;
@@ -92,17 +93,35 @@ export function PermissionManagement() {
             Manage system permissions and access control
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button onClick={() => router.push('/permissions/roles')} className="gap-2">
-            <Settings className="h-4 w-4" />
-            Manage Roles
-          </Button>
-          <Badge variant="secondary" className="gap-2">
-            <Shield className="h-4 w-4" />
-            {permissions.length} Permissions
-          </Badge>
-        </div>
+        <Button onClick={() => router.push('/permissions/roles')} className="gap-2">
+          <Settings className="h-4 w-4" />
+          Manage Roles
+        </Button>
       </div>
+
+      <StatsCardGrid>
+        <StatsCard
+          title="Total Permissions"
+          value={permissions.length}
+          icon={Shield}
+          color="text-blue-600"
+          bgGradient="from-blue-500 to-blue-600"
+        />
+        <StatsCard
+          title="Permission Modules"
+          value={Object.keys(groupedPermissions).length}
+          icon={Lock}
+          color="text-green-600"
+          bgGradient="from-green-500 to-green-600"
+        />
+        <StatsCard
+          title="System Settings"
+          value="Active"
+          icon={Settings}
+          color="text-purple-600"
+          bgGradient="from-purple-500 to-purple-600"
+        />
+      </StatsCardGrid>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

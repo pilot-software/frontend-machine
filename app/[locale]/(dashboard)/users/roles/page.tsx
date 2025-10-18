@@ -9,6 +9,7 @@ import {Switch} from "@/components/ui/switch";
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
 import {Edit, Settings, Shield, Users} from "lucide-react";
 import {apiClient} from "@/lib/api";
+import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
 
 const ROLES = ["ADMIN", "DOCTOR", "NURSE", "FINANCE", "RECEPTIONIST"];
 const MODULES = [
@@ -141,43 +142,29 @@ export default function RolesPage() {
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-muted-foreground">System Roles</p>
-                                <p className="text-2xl font-bold">{ROLES.length}</p>
-                            </div>
-                            <Settings className="h-8 w-8 text-blue-600"/>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-muted-foreground">
-                                    Permission Modules
-                                </p>
-                                <p className="text-2xl font-bold">{MODULES.length}</p>
-                            </div>
-                            <Shield className="h-8 w-8 text-green-600"/>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Custom Roles</p>
-                                <p className="text-2xl font-bold">0</p>
-                            </div>
-                            <Users className="h-8 w-8 text-purple-600"/>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+            <StatsCardGrid>
+                <StatsCard
+                    title="System Roles"
+                    value={ROLES.length}
+                    icon={Settings}
+                    color="text-blue-600"
+                    bgGradient="from-blue-500 to-blue-600"
+                />
+                <StatsCard
+                    title="Permission Modules"
+                    value={MODULES.length}
+                    icon={Shield}
+                    color="text-green-600"
+                    bgGradient="from-green-500 to-green-600"
+                />
+                <StatsCard
+                    title="Custom Roles"
+                    value={0}
+                    icon={Users}
+                    color="text-purple-600"
+                    bgGradient="from-purple-500 to-purple-600"
+                />
+            </StatsCardGrid>
 
             <Card>
                 <CardHeader>

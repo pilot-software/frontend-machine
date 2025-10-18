@@ -1,7 +1,8 @@
 import React from "react";
 import { useTranslations } from "next-intl";
-import { LucideIcon, TrendingUp } from "lucide-react";
+import { LucideIcon, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useCounterAnimation } from "@/hooks/useCounterAnimation";
+import { Card, CardContent } from "@/components/ui/card";
 
 export interface StatsCardProps {
   title: string;
@@ -37,110 +38,39 @@ export function StatsCard({
       ? animatedValue.toLocaleString()
       : String(value).replace(/[0-9,]+/, animatedValue.toLocaleString());
 
-  const borderGradient = bgGradient;
+  const TrendIcon = trend === "up" ? ArrowUpRight : trend === "down" ? ArrowDownRight : null;
+
   return (
-    <div
-      className={`relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm shadow-sm hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 cursor-pointer group`}
-    >
-      {/* Animated gradient overlay */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-[0.07] group-hover:opacity-[0.15] transition-all duration-500`}
-      />
-
-      {/* Floating orbs */}
-      <div
-        className={`absolute -top-8 -right-8 w-24 h-24 ${color
-          .replace("text-", "bg-")
-          .replace(
-            "-600",
-            "-500/20"
-          )} rounded-full blur-2xl group-hover:blur-3xl group-hover:scale-150 transition-all duration-500`}
-      />
-      <div
-        className={`absolute -bottom-8 -left-8 w-24 h-24 ${color
-          .replace("text-", "bg-")
-          .replace(
-            "-600",
-            "-400/10"
-          )} rounded-full blur-2xl group-hover:blur-3xl group-hover:scale-150 transition-all duration-500`}
-      />
-
-      <div className="relative z-10 p-5">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 rounded-xl bg-white dark:bg-slate-800 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 relative">
-            <Icon
-              className={`${color} group-hover:scale-125 group-hover:rotate-12 transition-all duration-300`}
-              strokeWidth={2.5}
-              style={{ width: "24px", height: "24px" }}
-            />
+    <div className="group relative rounded-xl bg-gradient-to-br from-card to-card/50 p-5 shadow-lg hover:shadow-xl transition-all duration-300 border border-border/50 overflow-hidden hover:-translate-y-1">
+      <div className={`absolute inset-0 bg-gradient-radial from-${color.replace('text-', '').replace('-600', '-500/10')} via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} style={{background: `radial-gradient(circle at 20% 30%, ${color.includes('blue') ? 'rgba(59, 130, 246, 0.15)' : color.includes('green') ? 'rgba(16, 185, 129, 0.15)' : color.includes('orange') ? 'rgba(249, 115, 22, 0.15)' : color.includes('purple') ? 'rgba(168, 85, 247, 0.15)' : 'rgba(59, 130, 246, 0.15)'} 0%, transparent 70%)`}} />
+      <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-5`} />
+      <div className="relative">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <h3 className="text-3xl font-bold mt-2">{displayValue}</h3>
+            {displayChange && (
+              <div className="flex items-center mt-2 text-xs">
+                {TrendIcon && <TrendIcon className={`h-3 w-3 mr-1 ${trend === "up" ? "text-green-600" : "text-red-600"}`} />}
+                <span className={trend === "up" ? "text-green-600" : trend === "down" ? "text-red-600" : "text-gray-600"}>
+                  {displayChange}
+                </span>
+                <span className="text-muted-foreground ml-1">vs yesterday</span>
+              </div>
+            )}
           </div>
-          {displayChange && (
-            <div
-              className={`flex items-center gap-1 px-2 py-1 rounded-full ${trend === "up"
-                ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                : trend === "down"
-                  ? "bg-red-500/10 text-red-600 dark:text-red-400"
-                  : "bg-muted text-muted-foreground"
-                }`}
-            >
-              {trend !== "neutral" && (
-                <TrendingUp
-                  className={`h-3 w-3 ${trend === "down" ? "rotate-60" : ""}`}
-                />
-              )}
-              <span className="text-xs font-semibold">{displayChange}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-            {title}
-          </p>
-          <p className="text-2xl font-bold tracking-tight group-hover:scale-105 transition-transform duration-300 origin-left">
-            {displayValue}
-          </p>
+          <div className={`p-3 rounded-xl bg-gradient-to-br ${bgGradient}`}>
+            <Icon className="h-6 w-6 text-white" strokeWidth={2} />
+          </div>
         </div>
       </div>
-
-      {/* Animated border sweep left to right */}
-      <div className="absolute inset-0 rounded-xl pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:[animation:border-sweep_1.5s_ease-out_forwards]"
-          style={{
-            borderImage: `linear-gradient(90deg, transparent 0%, ${color.includes("blue")
-              ? "#3b82f6"
-              : color.includes("orange")
-                ? "#f97316"
-                : color.includes("green")
-                  ? "#10b981"
-                  : color.includes("purple")
-                    ? "#a855f7"
-                    : "#3b82f6"
-              } 50%, transparent 100%) 1`,
-            borderWidth: "2px",
-            borderStyle: "solid",
-            borderRadius: "0.75rem",
-            width: "40%",
-            height: "100%",
-            position: "absolute",
-            left: "-40%",
-            top: 0,
-          }}
-        />
-      </div>
-
-      {/* Accent border */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-      />
     </div>
   );
 }
 
 export function StatsCardGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
       {children}
     </div>
   );

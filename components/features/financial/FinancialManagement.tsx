@@ -264,7 +264,7 @@ export function FinancialManagement() {
             value={45230}
             icon={DollarSign}
             color="text-green-600"
-            bgGradient="from-green-500/10 to-green-600/5"
+            bgGradient="from-green-500 to-green-600"
             change="+12%"
             trend="up"
           />
@@ -273,7 +273,7 @@ export function FinancialManagement() {
             value={12450}
             icon={FileText}
             color="text-orange-600"
-            bgGradient="from-orange-500/10 to-orange-600/5"
+            bgGradient="from-orange-500 to-orange-600"
             change="-5%"
             trend="down"
           />
@@ -282,7 +282,7 @@ export function FinancialManagement() {
             value={3200}
             icon={CreditCard}
             color="text-blue-600"
-            bgGradient="from-blue-500/10 to-blue-600/5"
+            bgGradient="from-blue-500 to-blue-600"
             change="+18%"
             trend="up"
           />
@@ -291,7 +291,7 @@ export function FinancialManagement() {
             value={28900}
             icon={Receipt}
             color="text-purple-600"
-            bgGradient="from-purple-500/10 to-purple-600/5"
+            bgGradient="from-purple-500 to-purple-600"
             change="+8%"
             trend="up"
           />

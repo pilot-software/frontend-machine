@@ -203,19 +203,24 @@ export function ClinicalInterface() {
       {/* Clinical Stats - Only show for non-patient users */}
       {user?.role !== "patient" && (
         <StatsCardGrid>
-          {clinicalStats.map((stat, index) => (
-            <StatsCard
-              key={index}
-              title={stat.label}
-              value={stat.value}
-              icon={stat.icon}
-              color={stat.color}
-              bgGradient={`from-${stat.color.replace(
-                "text-",
-                ""
-              )}/10 to-${stat.color.replace("text-", "")}/5`}
-            />
-          ))}
+          {clinicalStats.map((stat, index) => {
+            const colorMap: Record<string, string> = {
+              "text-blue-600": "from-blue-500 to-blue-600",
+              "text-red-600": "from-red-500 to-red-600",
+              "text-purple-600": "from-purple-500 to-purple-600",
+              "text-green-600": "from-green-500 to-green-600",
+            };
+            return (
+              <StatsCard
+                key={index}
+                title={stat.label}
+                value={stat.value}
+                icon={stat.icon}
+                color={stat.color}
+                bgGradient={colorMap[stat.color] || "from-blue-500 to-blue-600"}
+              />
+            );
+          })}
         </StatsCardGrid>
       )}
 

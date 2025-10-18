@@ -200,27 +200,33 @@ export function SecurityLog() {
       </div>
 
       {/* Security Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:gap-6">
         <StatsCard
           title="Total Logins Today"
           value="47"
           icon={LogIn}
+          color="text-blue-600"
+          bgGradient="from-blue-500 to-blue-600"
+          change="+12%"
           trend="up"
-          trendValue="+12%"
         />
         <StatsCard
           title="Failed Attempts"
           value="3"
           icon={AlertTriangle}
+          color="text-red-600"
+          bgGradient="from-red-500 to-red-600"
+          change="-25%"
           trend="down"
-          trendValue="-25%"
         />
         <StatsCard
           title="Active Sessions"
           value="12"
           icon={Monitor}
+          color="text-green-600"
+          bgGradient="from-green-500 to-green-600"
+          change="+8%"
           trend="up"
-          trendValue="+8%"
         />
       </div>
 

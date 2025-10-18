@@ -256,28 +256,28 @@ export function PrescriptionSystem() {
           value={1234}
           icon={PillBottle}
           color="text-blue-600"
-          bgGradient="from-blue-500/10 to-blue-600/5"
+          bgGradient="from-blue-500 to-blue-600"
         />
         <StatsCard
           title="Pending Approval"
           value={23}
           icon={Clock}
           color="text-orange-600"
-          bgGradient="from-orange-500/10 to-orange-600/5"
+          bgGradient="from-orange-500 to-orange-600"
         />
         <StatsCard
           title="Filled Today"
           value={89}
           icon={CheckCircle2}
           color="text-green-600"
-          bgGradient="from-green-500/10 to-green-600/5"
+          bgGradient="from-green-500 to-green-600"
         />
         <StatsCard
           title="Refill Requests"
           value={45}
           icon={AlertTriangle}
           color="text-purple-600"
-          bgGradient="from-purple-500/10 to-purple-600/5"
+          bgGradient="from-purple-500 to-purple-600"
         />
       </StatsCardGrid>
 

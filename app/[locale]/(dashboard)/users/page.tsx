@@ -58,6 +58,8 @@ function UserManagementPageContent() {
     const [deleting, setDeleting] = useState<string | null>(null);
     const [bulkAction, setBulkAction] = useState('');
     const [newRole, setNewRole] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(25);
 
     useEffect(() => {
         fetchUsers();
@@ -144,6 +146,9 @@ function UserManagementPageContent() {
         return matchesSearch && matchesRole && matchesStatus;
     });
 
+    const totalPages = Math.ceil(filteredUsers.length / pageSize);
+    const paginatedUsers = filteredUsers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
     const getRoleBadgeColor = (role: string) => {
         const colors = {
             ADMIN: 'bg-red-100 text-red-800',
@@ -173,13 +178,13 @@ function UserManagementPageContent() {
             />
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
                 <StatsCard
                     title="Total Users"
                     value={users.length}
                     icon={Users}
                     color="text-blue-600"
-                    bgGradient="from-blue-500/10 to-blue-600/5"
+                    bgGradient="from-blue-500 to-blue-600"
                     change="All users"
                     trend="neutral"
                 />
@@ -188,7 +193,7 @@ function UserManagementPageContent() {
                     value={users.filter(u => u.status === 'ACTIVE').length}
                     icon={Activity}
                     color="text-green-600"
-                    bgGradient="from-green-500/10 to-green-600/5"
+                    bgGradient="from-green-500 to-green-600"
                     change={`${Math.round((users.filter(u => u.status === 'ACTIVE').length / users.length) * 100)}%`}
                     trend="up"
                 />
@@ -196,8 +201,8 @@ function UserManagementPageContent() {
                     title="Doctors"
                     value={users.filter(u => u.role === 'DOCTOR').length}
                     icon={Shield}
-                    color="text-blue-600"
-                    bgGradient="from-blue-500/10 to-blue-600/5"
+                    color="text-purple-600"
+                    bgGradient="from-purple-500 to-purple-600"
                     change="Medical staff"
                     trend="neutral"
                 />
@@ -206,7 +211,7 @@ function UserManagementPageContent() {
                     value={users.filter(u => u.role === 'ADMIN').length}
                     icon={Settings}
                     color="text-red-600"
-                    bgGradient="from-red-500/10 to-red-600/5"
+                    bgGradient="from-red-500 to-red-600"
                     change="System admins"
                     trend="neutral"
                 />
@@ -315,207 +320,186 @@ function UserManagementPageContent() {
                 }
             />
 
-            <ViewToggle
-                gridView={
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {loading ? (
-                    <Card className="col-span-full">
-                        <CardContent className="p-8 text-center">
-                            <p className="text-muted-foreground">Loading users...</p>
-                        </CardContent>
-                    </Card>
-                ) : filteredUsers.length === 0 ? (
-                    <Card className="col-span-full">
-                        <CardContent className="p-8 text-center">
-                            <p className="text-muted-foreground">No users found</p>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    filteredUsers.map((user) => (
-                        <Card key={user.id} className="hover:shadow-lg transition-all duration-200 group">
-                            <CardHeader className="pb-3">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <Checkbox
-                                            checked={selectedUsers.includes(user.id)}
-                                            onCheckedChange={() => toggleUserSelection(user.id)}
-                                        />
-                                        <Avatar className="h-12 w-12">
-                                            <AvatarFallback className="text-lg">
+            {/* Mobile: 2-column grid */}
+            <div className="lg:hidden">
+                <div className="grid grid-cols-2 gap-3">
+                    {loading ? (
+                        <Card className="col-span-2">
+                            <CardContent className="p-6 text-center">
+                                <p className="text-sm text-muted-foreground">Loading...</p>
+                            </CardContent>
+                        </Card>
+                    ) : paginatedUsers.length === 0 ? (
+                        <Card className="col-span-2">
+                            <CardContent className="p-6 text-center">
+                                <p className="text-sm text-muted-foreground">No users found</p>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        paginatedUsers.map((user) => (
+                            <Card key={user.id} className="hover:shadow-md transition-shadow" onClick={() => {
+                                setSelectedUser(user);
+                                setIsDetailModalOpen(true);
+                            }}>
+                                <CardContent className="p-3 space-y-2">
+                                    <div className="flex flex-col items-center text-center">
+                                        <Avatar className="h-10 w-10 mb-2">
+                                            <AvatarFallback className="text-sm">
                                                 {user.name.split(' ').map(n => n[0]).join('')}
                                             </AvatarFallback>
                                         </Avatar>
+                                        <h3 className="font-semibold text-xs truncate w-full">{user.name}</h3>
+                                        <Badge className={`${getRoleBadgeColor(user.role)} text-xs mt-1`}>
+                                            {user.role}
+                                        </Badge>
                                     </div>
-                                    <Badge className={getStatusBadgeColor(user.status)}>
-                                        {user.status}
-                                    </Badge>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                <div>
-                                    <h3 className="font-semibold text-base truncate">{user.name}</h3>
-                                    <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-                                </div>
-                                
-                                <div className="flex items-center justify-between">
-                                    <Badge className={getRoleBadgeColor(user.role)}>
-                                        {user.role}
-                                    </Badge>
-                                    <span className="text-xs text-muted-foreground">
-                                        {user.department || 'No dept'}
-                                    </span>
-                                </div>
-
-                                {user.lastLogin && (
-                                    <div className="text-xs text-muted-foreground">
-                                        Last login: {user.lastLogin}
-                                    </div>
-                                )}
-
-                                <div className="flex gap-2 pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1"
-                                        onClick={() => {
-                                            setSelectedUser(user);
-                                            setIsDetailModalOpen(true);
-                                        }}
-                                    >
-                                        <Eye className="h-3 w-3 mr-1"/>
-                                        View
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1"
-                                        onClick={() => router.push(`/users/${user.id}/profile`)}
-                                    >
-                                        <Edit className="h-3 w-3 mr-1"/>
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                        onClick={() => deleteUser(user.id)}
-                                        disabled={deleting === user.id}
-                                    >
-                                        <Trash2 className="h-3 w-3"/>
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))
+                                </CardContent>
+                            </Card>
+                        ))
                     )}
-                    </div>
-                }
-                listView={
-                    <Card>
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-12">
+                </div>
+            </div>
+
+            {/* Desktop: Table view */}
+            <Card className="hidden lg:block">
+                <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-12">
+                                        <Checkbox
+                                            checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                                            onCheckedChange={selectAllUsers}
+                                        />
+                                    </TableHead>
+                                    <TableHead>User</TableHead>
+                                    <TableHead>Role</TableHead>
+                                    <TableHead>Department</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Last Login</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={7} className="text-center py-8">
+                                            Loading users...
+                                        </TableCell>
+                                    </TableRow>
+                                ) : paginatedUsers.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={7} className="text-center py-8">
+                                            No users found
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    paginatedUsers.map((user) => (
+                                        <TableRow key={user.id} className="hover:bg-muted/50">
+                                            <TableCell>
                                                 <Checkbox
-                                                    checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                                                    onCheckedChange={selectAllUsers}
+                                                    checked={selectedUsers.includes(user.id)}
+                                                    onCheckedChange={() => toggleUserSelection(user.id)}
                                                 />
-                                            </TableHead>
-                                            <TableHead>User</TableHead>
-                                            <TableHead>Role</TableHead>
-                                            <TableHead>Department</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Last Login</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <p className="font-medium">{user.name}</p>
+                                                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge className={getRoleBadgeColor(user.role)}>
+                                                    {user.role}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>{user.department || 'N/A'}</TableCell>
+                                            <TableCell>
+                                                <Badge className={getStatusBadgeColor(user.status)}>
+                                                    {user.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-sm text-muted-foreground">{user.lastLogin || 'Never'}</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setSelectedUser(user);
+                                                            setIsDetailModalOpen(true);
+                                                        }}
+                                                    >
+                                                        <Eye className="h-4 w-4"/>
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => router.push(`/users/${user.id}/profile`)}
+                                                    >
+                                                        <Edit className="h-4 w-4"/>
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-red-600 hover:text-red-700"
+                                                        onClick={() => deleteUser(user.id)}
+                                                        disabled={deleting === user.id}
+                                                    >
+                                                        <Trash2 className="h-4 w-4"/>
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {loading ? (
-                                            <TableRow>
-                                                <TableCell colSpan={7} className="text-center py-8">
-                                                    Loading users...
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : filteredUsers.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={7} className="text-center py-8">
-                                                    No users found
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : (
-                                            filteredUsers.map((user) => (
-                                                <TableRow key={user.id} className="hover:bg-muted/50">
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedUsers.includes(user.id)}
-                                                            onCheckedChange={() => toggleUserSelection(user.id)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center gap-3">
-                                                            <Avatar className="h-8 w-8">
-                                                                <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                                                            </Avatar>
-                                                            <div>
-                                                                <p className="font-medium">{user.name}</p>
-                                                                <p className="text-sm text-muted-foreground">{user.email}</p>
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge className={getRoleBadgeColor(user.role)}>
-                                                            {user.role}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>{user.department || 'N/A'}</TableCell>
-                                                    <TableCell>
-                                                        <Badge className={getStatusBadgeColor(user.status)}>
-                                                            {user.status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-sm text-muted-foreground">{user.lastLogin || 'Never'}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <div className="flex items-center justify-end gap-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    setSelectedUser(user);
-                                                                    setIsDetailModalOpen(true);
-                                                                }}
-                                                            >
-                                                                <Eye className="h-4 w-4"/>
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => router.push(`/users/${user.id}/profile`)}
-                                                            >
-                                                                <Edit className="h-4 w-4"/>
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                className="text-red-600 hover:text-red-700"
-                                                                onClick={() => deleteUser(user.id)}
-                                                                disabled={deleting === user.id}
-                                                            >
-                                                                <Trash2 className="h-4 w-4"/>
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Pagination */}
+            {filteredUsers.length > 0 && (
+                <Card>
+                    <CardContent className="p-3">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="text-sm text-muted-foreground">
+                                Showing <span className="font-medium text-foreground">{(currentPage - 1) * pageSize + 1}</span> to{" "}
+                                <span className="font-medium text-foreground">{Math.min(currentPage * pageSize, filteredUsers.length)}</span> of{" "}
+                                <span className="font-medium text-foreground">{filteredUsers.length}</span> users
                             </div>
-                        </CardContent>
-                    </Card>
-                }
-            />
+                            <div className="flex items-center gap-2">
+                                <Select value={`${pageSize}`} onValueChange={(value) => { setPageSize(Number(value)); setCurrentPage(1); }}>
+                                    <SelectTrigger className="h-8 w-[100px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {[10, 25, 50, 100].map((size) => (
+                                            <SelectItem key={size} value={`${size}`}>{size} rows</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>First</Button>
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>Previous</Button>
+                                <div className="flex items-center gap-1 px-3 py-1 bg-muted rounded-md text-sm font-medium">
+                                    <span>{currentPage}</span>
+                                    <span className="text-muted-foreground">/</span>
+                                    <span>{totalPages}</span>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>Next</Button>
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>Last</Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* User Detail Modal */}
             <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>

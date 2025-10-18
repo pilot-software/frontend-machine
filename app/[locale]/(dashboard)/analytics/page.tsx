@@ -154,17 +154,43 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {vitalMetrics.map((metric, index) => (
-                    <StatsCard
-                        key={index}
-                        title={metric.title}
-                        value={metric.value}
-                        icon={metric.icon}
-                        trend={metric.trend}
-                        trendValue={metric.change}
-                    />
-                ))}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
+                <StatsCard
+                    title="Total Patients"
+                    value="3,547"
+                    icon={Users}
+                    color="text-blue-600"
+                    bgGradient="from-blue-500 to-blue-600"
+                    change="+12.5%"
+                    trend="up"
+                />
+                <StatsCard
+                    title="Monthly Revenue"
+                    value="$680K"
+                    icon={DollarSign}
+                    color="text-green-600"
+                    bgGradient="from-green-500 to-green-600"
+                    change="+8.2%"
+                    trend="up"
+                />
+                <StatsCard
+                    title="Appointments Today"
+                    value="127"
+                    icon={Calendar}
+                    color="text-purple-600"
+                    bgGradient="from-purple-500 to-purple-600"
+                    change="-2.1%"
+                    trend="down"
+                />
+                <StatsCard
+                    title="Bed Occupancy"
+                    value="89%"
+                    icon={Building2}
+                    color="text-orange-600"
+                    bgGradient="from-orange-500 to-orange-600"
+                    change="+5.3%"
+                    trend="up"
+                />
             </div>
 
             {/* Analytics Tabs */}

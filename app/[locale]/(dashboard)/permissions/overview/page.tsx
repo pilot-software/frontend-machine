@@ -95,34 +95,34 @@ export default function PermissionsOverviewPage() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
                 <StatsCard
                     title="Total Users"
                     value={45}
                     icon={Users}
                     color="text-blue-600"
-                    bgGradient="from-blue-500/10 to-blue-600/5"
+                    bgGradient="from-blue-500 to-blue-600"
                 />
                 <StatsCard
                     title="Active Roles"
                     value={5}
                     icon={UserCog}
                     color="text-green-600"
-                    bgGradient="from-green-500/10 to-green-600/5"
+                    bgGradient="from-green-500 to-green-600"
                 />
                 <StatsCard
                     title="Permission Groups"
                     value={3}
                     icon={Layers}
                     color="text-purple-600"
-                    bgGradient="from-purple-500/10 to-purple-600/5"
+                    bgGradient="from-purple-500 to-purple-600"
                 />
                 <StatsCard
                     title="Branches"
                     value={4}
                     icon={Building2}
                     color="text-orange-600"
-                    bgGradient="from-orange-500/10 to-orange-600/5"
+                    bgGradient="from-orange-500 to-orange-600"
                 />
             </div>
 
