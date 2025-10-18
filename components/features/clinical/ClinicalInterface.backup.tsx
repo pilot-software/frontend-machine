@@ -11,9 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Activity, AlertTriangle, Droplets, Eye, Heart, Plus, Stethoscope, TestTube, Thermometer, TrendingUp, TrendingDown, FileText, Calendar, User, Clock, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Activity, AlertTriangle, Droplets, Eye, Heart, Plus, Stethoscope, TestTube, Thermometer, TrendingUp, TrendingDown, FileText, Calendar, User, Clock, Download, Pill, Syringe, Microscope, Brain } from "lucide-react";
 import { format } from "date-fns";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface VitalSign {
   id: string;
@@ -63,11 +62,6 @@ const STATIC_VITALS: VitalSign[] = [
   { id: "V001", patientName: "John Smith", temperature: 98.6, bloodPressure: "120/80", heartRate: 72, respiratoryRate: 16, oxygenSaturation: 98, weight: 70, height: 175, bmi: 22.9, recordedAt: new Date(), recordedBy: "Dr. Sarah Johnson", status: "normal" },
   { id: "V002", patientName: "Emma Wilson", temperature: 99.2, bloodPressure: "135/85", heartRate: 88, respiratoryRate: 18, oxygenSaturation: 96, weight: 65, height: 165, bmi: 23.9, recordedAt: new Date(), recordedBy: "Nurse Mary", status: "warning" },
   { id: "V003", patientName: "Robert Brown", temperature: 100.4, bloodPressure: "145/95", heartRate: 105, respiratoryRate: 22, oxygenSaturation: 94, weight: 85, height: 180, bmi: 26.2, recordedAt: new Date(), recordedBy: "Dr. Michael Chen", status: "critical" },
-  { id: "V004", patientName: "Lisa Anderson", temperature: 98.4, bloodPressure: "118/78", heartRate: 68, respiratoryRate: 15, oxygenSaturation: 99, weight: 62, height: 168, bmi: 22.0, recordedAt: new Date(), recordedBy: "Nurse John", status: "normal" },
-  { id: "V005", patientName: "David Martinez", temperature: 98.8, bloodPressure: "125/82", heartRate: 75, respiratoryRate: 17, oxygenSaturation: 97, weight: 78, height: 182, bmi: 23.5, recordedAt: new Date(), recordedBy: "Dr. Emily Davis", status: "normal" },
-  { id: "V006", patientName: "Sarah Taylor", temperature: 99.5, bloodPressure: "140/90", heartRate: 92, respiratoryRate: 20, oxygenSaturation: 95, weight: 68, height: 170, bmi: 23.5, recordedAt: new Date(), recordedBy: "Dr. Sarah Johnson", status: "warning" },
-  { id: "V007", patientName: "James Lee", temperature: 98.2, bloodPressure: "115/75", heartRate: 65, respiratoryRate: 14, oxygenSaturation: 99, weight: 75, height: 178, bmi: 23.7, recordedAt: new Date(), recordedBy: "Nurse Mary", status: "normal" },
-  { id: "V008", patientName: "Maria Garcia", temperature: 98.9, bloodPressure: "122/80", heartRate: 70, respiratoryRate: 16, oxygenSaturation: 98, weight: 60, height: 162, bmi: 22.9, recordedAt: new Date(), recordedBy: "Dr. Michael Chen", status: "normal" },
 ];
 
 const STATIC_LABS: LabResult[] = [
@@ -92,9 +86,6 @@ export function ClinicalInterface() {
   const [modalType, setModalType] = useState<"vital" | "lab" | "procedure">("vital");
   const [activeTab, setActiveTab] = useState("vitals");
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
   const stats = [
     { title: "Active Patients", value: 156, icon: Activity, color: "text-blue-600", bgGradient: "from-blue-500 to-blue-600", trend: "+12%" },
@@ -119,26 +110,9 @@ export function ClinicalInterface() {
     setIsModalOpen(true);
   };
 
-  const filteredVitals = vitals.filter(v => {
-    const matchesSearch = v.patientName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || v.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-  const filteredLabs = labs.filter(l => {
-    const matchesSearch = l.patientName.toLowerCase().includes(searchTerm.toLowerCase()) || l.testName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || l.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-  const filteredProcedures = procedures.filter(p => {
-    const matchesSearch = p.patientName.toLowerCase().includes(searchTerm.toLowerCase()) || p.procedureName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || p.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const paginatedVitals = filteredVitals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const paginatedLabs = filteredLabs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const paginatedProcedures = filteredProcedures.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const totalPages = Math.ceil(filteredVitals.length / itemsPerPage);
+  const filteredVitals = vitals.filter(v => v.patientName.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredLabs = labs.filter(l => l.patientName.toLowerCase().includes(searchTerm.toLowerCase()) || l.testName.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredProcedures = procedures.filter(p => p.patientName.toLowerCase().includes(searchTerm.toLowerCase()) || p.procedureName.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="space-y-6">
@@ -195,21 +169,8 @@ export function ClinicalInterface() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 mb-4">
-                <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="warning">Warning</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-sm text-muted-foreground">Showing {paginatedVitals.length} of {filteredVitals.length}</span>
-              </div>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-3">
-                  {paginatedVitals.map((vital) => (
+              <div className="space-y-4">
+                {filteredVitals.map((vital) => (
                   <div key={vital.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4">
                     <div className="flex items-center gap-4 flex-1">
                       <div className="p-3 bg-blue-100 rounded-full">
@@ -231,20 +192,8 @@ export function ClinicalInterface() {
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(vital, "vital")}><Eye className="h-4 w-4" /></Button>
                   </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                    <ChevronLeft className="h-4 w-4 mr-1" />Previous
-                  </Button>
-                  <span className="text-sm">Page {currentPage} of {totalPages}</span>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                    Next<ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
-              )}
+                ))}
+              </div>
             </CardContent>
           </Card>
 
@@ -304,20 +253,8 @@ export function ClinicalInterface() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 mb-4">
-                <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="abnormal">Abnormal</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-sm text-muted-foreground">Showing {paginatedLabs.length} of {filteredLabs.length}</span>
-              </div>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-3">
-                  {paginatedLabs.map((lab) => (
+              <div className="space-y-3">
+                {filteredLabs.map((lab) => (
                   <div key={lab.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4">
                     <div className="flex items-center gap-4 flex-1">
                       <div className={`p-3 rounded-full ${lab.status === "normal" ? "bg-green-100" : lab.status === "abnormal" ? "bg-orange-100" : "bg-red-100"}`}>
@@ -341,20 +278,8 @@ export function ClinicalInterface() {
                       <Button variant="ghost" size="sm"><Download className="h-4 w-4" /></Button>
                     </div>
                   </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                    <ChevronLeft className="h-4 w-4 mr-1" />Previous
-                  </Button>
-                  <span className="text-sm">Page {currentPage} of {totalPages}</span>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                    Next<ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
-              )}
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -374,21 +299,8 @@ export function ClinicalInterface() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 mb-4">
-                <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-[150px]"><SelectValue placeholder="Filter" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-sm text-muted-foreground">Showing {paginatedProcedures.length} of {filteredProcedures.length}</span>
-              </div>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-3">
-                  {paginatedProcedures.map((proc) => (
+              <div className="space-y-3">
+                {filteredProcedures.map((proc) => (
                   <div key={proc.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4">
                     <div className="flex items-center gap-4 flex-1">
                       <div className="p-3 bg-purple-100 rounded-full">
@@ -409,20 +321,8 @@ export function ClinicalInterface() {
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(proc, "procedure")}><Eye className="h-4 w-4" /></Button>
                   </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                    <ChevronLeft className="h-4 w-4 mr-1" />Previous
-                  </Button>
-                  <span className="text-sm">Page {currentPage} of {totalPages}</span>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                    Next<ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
-              )}
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
