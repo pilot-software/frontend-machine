@@ -26,7 +26,7 @@ export function ScrollToTop() {
     <Button
       onClick={scrollToTop}
       size="icon"
-      className="fixed bottom-8 right-8 z-50 rounded-full shadow-lg"
+      className="fixed bottom-24 right-4 md:right-8 z-50 rounded-full shadow-lg"
       aria-label="Scroll to top"
     >
       <ArrowUp className="h-5 w-5" />

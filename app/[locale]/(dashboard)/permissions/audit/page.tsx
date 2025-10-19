@@ -31,6 +31,7 @@ import {
   Users,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { StatsCard } from "@/components/ui/stats-card";
 
 interface PermissionAuditLog {
   id: string;
@@ -188,81 +189,56 @@ export default function PermissionAuditPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <h1 className="text-2xl font-bold">Permission Audit Log</h1>
+        <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.push("/permissions/overview")}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
           </Button>
-          <h1 className="text-2xl font-bold">Permission Audit Log</h1>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={fetchAuditLogs}
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          className="flex items-center gap-2"
-          onClick={fetchAuditLogs}
-        >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Changes</p>
-                <p className="text-2xl font-bold">{displayLogs.length}</p>
-              </div>
-              <FileText className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Successful</p>
-                <p className="text-2xl font-bold">
-                  {displayLogs.filter((l) => l.status === "SUCCESS").length}
-                </p>
-              </div>
-              <Shield className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Failed</p>
-                <p className="text-2xl font-bold">
-                  {displayLogs.filter((l) => l.status === "FAILED").length}
-                </p>
-              </div>
-              <User className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Today</p>
-                <p className="text-2xl font-bold">
-                  {
-                    displayLogs.filter((l) =>
-                      l.timestamp.startsWith("2024-01-15")
-                    ).length
-                  }
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
+        <StatsCard
+          title="Total Changes"
+          value={displayLogs.length}
+          icon={FileText}
+          color="text-blue-600"
+          bgGradient="from-blue-500 to-blue-600"
+        />
+        <StatsCard
+          title="Successful"
+          value={displayLogs.filter((l) => l.status === "SUCCESS").length}
+          icon={Shield}
+          color="text-green-600"
+          bgGradient="from-green-500 to-green-600"
+        />
+        <StatsCard
+          title="Failed"
+          value={displayLogs.filter((l) => l.status === "FAILED").length}
+          icon={User}
+          color="text-red-600"
+          bgGradient="from-red-500 to-red-600"
+        />
+        <StatsCard
+          title="Today"
+          value={displayLogs.filter((l) => l.timestamp.startsWith("2024-01-15")).length}
+          icon={Users}
+          color="text-purple-600"
+          bgGradient="from-purple-500 to-purple-600"
+        />
       </div>
 
       {/* Filters */}

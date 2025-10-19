@@ -97,10 +97,10 @@ export function ClinicalInterface() {
   const itemsPerPage = 5;
 
   const stats = [
-    { title: "Active Patients", value: 156, icon: Activity, color: "text-blue-600", bgGradient: "from-blue-500 to-blue-600", trend: "+12%" },
-    { title: "Critical Cases", value: 8, icon: AlertTriangle, color: "text-red-600", bgGradient: "from-red-500 to-red-600", trend: "-2" },
-    { title: "Pending Labs", value: 23, icon: TestTube, color: "text-purple-600", bgGradient: "from-purple-500 to-purple-600", trend: "+5" },
-    { title: "Procedures Today", value: 12, icon: Stethoscope, color: "text-green-600", bgGradient: "from-green-500 to-green-600", trend: "+3" },
+    { title: "Active Patients", value: 156, icon: Activity, color: "text-blue-600", bgGradient: "from-blue-500 to-blue-600" },
+    { title: "Critical Cases", value: 8, icon: AlertTriangle, color: "text-red-600", bgGradient: "from-red-500 to-red-600" },
+    { title: "Pending Labs", value: 23, icon: TestTube, color: "text-purple-600", bgGradient: "from-purple-500 to-purple-600" },
+    { title: "Procedures Today", value: 12, icon: Stethoscope, color: "text-green-600", bgGradient: "from-green-500 to-green-600" },
   ];
 
   const getVitalIcon = (type: string) => {

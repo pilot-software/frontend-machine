@@ -314,13 +314,6 @@ export default function RolePermissionsPage() {
 
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button
-                        variant="ghost"
-                        onClick={() => router.push("/permissions/overview")}
-                    >
-                        <ArrowLeft className="h-4 w-4"/>
-                    </Button>
-
                     <h1 className="text-2xl font-bold">Role Permission Matrix</h1>
 
                     <div className="flex gap-2">
@@ -343,8 +336,15 @@ export default function RolePermissionsPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                     {saveError && <div className="text-sm text-red-600">{saveError}</div>}
+                    <Button
+                        variant="outline"
+                        onClick={() => router.push("/permissions/overview")}
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2"/>
+                        Back
+                    </Button>
                     <Button
                         className="flex items-center gap-2"
                         onClick={saveRolePermissions}

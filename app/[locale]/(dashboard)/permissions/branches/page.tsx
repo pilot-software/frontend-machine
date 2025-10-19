@@ -106,13 +106,13 @@ export default function BranchAccessPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" onClick={() => router.push('/permissions/overview')}>
-                        <ArrowLeft className="h-4 w-4"/>
+                <h1 className="text-2xl font-bold">Branch Access Management</h1>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => router.push('/permissions/overview')}>
+                        <ArrowLeft className="h-4 w-4 mr-2"/>
+                        Back
                     </Button>
-                    <h1 className="text-2xl font-bold">Branch Access Management</h1>
-                </div>
-                <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
+                    <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">
                             <Plus className="h-4 w-4"/>
@@ -163,7 +163,8 @@ export default function BranchAccessPage() {
                             </div>
                         </div>
                     </DialogContent>
-                </Dialog>
+                    </Dialog>
+                </div>
             </div>
 
             <Tabs value={selectedBranch}

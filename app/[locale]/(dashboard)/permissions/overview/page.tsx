@@ -15,34 +15,30 @@ export default function PermissionsOverviewPage() {
         {
             title: 'Role Permissions',
             description: 'Manage permissions for each user role',
-            icon: <Shield className="h-8 w-8 text-blue-600"/>,
+            icon: <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400"/>,
             path: '/permissions/roles',
-            stats: '5 Roles',
-            color: 'bg-blue-50 border-blue-200'
+            stats: '5 Roles'
         },
         {
             title: 'Permission Groups',
             description: 'Create and manage permission groups',
-            icon: <Users className="h-8 w-8 text-green-600"/>,
+            icon: <Users className="h-8 w-8 text-green-600 dark:text-green-400"/>,
             path: '/permissions/groups',
-            stats: '3 Groups',
-            color: 'bg-green-50 border-green-200'
+            stats: '3 Groups'
         },
         {
             title: 'Branch Access',
             description: 'Manage location-specific access control',
-            icon: <Building className="h-8 w-8 text-purple-600"/>,
+            icon: <Building className="h-8 w-8 text-purple-600 dark:text-purple-400"/>,
             path: '/permissions/branches',
-            stats: '4 Branches',
-            color: 'bg-purple-50 border-purple-200'
+            stats: '4 Branches'
         },
         {
             title: 'Audit Log',
             description: 'View permission change history',
-            icon: <FileText className="h-8 w-8 text-orange-600"/>,
+            icon: <FileText className="h-8 w-8 text-orange-600 dark:text-orange-400"/>,
             path: '/permissions/audit',
-            stats: '156 Entries',
-            color: 'bg-orange-50 border-orange-200'
+            stats: '156 Entries'
         }
     ];
 
@@ -129,11 +125,11 @@ export default function PermissionsOverviewPage() {
             {/* Permission Modules */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {permissionModules.map((module, index) => (
-                    <Card key={index} className={`cursor-pointer transition-all hover:shadow-md ${module.color}`}>
+                    <Card key={index} className="cursor-pointer transition-all hover:shadow-md">
                         <CardContent className="p-6" onClick={() => router.push(module.path)}>
                             <div className="flex items-start justify-between">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-2 bg-white rounded-lg">
+                                    <div className="p-2 bg-muted rounded-lg">
                                         {module.icon}
                                     </div>
                                     <div>
@@ -162,9 +158,9 @@ export default function PermissionsOverviewPage() {
                     <CardContent>
                         <div className="space-y-4">
                             {recentActivity.map((activity, index) => (
-                                <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                                <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-card">
                                     <div className={`w-2 h-2 rounded-full ${
-                                        activity.status === 'success' ? 'bg-green-500' : 'bg-red-500'
+                                        activity.status === 'success' ? 'bg-green-500 dark:bg-green-400' : 'bg-red-500 dark:bg-red-400'
                                     }`}></div>
                                     <div className="flex-1">
                                         <p className="font-medium">{activity.action}</p>

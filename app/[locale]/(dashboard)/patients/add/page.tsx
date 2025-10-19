@@ -153,8 +153,9 @@ export default function AddPatientPage() {
           <p className="text-muted-foreground mt-1">Enter comprehensive patient information</p>
         </div>
         <div className="flex space-x-2 w-full sm:w-auto">
-          <Button type="button" variant="outline" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-5 w-5" />
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
           </Button>
           <Button type="submit" disabled={isSubmitting} onClick={handleSubmit} className="flex-1 sm:flex-none">
             {isSubmitting ? (

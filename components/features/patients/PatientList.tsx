@@ -4,7 +4,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/compo
 import {Button} from '@/components/ui/button';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {StatusBadge} from '@/components/ui/status-badge';
-import {LoadingState} from '@/components/ui/loading-state';
+import { Skeleton } from '@/components/ui/skeleton';
 import {Edit, Eye, FileText} from 'lucide-react';
 import {PatientDisplay} from '@/lib/utils/data-transformers';
 
@@ -18,11 +18,45 @@ interface PatientListProps {
 export function PatientList({patients, loading, onViewPatient, onEditPatient}: PatientListProps) {
   const t = useTranslations('common');
     if (loading) {
-        return <LoadingState message="Loading patients..."/>;
+        return (
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-[200px]" />
+                    <Skeleton className="h-4 w-[300px] mt-2" />
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                                <div className="flex items-center space-x-4">
+                                    <Skeleton className="h-12 w-12 rounded-full" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-[200px]" />
+                                        <Skeleton className="h-3 w-[300px]" />
+                                        <Skeleton className="h-3 w-[250px]" />
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Skeleton className="h-8 w-8" />
+                                    <Skeleton className="h-8 w-8" />
+                                    <Skeleton className="h-8 w-8" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        );
     }
 
     if (patients.length === 0) {
-        return <LoadingState message="No patients found" className="text-center"/>;
+        return (
+            <Card>
+                <CardContent className="py-12 text-center">
+                    <p className="text-muted-foreground">No patients found</p>
+                </CardContent>
+            </Card>
+        );
     }
 
     return (

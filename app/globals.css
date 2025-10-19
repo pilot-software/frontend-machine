@@ -423,4 +423,13 @@ html {
     .dark .scrollbar-thin {
         scrollbar-color: rgb(75 85 99) rgb(31 41 55);
     }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
 }
