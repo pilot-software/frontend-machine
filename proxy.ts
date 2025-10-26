@@ -6,7 +6,7 @@ const intlMiddleware = createMiddleware({
   defaultLocale: 'en'
 });
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   
   // Set hospital type based on subdomain
