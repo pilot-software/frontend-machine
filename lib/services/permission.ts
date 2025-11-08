@@ -11,7 +11,8 @@ export interface UserPermissions {
 
 export class PermissionService {
   async getAllPermissions(): Promise<Permission> {
-    const response = await fetch(`${this.getBaseUrl()}/api/permissions/all`, {
+    const baseUrl = await this.getBaseUrl('/api/permissions/all');
+    const response = await fetch(`${baseUrl}/api/permissions/all`, {
       method: "GET",
       headers: this.getHeaders(),
     });
@@ -24,8 +25,9 @@ export class PermissionService {
   }
 
   async getUserPermissions(userId: string): Promise<Permission[]> {
+    const baseUrl = await this.getBaseUrl('/api/permissions/user');
     const response = await fetch(
-      `${this.getBaseUrl()}/api/permissions/user/${userId}`,
+      `${baseUrl}/api/permissions/user/${userId}`,
       {
         method: "GET",
         headers: this.getHeaders(),
@@ -59,12 +61,12 @@ export class PermissionService {
     return data;
   }
 
-  private getBaseUrl() {
-    return process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace("/api", "") ||
-          "https://springboot-api.azurewebsites.net"
-      : process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") ||
-          "http://localhost:8080";
+  private async getBaseUrl(endpoint: string = '') {
+    if (process.env.NODE_ENV === "production") {
+      const { getMicroserviceUrl } = await import('../config/microservices.config');
+      return getMicroserviceUrl(endpoint);
+    }
+    return process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") || "http://localhost:8080";
   }
 
   private getHeaders(): Record<string, string> {

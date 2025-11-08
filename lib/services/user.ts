@@ -13,15 +13,17 @@ export interface ApiUser {
 
 export class UserService {
     async getUsers(): Promise<ApiUser[]> {
-        const response = await fetch(`${this.getBaseUrl()}/api/users`, {
+        const baseUrl = await this.getBaseUrl('/api/users');
+        const response = await fetch(`${baseUrl}/api/users`, {
             headers: this.getHeaders(),
         });
         return response.json();
     }
 
     async getUsersByRole(role: string): Promise<ApiUser[]> {
+        const baseUrl = await this.getBaseUrl('/api/users/role');
         const response = await fetch(
-            `${this.getBaseUrl()}/api/users/role/${role}`,
+            `${baseUrl}/api/users/role/${role}`,
             {
                 headers: this.getHeaders(),
             }
@@ -30,7 +32,8 @@ export class UserService {
     }
 
     async createUser(data: any): Promise<ApiUser> {
-        const response = await fetch(`${this.getBaseUrl()}/api/users`, {
+        const baseUrl = await this.getBaseUrl('/api/users');
+        const response = await fetch(`${baseUrl}/api/users`, {
             method: "POST",
             headers: this.getHeaders(),
             body: JSON.stringify(data),
@@ -42,12 +45,12 @@ export class UserService {
         return response.json();
     }
 
-    private getBaseUrl() {
-        return process.env.NODE_ENV === "production"
-            ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace("/api", "") ||
-            "https://springboot-api.azurewebsites.net"
-            : process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") ||
-            "http://localhost:8080";
+    private async getBaseUrl(endpoint: string = '') {
+        if (process.env.NODE_ENV === "production") {
+            const { getMicroserviceUrl } = await import('../config/microservices.config');
+            return getMicroserviceUrl(endpoint);
+        }
+        return process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") || "http://localhost:8080";
     }
 
     private getHeaders() {

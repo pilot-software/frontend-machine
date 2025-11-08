@@ -13,7 +13,8 @@ export interface LoginResponse {
 
 export class AuthService {
     async login(credentials: LoginRequest): Promise<LoginResponse> {
-        const response = await fetch(`${this.getBaseUrl()}/api/auth/login`, {
+        const baseUrl = await this.getBaseUrl('/api/auth/login');
+        const response = await fetch(`${baseUrl}/api/auth/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(credentials)
@@ -22,14 +23,17 @@ export class AuthService {
     }
 
     async logout(): Promise<{ message: string }> {
-        const response = await fetch(`${this.getBaseUrl()}/api/auth/logout`, {method: 'POST'});
+        const baseUrl = await this.getBaseUrl('/api/auth/logout');
+        const response = await fetch(`${baseUrl}/api/auth/logout`, {method: 'POST'});
         return response.json();
     }
 
-    private getBaseUrl() {
-        return process.env.NODE_ENV === 'production'
-            ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace('/api', '') || 'https://springboot-api.azurewebsites.net'
-            : process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
+    private async getBaseUrl(endpoint: string = '') {
+        if (process.env.NODE_ENV === 'production') {
+            const { getMicroserviceUrl } = await import('../config/microservices.config');
+            return getMicroserviceUrl(endpoint);
+        }
+        return process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
     }
 }
 

@@ -259,16 +259,13 @@ export class ApiClient {
     const { method = "GET", body, branchId, userRole } = options;
     const role = userRole || this.getUserRole();
 
-    // Use environment-based API URL
-    const baseUrl =
-      process.env.NODE_ENV === "production"
-        ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace("/api", "") ||
-          "https://springboot-api.azurewebsites.net"
-        : process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") ||
-          "http://localhost:8080";
-
     // Use new routing logic
     const routedEndpoint = getEndpoint(role, endpoint);
+    
+    // Get microservice URL based on endpoint
+    const { getMicroserviceUrl } = await import('./config/microservices.config');
+    const baseUrl = getMicroserviceUrl(routedEndpoint);
+    
     const url =
       baseUrl +
       routedEndpoint +
@@ -293,13 +290,13 @@ export class ApiClient {
 
 export const apiClient = new ApiClient();
 
-// Get base URL based on environment
-const getBaseUrl = () => {
-  return process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_PROD_API_URL?.replace("/api", "") ||
-        "https://springboot-api.azurewebsites.net"
-    : process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") ||
-        "http://localhost:8080";
+// Get base URL based on environment and endpoint
+const getBaseUrl = async (endpoint: string = '') => {
+  if (process.env.NODE_ENV === "production") {
+    const { getMicroserviceUrl } = await import('./config/microservices.config');
+    return getMicroserviceUrl(endpoint);
+  }
+  return process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") || "http://localhost:8080";
 };
 
 class SimpleApi {
@@ -319,7 +316,8 @@ class SimpleApi {
     data?: any
   ) {
     const token = localStorage.getItem("auth_token");
-    const response = await fetch(`${getBaseUrl()}${endpoint}`, {
+    const baseUrl = await getBaseUrl(endpoint);
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       method,
       headers: {
         "Content-Type": "application/json",
