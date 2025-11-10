@@ -95,6 +95,9 @@ export function ClinicalInterface() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [isOrderLabOpen, setIsOrderLabOpen] = useState(false);
+  const [isNewAssessmentOpen, setIsNewAssessmentOpen] = useState(false);
+  const [isAddRecordOpen, setIsAddRecordOpen] = useState(false);
 
   const stats = [
     { title: "Active Patients", value: 156, icon: Activity, color: "text-blue-600", bgGradient: "from-blue-500 to-blue-600" },
@@ -148,8 +151,8 @@ export function ClinicalInterface() {
           <p className="text-muted-foreground mt-1">Patient clinical data, vitals, and medical records</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm"><TestTube className="h-4 w-4 mr-2" />Order Labs</Button>
-          <Button size="sm"><Plus className="h-4 w-4 mr-2" />New Assessment</Button>
+          <Button variant="outline" size="sm" onClick={() => setIsOrderLabOpen(true)}><TestTube className="h-4 w-4 mr-2" />Order Labs</Button>
+          <Button size="sm" onClick={() => setIsNewAssessmentOpen(true)}><Plus className="h-4 w-4 mr-2" />New Assessment</Button>
         </div>
       </div>
 
@@ -190,7 +193,7 @@ export function ClinicalInterface() {
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <Input placeholder="Search patients..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full sm:w-[200px]" />
-                  <Button><Plus className="h-4 w-4 mr-2" />Record</Button>
+                  <Button onClick={() => setIsAddRecordOpen(true)}><Plus className="h-4 w-4 mr-2" />Record</Button>
                 </div>
               </div>
             </CardHeader>
@@ -445,6 +448,9 @@ export function ClinicalInterface() {
       </Tabs>
 
       <DetailModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} item={selectedItem} type={modalType} />
+      <OrderLabModal isOpen={isOrderLabOpen} onClose={() => setIsOrderLabOpen(false)} />
+      <NewAssessmentModal isOpen={isNewAssessmentOpen} onClose={() => setIsNewAssessmentOpen(false)} />
+      <AddRecordModal isOpen={isAddRecordOpen} onClose={() => setIsAddRecordOpen(false)} />
     </div>
   );
 }
@@ -494,6 +500,111 @@ function DetailModal({ isOpen, onClose, item, type }: { isOpen: boolean; onClose
               {item.notes && <div><Label>Notes</Label><p className="text-sm text-muted-foreground">{item.notes}</p></div>}
             </div>
           )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function OrderLabModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Order Laboratory Test</DialogTitle>
+          <DialogDescription>Request new lab tests for patient</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div><Label>Patient Name</Label><Input placeholder="Search patient..." /></div>
+          <div><Label>Test Type</Label>
+            <Select><SelectTrigger><SelectValue placeholder="Select test type" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hematology">Hematology</SelectItem>
+                <SelectItem value="chemistry">Chemistry</SelectItem>
+                <SelectItem value="microbiology">Microbiology</SelectItem>
+                <SelectItem value="endocrinology">Endocrinology</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div><Label>Test Name</Label>
+            <Select><SelectTrigger><SelectValue placeholder="Select test" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cbc">Complete Blood Count</SelectItem>
+                <SelectItem value="glucose">Blood Glucose</SelectItem>
+                <SelectItem value="lipid">Lipid Panel</SelectItem>
+                <SelectItem value="thyroid">Thyroid Function</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div><Label>Priority</Label>
+            <Select><SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="routine">Routine</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+                <SelectItem value="stat">STAT</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div><Label>Clinical Notes</Label><Textarea placeholder="Reason for test..." /></div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>Order Test</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function NewAssessmentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>New Clinical Assessment</DialogTitle>
+          <DialogDescription>Complete patient evaluation and clinical notes</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div><Label>Patient Name</Label><Input placeholder="Search patient..." /></div>
+          <div><Label>Chief Complaint</Label><Textarea placeholder="Patient's primary concern..." /></div>
+          <div><Label>History of Present Illness</Label><Textarea placeholder="Detailed history..." /></div>
+          <div><Label>Physical Examination</Label><Textarea placeholder="Physical exam findings..." /></div>
+          <div><Label>Assessment</Label><Textarea placeholder="Clinical assessment..." /></div>
+          <div><Label>Plan</Label><Textarea placeholder="Treatment plan..." /></div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}><FileText className="h-4 w-4 mr-2" />Save Assessment</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddRecordModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Record Vital Signs</DialogTitle>
+          <DialogDescription>Add new vital signs measurement</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div><Label>Patient Name</Label><Input placeholder="Search patient..." /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><Label>Temperature (°F)</Label><Input type="number" placeholder="98.6" /></div>
+            <div><Label>Heart Rate (bpm)</Label><Input type="number" placeholder="72" /></div>
+            <div><Label>Blood Pressure</Label><Input placeholder="120/80" /></div>
+            <div><Label>Oxygen Saturation (%)</Label><Input type="number" placeholder="98" /></div>
+            <div><Label>Respiratory Rate (/min)</Label><Input type="number" placeholder="16" /></div>
+            <div><Label>Weight (kg)</Label><Input type="number" placeholder="70" /></div>
+            <div><Label>Height (cm)</Label><Input type="number" placeholder="175" /></div>
+          </div>
+          <div><Label>Notes</Label><Textarea placeholder="Additional observations..." /></div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>Save Record</Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -217,15 +217,6 @@ export class PermissionStrategy {
             });
         }
 
-        if (permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS')) {
-            menuItems.push({
-                icon: Settings,
-                label: "settings",
-                path: "/settings",
-                permission: 'SYSTEM_HOSPITAL_SETTINGS'
-            });
-        }
-
         return menuItems;
     }
 

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Calendar, Mail, MapPin, Phone, Save, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Mail, MapPin, Phone, Save, User, Heart, Shield, FileText, CheckCircle2 } from 'lucide-react';
 import { patientService } from '@/lib/services/patient';
 import { userService } from '@/lib/services/user';
 import { useAppData } from '@/lib/hooks/useAppData';
@@ -146,46 +146,38 @@ export default function AddPatientPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-foreground">Add New Patient</h2>
+          <h1 className="text-3xl font-bold">Add New Patient</h1>
           <p className="text-muted-foreground mt-1">Enter comprehensive patient information</p>
         </div>
-        <div className="flex space-x-2 w-full sm:w-auto">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <Button type="submit" disabled={isSubmitting} onClick={handleSubmit} className="flex-1 sm:flex-none">
-            {isSubmitting ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Create Patient
-              </>
-            )}
-          </Button>
-        </div>
+        <Button variant="outline" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <User className="h-5 w-5" />
-              <span>{t('personalInformation')}</span>
-            </CardTitle>
-            <CardDescription>Basic patient demographics and contact information</CardDescription>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <User className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <CardTitle>{t('personalInformation')}</CardTitle>
+                <CardDescription>Basic patient demographics and contact information</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="firstName">{t('firstName')} *</Label>
+                <Label htmlFor="firstName" className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  {t('firstName')} *
+                </Label>
                 <Input
                   id="firstName"
                   value={patientData.firstName}
@@ -195,7 +187,10 @@ export default function AddPatientPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="lastName">{t('lastName')} *</Label>
+                <Label htmlFor="lastName" className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  {t('lastName')} *
+                </Label>
                 <Input
                   id="lastName"
                   value={patientData.lastName}
@@ -222,60 +217,69 @@ export default function AddPatientPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="email">{t('emailAddress')} *</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={patientData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="patient@example.com"
-                    className="pl-10"
-                    required
-                  />
-                </div>
+                <Label htmlFor="email" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  {t('emailAddress')} *
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={patientData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="patient@example.com"
+                  required
+                />
               </div>
               <div>
-                <Label htmlFor="phone">{t('phoneNumber')} *</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="phone"
-                    value={patientData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="+1-555-0123"
-                    className="pl-10"
-                  />
-                </div>
+                <Label htmlFor="phone" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  {t('phoneNumber')} *
+                </Label>
+                <Input
+                  id="phone"
+                  value={patientData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="+1-555-0123"
+                />
               </div>
               <div>
-                <Label htmlFor="dateOfBirth">{t('dateOfBirth')} *</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="dateOfBirth"
-                    type="date"
-                    value={patientData.dateOfBirth}
-                    onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+                <Label htmlFor="dateOfBirth" className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  {t('dateOfBirth')} *
+                </Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={patientData.dateOfBirth}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Textarea
-                  id="address"
-                  value={patientData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter full address"
-                  className="pl-10"
-                />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <MapPin className="h-5 w-5 text-green-600" />
               </div>
+              <div>
+                <CardTitle>Address Information</CardTitle>
+                <CardDescription>Residential address details</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="address">Street Address</Label>
+              <Input
+                id="address"
+                value={patientData.address}
+                onChange={(e) => handleInputChange('address', e.target.value)}
+                placeholder="123 Main Street"
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -317,30 +321,40 @@ export default function AddPatientPage() {
               </div>
             </div>
 
-            <Separator />
+          </CardContent>
+        </Card>
 
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <Phone className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <CardTitle>Emergency Contact</CardTitle>
+                <CardDescription>Contact person in case of emergency</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
+                <Label htmlFor="emergencyContactName">Contact Name</Label>
                 <Input
                   id="emergencyContactName"
                   value={patientData.emergencyContactName}
                   onChange={(e) => handleInputChange('emergencyContactName', e.target.value)}
-                  placeholder="Contact person name"
+                  placeholder="Jane Doe"
                 />
               </div>
               <div>
-                <Label htmlFor="emergencyContact">Emergency Contact Phone</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="emergencyContact"
-                    value={patientData.emergencyContactPhone}
-                    onChange={(e) => handleInputChange('emergencyContactPhone', e.target.value)}
-                    placeholder="+1-555-0124"
-                    className="pl-10"
-                  />
-                </div>
+                <Label htmlFor="emergencyContact">Contact Phone</Label>
+                <Input
+                  id="emergencyContact"
+                  value={patientData.emergencyContactPhone}
+                  onChange={(e) => handleInputChange('emergencyContactPhone', e.target.value)}
+                  placeholder="+1-555-0124"
+                />
               </div>
               <div>
                 <Label htmlFor="emergencyRelationship">Relationship</Label>
@@ -352,9 +366,22 @@ export default function AddPatientPage() {
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <Separator />
-
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Heart className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <CardTitle>Medical Information</CardTitle>
+                <CardDescription>Blood type, allergies, and medical conditions</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="bloodType">{t('bloodType')}</Label>
@@ -374,6 +401,73 @@ export default function AddPatientPage() {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label htmlFor="assignedDoctor">{t('assignedDoctor')}</Label>
+                <Select value={patientData.assignedDoctor} onValueChange={(value) => handleInputChange('assignedDoctor', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.isArray(doctors) &&
+                      doctors.map((doctor) => (
+                        <SelectItem key={doctor.id} value={doctor.id}>
+                          {doctor.name} - {doctor.specialization || doctor.department}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="allergies">{t('allergies')}</Label>
+                <Textarea
+                  id="allergies"
+                  value={patientData.allergies}
+                  onChange={(e) => handleInputChange('allergies', e.target.value)}
+                  placeholder="List any known allergies"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="chronicConditions">{t('chronicConditions')}</Label>
+                <Textarea
+                  id="chronicConditions"
+                  value={patientData.chronicConditions}
+                  onChange={(e) => handleInputChange('chronicConditions', e.target.value)}
+                  placeholder="List chronic conditions"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="currentMedications">{t('currentMedications')}</Label>
+                <Textarea
+                  id="currentMedications"
+                  value={patientData.currentMedications}
+                  onChange={(e) => handleInputChange('currentMedications', e.target.value)}
+                  placeholder="List current medications"
+                  rows={3}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <Shield className="h-5 w-5 text-indigo-600" />
+              </div>
+              <div>
+                <CardTitle>Insurance Information</CardTitle>
+                <CardDescription>Insurance provider and policy details</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="insuranceProvider">{t('insuranceProvider')}</Label>
                 <Select value={patientData.insuranceProvider} onValueChange={(value) => handleInputChange('insuranceProvider', value)}>
@@ -399,61 +493,27 @@ export default function AddPatientPage() {
                 />
               </div>
             </div>
-
-            <Separator />
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="assignedDoctor">{t('assignedDoctor')}</Label>
-                <Select value={patientData.assignedDoctor} onValueChange={(value) => handleInputChange('assignedDoctor', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select doctor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.isArray(doctors) &&
-                      doctors.map((doctor) => (
-                        <SelectItem key={doctor.id} value={doctor.id}>
-                          {doctor.name} - {doctor.specialization || doctor.department}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="allergies">{t('allergies')}</Label>
-                <Textarea
-                  id="allergies"
-                  value={patientData.allergies}
-                  onChange={(e) => handleInputChange('allergies', e.target.value)}
-                  placeholder="List any known allergies"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="chronicConditions">{t('chronicConditions')}</Label>
-                <Textarea
-                  id="chronicConditions"
-                  value={patientData.chronicConditions}
-                  onChange={(e) => handleInputChange('chronicConditions', e.target.value)}
-                  placeholder="List chronic conditions"
-                />
-              </div>
-              <div>
-                <Label htmlFor="currentMedications">{t('currentMedications')}</Label>
-                <Textarea
-                  id="currentMedications"
-                  value={patientData.currentMedications}
-                  onChange={(e) => handleInputChange('currentMedications', e.target.value)}
-                  placeholder="List current medications"
-                />
-              </div>
-            </div>
           </CardContent>
         </Card>
 
-
+        <div className="flex flex-col sm:flex-row gap-3 justify-end">
+          <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
+            {isSubmitting ? (
+              <>
+                <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                Create Patient
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </div>
   );

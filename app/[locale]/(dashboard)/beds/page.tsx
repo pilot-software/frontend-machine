@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatsCard } from "@/components/ui/stats-card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -366,41 +368,46 @@ export default function BedManagementPage() {
         <Card className="hidden lg:block">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-left p-4 font-medium">Bed Number</th>
-                    <th className="text-left p-4 font-medium">Ward</th>
-                    <th className="text-left p-4 font-medium">Floor</th>
-                    <th className="text-left p-4 font-medium">Status</th>
-                    <th className="text-left p-4 font-medium">Patient</th>
-                    <th className="text-left p-4 font-medium">Condition</th>
-                    <th className="text-left p-4 font-medium">Last Cleaned</th>
-                    <th className="text-left p-4 font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Bed Number</TableHead>
+                    <TableHead>Ward</TableHead>
+                    <TableHead>Floor</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Patient</TableHead>
+                    <TableHead>Condition</TableHead>
+                    <TableHead>Last Cleaned</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {paginatedBeds.map((bed) => (
-                    <tr key={bed.id} className="border-b hover:bg-muted/50">
-                      <td className="p-4 font-medium">{bed.number}</td>
-                      <td className="p-4">{bed.ward}</td>
-                      <td className="p-4">{bed.floor}</td>
-                      <td className="p-4">
+                    <TableRow key={bed.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">{bed.number}</TableCell>
+                      <TableCell>{bed.ward}</TableCell>
+                      <TableCell>{bed.floor}</TableCell>
+                      <TableCell>
                         <Badge className={getStatusColor(bed.status)}>
                           {bed.status}
                         </Badge>
-                      </td>
-                      <td className="p-4">
+                      </TableCell>
+                      <TableCell>
                         {bed.patient ? (
-                          <div>
-                            <p className="font-medium">{bed.patient.name}</p>
-                            <p className="text-xs text-muted-foreground">{bed.patient.id}</p>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>{bed.patient.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">{bed.patient.name}</p>
+                              <p className="text-sm text-muted-foreground">{bed.patient.id}</p>
+                            </div>
                           </div>
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
-                      </td>
-                      <td className="p-4">
+                      </TableCell>
+                      <TableCell>
                         {bed.patient ? (
                           <span className={`font-medium ${getConditionColor(bed.patient.condition)}`}>
                             {bed.patient.condition}
@@ -408,15 +415,15 @@ export default function BedManagementPage() {
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
-                      </td>
-                      <td className="p-4 text-sm text-muted-foreground">{bed.lastCleaned}</td>
-                      <td className="p-4">
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{bed.lastCleaned}</TableCell>
+                      <TableCell className="text-right">
                         <Button variant="outline" size="sm">Manage</Button>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </CardContent>
         </Card>

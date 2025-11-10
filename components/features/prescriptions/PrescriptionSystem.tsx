@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertTriangle, Calendar, CheckCircle2, Clock, Edit, Eye, PillBottle, Plus, Printer, Search, Send, AlertCircle, Pill, Syringe, ChevronLeft, ChevronRight, Download, FileText, User } from "lucide-react";
+import { AlertTriangle, Calendar, CheckCircle2, Clock, Edit, Eye, PillBottle, Plus, Printer, Search, Send, AlertCircle, Pill, Syringe, ChevronLeft, ChevronRight, Download, FileText, User, Upload, X, File, CheckCircle } from "lucide-react";
 import { format, addDays } from "date-fns";
 
 interface Prescription {
@@ -67,12 +68,14 @@ const REFILL_REQUESTS: RefillRequest[] = [
 ];
 
 export function PrescriptionSystem() {
+  const router = useRouter();
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(STATIC_PRESCRIPTIONS);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("active");
   const itemsPerPage = 6;
@@ -226,7 +229,14 @@ export function PrescriptionSystem() {
           <h2 className="text-2xl font-semibold">Prescription Management</h2>
           <p className="text-muted-foreground mt-1">Manage medications, dosages, and refills</p>
         </div>
-        <Button><Plus className="h-4 w-4 mr-2" />New Prescription</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsUploadModalOpen(true)}>
+            <Upload className="h-4 w-4 mr-2" />Upload Prescription
+          </Button>
+          <Button onClick={() => router.push('/prescriptions/add')}>
+            <Plus className="h-4 w-4 mr-2" />New Prescription
+          </Button>
+        </div>
       </div>
 
       <StatsCardGrid>
@@ -466,7 +476,220 @@ export function PrescriptionSystem() {
       </Tabs>
 
       <PrescriptionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} prescription={selectedPrescription} onPrint={handlePrint} />
+      <UploadPrescriptionModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
     </div>
+  );
+}
+
+function UploadPrescriptionModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type === 'application/pdf' || file.type.startsWith('image/')
+    );
+    setUploadedFiles(prev => [...prev, ...files]);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setUploadedFiles(prev => [...prev, ...files]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpload = async () => {
+    setIsUploading(true);
+    // Simulate upload
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsUploading(false);
+    setUploadedFiles([]);
+    onClose();
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+              <Upload className="h-5 w-5 text-white" />
+            </div>
+            Upload Prescription
+          </DialogTitle>
+          <DialogDescription>
+            Upload prescription images or PDF files for processing
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`relative border-2 border-dashed rounded-xl p-8 transition-all duration-200 ${
+              isDragging 
+                ? 'border-blue-500 bg-blue-50 scale-[1.02]' 
+                : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*,.pdf"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            
+            <div className="flex flex-col items-center justify-center text-center space-y-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-xl opacity-20 animate-pulse" />
+                <div className="relative p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full">
+                  <Upload className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  {isDragging ? 'Drop files here' : 'Drag & drop files here'}
+                </h3>
+                <p className="text-sm text-gray-500 mb-3">
+                  or click to browse from your device
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Browse Files
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-4 text-xs text-gray-400">
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  <span>PDF</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  <span>JPG</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  <span>PNG</span>
+                </div>
+                <span>•</span>
+                <span>Max 10MB per file</span>
+              </div>
+            </div>
+          </div>
+
+          {uploadedFiles.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <File className="h-4 w-4" />
+                Uploaded Files ({uploadedFiles.length})
+              </h4>
+              <ScrollArea className="max-h-48">
+                <div className="space-y-2">
+                  {uploadedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg group hover:shadow-md transition-all"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="p-2 bg-white rounded-lg shadow-sm">
+                          {file.type === 'application/pdf' ? (
+                            <FileText className="h-5 w-5 text-red-500" />
+                          ) : (
+                            <File className="h-5 w-5 text-blue-500" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(file.size)}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="flex-1"
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleUpload}
+              disabled={uploadedFiles.length === 0 || isUploading}
+              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+            >
+              {isUploading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload {uploadedFiles.length > 0 && `(${uploadedFiles.length})`}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -8,10 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar as CalendarIcon, Clock, CheckCircle2, AlertCircle, MapPin, Phone, Video, Search, Plus, Edit, Eye, Activity, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, CheckCircle2, AlertCircle, MapPin, Phone, Video, Search, Plus, Edit, Eye, Activity, ChevronLeft, ChevronRight, FileText, BedDouble } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { format, addDays, isSameDay, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, addMonths, subMonths } from "date-fns";
 
 interface Appointment {
@@ -45,6 +47,7 @@ const STATIC_DATA: Appointment[] = [
 ];
 
 export function AppointmentSystemModern() {
+  const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>(STATIC_DATA);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -231,16 +234,72 @@ export function AppointmentSystemModern() {
                           </div>
                           <p className="text-sm text-muted-foreground">{apt.doctorName} • {apt.department}</p>
                           <p className="text-sm text-muted-foreground">{apt.reason}</p>
+                          {apt.roomNumber && (
+                            <p className="text-xs text-muted-foreground sm:hidden flex items-center gap-1 mt-1">
+                              <BedDouble className="h-3 w-3" />
+                              Room {apt.roomNumber}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        {apt.roomNumber && <Badge variant="outline" className="hidden sm:inline-flex">{apt.roomNumber}</Badge>}
-                        <Button variant="ghost" size="sm" onClick={() => { setModalMode("view"); setSelectedAppointment(apt); setIsModalOpen(true); }}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => { setModalMode("edit"); setSelectedAppointment(apt); setIsModalOpen(true); }}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                        {apt.roomNumber && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="outline" className="hidden sm:inline-flex gap-1 cursor-help">
+                                  <BedDouble className="h-3 w-3" />
+                                  Room {apt.roomNumber}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Room/Bed Number</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="sm" onClick={() => { setModalMode("view"); setSelectedAppointment(apt); setIsModalOpen(true); }}>
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View Details</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => { setModalMode("edit"); setSelectedAppointment(apt); setIsModalOpen(true); }}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit Appointment</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                                onClick={() => router.push(`/prescriptions/add?patient=${encodeURIComponent(apt.patientName)}&appointmentId=${apt.id}`)}
+                              >
+                                <FileText className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Add Prescription</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Add Prescription</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <Select value={apt.status} onValueChange={(val) => handleStatusChange(apt.id, val as Appointment["status"])}>
                           <SelectTrigger className="w-[110px] sm:w-[130px] h-8 text-xs sm:text-sm"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -378,8 +437,14 @@ export function AppointmentSystemModern() {
 }
 
 function AppointmentModal({ isOpen, onClose, mode, appointment, onSave }: { isOpen: boolean; onClose: () => void; mode: "create" | "edit" | "view"; appointment: Appointment | null; onSave: (apt: Appointment) => void }) {
+  const router = useRouter();
   const [form, setForm] = useState<Partial<Appointment>>(appointment || { patientName: "", patientPhone: "", doctorName: "", department: "", date: new Date(), time: "09:00", duration: 30, type: "routine", status: "scheduled", reason: "", notes: "", roomNumber: "", priority: "medium" });
   const isReadOnly = mode === "view";
+
+  const handleAddPrescription = () => {
+    router.push(`/prescriptions/add?patient=${encodeURIComponent(form.patientName || '')}&appointmentId=${appointment?.id || ''}`);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -411,7 +476,7 @@ function AppointmentModal({ isOpen, onClose, mode, appointment, onSave }: { isOp
           <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm({...form, notes: e.target.value})} disabled={isReadOnly} /></div>
         </div>
         <div className="flex justify-end gap-2 pt-4">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>{isReadOnly ? "Close" : "Cancel"}</Button>
           {!isReadOnly && <Button onClick={() => onSave(form as Appointment)}>{mode === "create" ? "Schedule" : "Update"}</Button>}
         </div>
       </DialogContent>

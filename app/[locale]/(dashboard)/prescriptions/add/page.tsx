@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,12 @@ import { ArrowLeft, Save, AlertTriangle } from 'lucide-react';
 export default function AddPrescriptionPage() {
   const t = useTranslations('common');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState('');
+  
+  const patientFromUrl = searchParams.get('patient');
+  const appointmentId = searchParams.get('appointmentId');
 
   const [prescriptionData, setprescriptionData] = useState({
     patientId: '',
@@ -29,6 +33,18 @@ export default function AddPrescriptionPage() {
     pharmacy: '',
     instructions: '',
   });
+
+  useEffect(() => {
+    if (patientFromUrl) {
+      const patientMap: Record<string, string> = {
+        'John Smith': 'john-smith',
+        'Emma Wilson': 'emma-davis',
+        'Robert Brown': 'michael-johnson',
+      };
+      const patientId = patientMap[patientFromUrl] || 'john-smith';
+      setprescriptionData(prev => ({ ...prev, patientId }));
+    }
+  }, [patientFromUrl]);
 
   const mockMedications = [
     { id: '1', name: 'Lisinopril', genericName: 'Lisinopril', contraindications: ['Pregnancy', 'Angioedema history'], sideEffects: ['Dry cough', 'Dizziness'] },
@@ -66,7 +82,10 @@ export default function AddPrescriptionPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-foreground">Create New Prescription</h2>
-          <p className="text-muted-foreground mt-1">Write a new prescription for a patient</p>
+          <p className="text-muted-foreground mt-1">
+            {patientFromUrl ? `Write a prescription for ${patientFromUrl}` : 'Write a new prescription for a patient'}
+            {appointmentId && <span className="text-xs ml-2 text-blue-600">(From Appointment #{appointmentId})</span>}
+          </p>
         </div>
         <div className="flex space-x-2 w-full sm:w-auto">
           <Button type="button" variant="outline" onClick={() => router.back()}>

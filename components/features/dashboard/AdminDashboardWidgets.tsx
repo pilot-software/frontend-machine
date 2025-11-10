@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/components/providers/AuthContext';
 import { PermissionStrategy } from '@/lib/strategies/permission.strategy';
+import { useRouter } from 'next/navigation';
 import {
   Bed,
   Activity,
@@ -33,6 +34,7 @@ export function AdminDashboardWidgets({
 }: AdminDashboardWidgetsProps) {
   const t = useTranslations('common');
   const { permissions } = useAuth();
+  const router = useRouter();
   const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
   const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
   const erStatus = { waiting: 12, inTreatment: 8, avgWait: "18 min" };
@@ -92,6 +94,7 @@ export function AdminDashboardWidgets({
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-colors"
+              onClick={() => router.push('/en/clinical')}
             >
               <TestTube className="h-6 w-6 text-orange-600" />
               <span className="text-sm font-medium">Lab Orders</span>
@@ -99,6 +102,7 @@ export function AdminDashboardWidgets({
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-pink-50 hover:border-pink-300 transition-colors"
+              onClick={() => router.push('/en/reports')}
             >
               <FileText className="h-6 w-6 text-pink-600" />
               <span className="text-sm font-medium">Reports</span>
