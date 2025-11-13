@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
 import { AdminDashboardWidgets } from "./AdminDashboardWidgets";
 import { DoctorDashboardWidgets } from "./DoctorDashboardWidgets";
@@ -15,6 +15,7 @@ import { ROLES } from "@/lib/constants";
 
 export function DashboardWidgets() {
   const t = useTranslations('common');
+  const locale = useLocale();
   const { user } = useAuth();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -26,15 +27,15 @@ export function DashboardWidgets() {
   };
 
   const handleAddPatient = () => {
-    router.push('/en/patients/add');
+    router.push(`/${locale}/patients/add`);
   };
 
   const handleAddAppointment = () => {
-    router.push('/en/appointments/add');
+    router.push(`/${locale}/appointments/add`);
   };
 
   const handleAddPrescription = () => {
-    router.push('/en/prescriptions/add');
+    router.push(`/${locale}/prescriptions/add`);
   };
 
   // Render role-specific dashboard widgets

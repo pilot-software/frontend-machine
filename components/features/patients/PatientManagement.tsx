@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import {
   Card,
   CardContent,
@@ -241,6 +242,7 @@ function VisitDetailsModal({ isOpen, onClose, visit }: VisitDetailsModalProps) {
 
 export function PatientManagement() {
   const router = useRouter();
+  const locale = useLocale();
   const { isOpen, mode, selectedId, openModal, closeModal } = useModal();
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
@@ -464,7 +466,7 @@ export function PatientManagement() {
         </div>
         <AnimatedAddPrompt
           text="Add New Patient"
-          onClick={() => router.push("/en/patients/add")}
+          onClick={() => router.push(`/${locale}/patients/add`)}
         />
       </div>
 

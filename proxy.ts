@@ -2,7 +2,7 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
 const intlMiddleware = createMiddleware({
-  locales: ['en', 'es', 'fr', 'hi'],
+  locales: ['en', 'es', 'fr', 'hi', 'gu', 'mr', 'bn', 'ta', 'te', 'kn'],
   defaultLocale: 'en'
 });
 
@@ -24,5 +24,5 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/(en|es|fr|hi)/:path*', '/((?!_next|_vercel|api|.*\\..*).*)']
+  matcher: ['/', '/(en|es|fr|hi|gu|mr|bn|ta|te|kn)/:path*', '/((?!_next|_vercel|api|.*\\..*).*)']
 };

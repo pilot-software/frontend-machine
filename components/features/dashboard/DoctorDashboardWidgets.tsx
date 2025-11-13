@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
 
 export function DoctorDashboardWidgets() {
   const t = useTranslations('common');
+  const locale = useLocale();
   const router = useRouter();
   const vitalsOverview = [
     { patient: 'Alice Brown', room: '105', bp: '120/80', hr: 72, spo2: 98, status: 'stable' },
@@ -61,7 +62,7 @@ export function DoctorDashboardWidgets() {
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
-              onClick={() => router.push('/en/patients/add')}
+              onClick={() => router.push(`/${locale}/patients/add`)}
             >
               <UserPlus className="h-6 w-6 text-blue-600" />
               <span className="text-sm font-medium">Add Patient</span>
@@ -69,7 +70,7 @@ export function DoctorDashboardWidgets() {
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-green-50 hover:border-green-300 transition-colors"
-              onClick={() => router.push('/en/appointments/add')}
+              onClick={() => router.push(`/${locale}/appointments/add`)}
             >
               <CalendarPlus className="h-6 w-6 text-green-600" />
               <span className="text-sm font-medium">Schedule Appointment</span>
@@ -77,7 +78,7 @@ export function DoctorDashboardWidgets() {
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-purple-50 hover:border-purple-300 transition-colors"
-              onClick={() => router.push('/en/prescriptions/add')}
+              onClick={() => router.push(`/${locale}/prescriptions/add`)}
             >
               <Pill className="h-6 w-6 text-purple-600" />
               <span className="text-sm font-medium">Write Prescription</span>
@@ -85,7 +86,7 @@ export function DoctorDashboardWidgets() {
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-colors"
-              onClick={() => router.push('/en/clinical')}
+              onClick={() => router.push(`/${locale}/clinical`)}
             >
               <ClipboardList className="h-6 w-6 text-orange-600" />
               <span className="text-sm font-medium">Clinical Notes</span>
@@ -93,7 +94,7 @@ export function DoctorDashboardWidgets() {
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-teal-50 hover:border-teal-300 transition-colors"
-              onClick={() => router.push('/en/appointments')}
+              onClick={() => router.push(`/${locale}/appointments`)}
             >
               <Calendar className="h-6 w-6 text-teal-600" />
               <span className="text-sm font-medium">View Schedule</span>

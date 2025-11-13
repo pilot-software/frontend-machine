@@ -149,12 +149,12 @@ export default function AddPatientPage() {
     <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Add New Patient</h1>
-          <p className="text-muted-foreground mt-1">Enter comprehensive patient information</p>
+          <h1 className="text-3xl font-bold">{t('addNewPatient')}</h1>
+          <p className="text-muted-foreground mt-1">{t('enterPatientDetails')}</p>
         </div>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          {t('back')}
         </Button>
       </div>
 
@@ -167,7 +167,7 @@ export default function AddPatientPage() {
               </div>
               <div>
                 <CardTitle>{t('personalInformation')}</CardTitle>
-                <CardDescription>Basic patient demographics and contact information</CardDescription>
+                <CardDescription>{t('basicDemographics')}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -182,7 +182,7 @@ export default function AddPatientPage() {
                   id="firstName"
                   value={patientData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  placeholder="Enter first name"
+                  placeholder={t('enterFirstName')}
                   required
                 />
               </div>
@@ -195,7 +195,7 @@ export default function AddPatientPage() {
                   id="lastName"
                   value={patientData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  placeholder="Enter last name"
+                  placeholder={t('enterLastName')}
                   required
                 />
               </div>
@@ -203,13 +203,13 @@ export default function AddPatientPage() {
                 <Label htmlFor="gender">{t('gender')} *</Label>
                 <Select value={patientData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
+                    <SelectValue placeholder={t('selectGender')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MALE">Male</SelectItem>
-                    <SelectItem value="FEMALE">Female</SelectItem>
-                    <SelectItem value="OTHER">Other</SelectItem>
-                    <SelectItem value="PREFER_NOT_TO_SAY">Prefer not to say</SelectItem>
+                    <SelectItem value="MALE">{t('male')}</SelectItem>
+                    <SelectItem value="FEMALE">{t('female')}</SelectItem>
+                    <SelectItem value="OTHER">{t('other')}</SelectItem>
+                    <SelectItem value="PREFER_NOT_TO_SAY">{t('preferNotToSay')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -266,57 +266,57 @@ export default function AddPatientPage() {
                 <MapPin className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <CardTitle>Address Information</CardTitle>
-                <CardDescription>Residential address details</CardDescription>
+                <CardTitle>{t('addressInformation')}</CardTitle>
+                <CardDescription>{t('residentialAddress')}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="address">Street Address</Label>
+              <Label htmlFor="address">{t('streetAddress')}</Label>
               <Input
                 id="address"
                 value={patientData.address}
                 onChange={(e) => handleInputChange('address', e.target.value)}
-                placeholder="123 Main Street"
+                placeholder={t('streetAddressPlaceholder')}
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">{t('city')}</Label>
                 <Input
                   id="city"
                   value={patientData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  placeholder="City"
+                  placeholder={t('city')}
                 />
               </div>
               <div>
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state">{t('state')}</Label>
                 <Input
                   id="state"
                   value={patientData.state}
                   onChange={(e) => handleInputChange('state', e.target.value)}
-                  placeholder="State"
+                  placeholder={t('state')}
                 />
               </div>
               <div>
-                <Label htmlFor="zipCode">Zip Code</Label>
+                <Label htmlFor="zipCode">{t('zipCode')}</Label>
                 <Input
                   id="zipCode"
                   value={patientData.zipCode}
                   onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                  placeholder="Zip Code"
+                  placeholder={t('zipCode')}
                 />
               </div>
               <div>
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="country">{t('country')}</Label>
                 <Input
                   id="country"
                   value={patientData.country}
                   onChange={(e) => handleInputChange('country', e.target.value)}
-                  placeholder="Country"
+                  placeholder={t('country')}
                 />
               </div>
             </div>
@@ -331,24 +331,24 @@ export default function AddPatientPage() {
                 <Phone className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <CardTitle>Emergency Contact</CardTitle>
-                <CardDescription>Contact person in case of emergency</CardDescription>
+                <CardTitle>{t('emergencyContact')}</CardTitle>
+                <CardDescription>{t('emergencyContactDescription')}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="emergencyContactName">Contact Name</Label>
+                <Label htmlFor="emergencyContactName">{t('contactName')}</Label>
                 <Input
                   id="emergencyContactName"
                   value={patientData.emergencyContactName}
                   onChange={(e) => handleInputChange('emergencyContactName', e.target.value)}
-                  placeholder="Jane Doe"
+                  placeholder={t('contactNamePlaceholder')}
                 />
               </div>
               <div>
-                <Label htmlFor="emergencyContact">Contact Phone</Label>
+                <Label htmlFor="emergencyContact">{t('contactPhone')}</Label>
                 <Input
                   id="emergencyContact"
                   value={patientData.emergencyContactPhone}
@@ -357,12 +357,12 @@ export default function AddPatientPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="emergencyRelationship">Relationship</Label>
+                <Label htmlFor="emergencyRelationship">{t('relationship')}</Label>
                 <Input
                   id="emergencyRelationship"
                   value={patientData.emergencyContactRelationship}
                   onChange={(e) => handleInputChange('emergencyContactRelationship', e.target.value)}
-                  placeholder="Spouse, Parent, etc."
+                  placeholder={t('relationshipPlaceholder')}
                 />
               </div>
             </div>
@@ -376,8 +376,8 @@ export default function AddPatientPage() {
                 <Heart className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <CardTitle>Medical Information</CardTitle>
-                <CardDescription>Blood type, allergies, and medical conditions</CardDescription>
+                <CardTitle>{t('medicalInformation')}</CardTitle>
+                <CardDescription>{t('medicalInformationDescription')}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -387,7 +387,7 @@ export default function AddPatientPage() {
                 <Label htmlFor="bloodType">{t('bloodType')}</Label>
                 <Select value={patientData.bloodType} onValueChange={(value) => handleInputChange('bloodType', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select blood type" />
+                    <SelectValue placeholder={t('selectBloodType')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="O_POSITIVE">O+</SelectItem>
@@ -405,7 +405,7 @@ export default function AddPatientPage() {
                 <Label htmlFor="assignedDoctor">{t('assignedDoctor')}</Label>
                 <Select value={patientData.assignedDoctor} onValueChange={(value) => handleInputChange('assignedDoctor', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select doctor" />
+                    <SelectValue placeholder={t('selectDoctor')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.isArray(doctors) &&
@@ -426,7 +426,7 @@ export default function AddPatientPage() {
                   id="allergies"
                   value={patientData.allergies}
                   onChange={(e) => handleInputChange('allergies', e.target.value)}
-                  placeholder="List any known allergies"
+                  placeholder={t('allergiesPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -436,7 +436,7 @@ export default function AddPatientPage() {
                   id="chronicConditions"
                   value={patientData.chronicConditions}
                   onChange={(e) => handleInputChange('chronicConditions', e.target.value)}
-                  placeholder="List chronic conditions"
+                  placeholder={t('chronicConditionsPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -446,7 +446,7 @@ export default function AddPatientPage() {
                   id="currentMedications"
                   value={patientData.currentMedications}
                   onChange={(e) => handleInputChange('currentMedications', e.target.value)}
-                  placeholder="List current medications"
+                  placeholder={t('currentMedicationsPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -461,8 +461,8 @@ export default function AddPatientPage() {
                 <Shield className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <CardTitle>Insurance Information</CardTitle>
-                <CardDescription>Insurance provider and policy details</CardDescription>
+                <CardTitle>{t('insuranceInformation')}</CardTitle>
+                <CardDescription>{t('insuranceDescription')}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -472,7 +472,7 @@ export default function AddPatientPage() {
                 <Label htmlFor="insuranceProvider">{t('insuranceProvider')}</Label>
                 <Select value={patientData.insuranceProvider} onValueChange={(value) => handleInputChange('insuranceProvider', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select insurance" />
+                    <SelectValue placeholder={t('selectInsurance')} />
                   </SelectTrigger>
                   <SelectContent>
                     {insuranceOptions.map((insurance) => (
@@ -489,7 +489,7 @@ export default function AddPatientPage() {
                   id="insurancePolicyNumber"
                   value={patientData.insurancePolicyNumber}
                   onChange={(e) => handleInputChange('insurancePolicyNumber', e.target.value)}
-                  placeholder="Policy number"
+                  placeholder={t('policyNumber')}
                 />
               </div>
             </div>
@@ -498,18 +498,18 @@ export default function AddPatientPage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-end">
           <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
             {isSubmitting ? (
               <>
                 <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Creating...
+                {t('creating')}
               </>
             ) : (
               <>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                Create Patient
+                {t('createPatient')}
               </>
             )}
           </Button>

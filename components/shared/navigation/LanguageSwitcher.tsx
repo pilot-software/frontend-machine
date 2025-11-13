@@ -17,6 +17,12 @@ const languages = [
   { code: "es", name: "Español" },
   { code: "fr", name: "Français" },
   { code: "hi", name: "हिन्दी" },
+  { code: "gu", name: "ગુજરાતી" },
+  { code: "mr", name: "मराठी" },
+  { code: "bn", name: "বাংলা" },
+  { code: "ta", name: "தமிழ்" },
+  { code: "te", name: "తెలుగు" },
+  { code: "kn", name: "ಕನ್ನಡ" },
 ];
 
 export function LanguageSwitcher() {
@@ -27,11 +33,14 @@ export function LanguageSwitcher() {
 
   const switchLocale = (newLocale: string) => {
     const segments = pathname.split("/").filter(Boolean);
-    segments[0] = newLocale;
-    const newPath = "/" + segments.join("/");
+    // Remove the current locale (first segment)
+    if (segments.length > 0) {
+      segments.shift();
+    }
+    // Add the new locale at the beginning
+    const newPath = "/" + newLocale + (segments.length > 0 ? "/" + segments.join("/") : "");
     startTransition(() => {
-      router.replace(newPath);
-      router.refresh();
+      router.push(newPath);
     });
   };
 
