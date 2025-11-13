@@ -40,9 +40,22 @@ export function StatsCard({
 
   const TrendIcon = trend === "up" ? ArrowUpRight : trend === "down" ? ArrowDownRight : null;
 
+  const getHoverColor = () => {
+    const colorMap: Record<string, string> = {
+      'blue': 'rgba(59, 130, 246, 0.08)',
+      'green': 'rgba(16, 185, 129, 0.08)',
+      'emerald': 'rgba(16, 185, 129, 0.08)',
+      'red': 'rgba(239, 68, 68, 0.08)',
+      'orange': 'rgba(249, 115, 22, 0.08)',
+      'purple': 'rgba(168, 85, 247, 0.08)',
+    };
+    const colorKey = Object.keys(colorMap).find(key => bgGradient.includes(key));
+    return colorKey ? colorMap[colorKey] : 'rgba(59, 130, 246, 0.08)';
+  };
+
   return (
-    <div className="group relative rounded-xl bg-gradient-to-br from-card to-card/50 p-5 shadow-none hover:shadow-2xl transition-all duration-300 border border-border/50 overflow-hidden hover:-translate-y-2 hover:scale-[1.02]">
-      <div className={`absolute inset-0 bg-gradient-radial from-${color.replace('text-', '').replace('-600', '-500/10')} via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} style={{background: `radial-gradient(circle at 20% 30%, ${color.includes('blue') ? 'rgba(59, 130, 246, 0.15)' : color.includes('green') ? 'rgba(16, 185, 129, 0.15)' : color.includes('orange') ? 'rgba(249, 115, 22, 0.15)' : color.includes('purple') ? 'rgba(168, 85, 247, 0.15)' : 'rgba(59, 130, 246, 0.15)'} 0%, transparent 70%)`}} />
+    <div className="group relative rounded-xl bg-gradient-to-br from-card to-card/50 p-5 shadow-none hover:shadow-xl transition-all duration-300 border border-border/50 overflow-hidden hover:-translate-y-1 hover:scale-[1.01]">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{background: `radial-gradient(circle at 20% 30%, ${getHoverColor()} 0%, transparent 70%)`}} />
       <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-5`} />
       <div className="relative">
         <div className="flex items-center justify-between">
