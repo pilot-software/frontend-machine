@@ -32,35 +32,35 @@ export interface ApiVitalSigns {
 
 export class ClinicalService {
     async getVisits(): Promise<ApiVisit[]> {
-        return api.get('/visits');
+        return api.get('/api/visits');
     }
 
     async getVisit(id: string): Promise<ApiVisit> {
-        return api.get(`/visits/${id}`);
+        return api.get(`/api/visits/${id}`);
     }
 
     async createVisit(visit: Omit<ApiVisit, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiVisit> {
-        return api.post('/visits', visit);
+        return api.post('/api/visits', visit);
     }
 
     async updateVisit(id: string, visit: Partial<ApiVisit>): Promise<ApiVisit> {
-        return api.put(`/visits/${id}`, visit);
+        return api.put(`/api/visits/${id}`, visit);
     }
 
     async getPatientVisits(patientId: string): Promise<ApiVisit[]> {
-        return api.get(`/patients/${patientId}/visits`);
+        return api.get(`/api/patients/${patientId}/visits`);
     }
 
     async getVitalSigns(): Promise<ApiVitalSigns[]> {
-        return api.get('/vitals');
+        return api.get('/api/vitals');
     }
 
     async createVitalSigns(vitals: Omit<ApiVitalSigns, 'id'>): Promise<ApiVitalSigns> {
-        return api.post('/vitals', vitals);
+        return api.post('/api/vitals', vitals);
     }
 
     async getPatientVitals(patientId: string): Promise<ApiVitalSigns[]> {
-        return api.get(`/patients/${patientId}/vitals`);
+        return api.get(`/api/patients/${patientId}/vitals`);
     }
 }
 

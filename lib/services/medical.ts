@@ -1,75 +1,43 @@
-import {apiClient} from '../api/client';
+import {api} from '../api';
 
-export interface MedicalData {
-    insurance: any[];
-    visits: any[];
-    labResults: LabResult[];
-    conditions: Condition[];
-    prescriptions: Prescription[];
-    vitals: Vital[];
-}
-
-export interface LabResult {
-    id: string;
-    organizationId: string;
-    patientId: string;
-    testName: string;
-    testDate: string;
-    testResults: string;
-    status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-    abnormalFlag: 'NORMAL' | 'ABNORMAL' | 'CRITICAL';
-    branchId?: string;
-    createdAt: string;
-}
-
-export interface Condition {
-    id: number;
-    patientId: string;
-    conditionName: string;
-    description: string;
-    severity: 'MILD' | 'MODERATE' | 'SEVERE' | 'CRITICAL';
-    diagnosedDate: string;
-    status: 'ACTIVE' | 'RESOLVED' | 'CHRONIC' | 'IN_REMISSION';
-    notes: string;
-    organizationId: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface Prescription {
-    id: string;
-    organizationId: string;
+export interface LabOrder {
     patientId: string;
     doctorId: string;
-    medicationName: string;
-    dosage: string;
-    frequency: string;
-    duration: string;
-    refillsRemaining: number;
-    status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
-    branchId?: string;
-    createdAt: string;
-    updatedAt: string;
+    testType: string;
+    instructions?: string;
+    urgency: 'ROUTINE' | 'URGENT' | 'STAT';
 }
 
-export interface Vital {
-    id: string;
-    organizationId: string;
+export interface FileUpload {
     patientId: string;
-    recordedAt: string;
-    temperature: number;
-    bloodPressure: string;
-    heartRate: number;
-    weight: number;
-    height: number;
-    oxygenSaturation: number;
-    createdAt: string;
-    updatedAt: string;
+    description: string;
 }
 
 export class MedicalService {
-    async getMedicalData(patientId: string): Promise<MedicalData> {
-        return apiClient.get(`/medical/patients/${patientId}/medical-data`);
+    async createLabOrder(order: LabOrder): Promise<any> {
+        return api.post('/api/medical/lab-orders', order);
+    }
+
+    async uploadFile(file: File, data: FileUpload): Promise<any> {
+        const token = localStorage.getItem('auth_token');
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('patientId', data.patientId);
+        formData.append('description', data.description);
+        
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') || 'http://localhost:8080';
+        const response = await fetch(`${baseUrl}/api/files/upload`, {
+            method: 'POST',
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` })
+            },
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+        return response.json();
     }
 }
 

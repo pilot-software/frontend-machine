@@ -19,39 +19,39 @@ export interface ApiPrescriptionFull {
 
 export class PrescriptionService {
     async getPrescriptions(): Promise<ApiPrescriptionFull[]> {
-        return api.get('/prescriptions');
+        return api.get('/api/prescriptions');
     }
 
     async getPrescription(id: string): Promise<ApiPrescriptionFull> {
-        return api.get(`/prescriptions/${id}`);
+        return api.get(`/api/prescriptions/${id}`);
     }
 
     async createPrescription(prescription: Omit<ApiPrescriptionFull, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiPrescriptionFull> {
-        return api.post('/prescriptions', prescription);
+        return api.post('/api/prescriptions', prescription);
     }
 
     async updatePrescription(id: string, prescription: Partial<ApiPrescriptionFull>): Promise<ApiPrescriptionFull> {
-        return api.put(`/prescriptions/${id}`, prescription);
+        return api.put(`/api/prescriptions/${id}`, prescription);
     }
 
     async getActivePrescriptions(): Promise<ApiPrescriptionFull[]> {
-        return api.get('/prescriptions/active');
+        return api.get('/api/prescriptions/active');
     }
 
     async getPatientPrescriptions(patientId: string): Promise<ApiPrescriptionFull[]> {
-        return api.get(`/prescriptions/patient/${patientId}`);
+        return api.get(`/api/prescriptions/patient/${patientId}`);
     }
 
     async getDoctorPrescriptions(doctorId: string): Promise<ApiPrescriptionFull[]> {
-        return api.get(`/prescriptions/doctor/${doctorId}`);
+        return api.get(`/api/prescriptions/doctor/${doctorId}`);
     }
 
     async updatePrescriptionStatus(id: string, status: string): Promise<ApiPrescriptionFull> {
-        return api.put(`/prescriptions/${id}/status`, {status});
+        return api.put(`/api/prescriptions/${id}/status`, {status});
     }
 
     async deletePrescription(id: string): Promise<void> {
-        return api.delete(`/prescriptions/${id}`);
+        return api.delete(`/api/prescriptions/${id}`);
     }
 }
 
