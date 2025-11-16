@@ -187,6 +187,7 @@
     "allergiesPlaceholder": "List any known allergies",
     "chronicConditionsPlaceholder": "List chronic conditions",
     "currentMedicationsPlaceholder": "List current medications",
+    "medicalInformation": "Medical Information",
     "insuranceInformation": "Insurance Information",
     "insuranceDescription": "Insurance provider and policy details",
     "selectInsurance": "Select insurance",

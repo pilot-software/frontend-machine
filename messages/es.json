@@ -151,6 +151,8 @@
     "insuranceInformation": "Información de Seguro",
     "insuranceDescription": "Proveedor de seguro y detalles de la póliza",
     "selectInsurance": "Seleccione el seguro",
+    "medicalInformation": "Información Médica",
+    "bedManagement": "Gestión de Camas",
     "myPatients": "Mis Pacientes",
     "todaysAppointments": "Citas de Hoy",
     "pendingReviews": "Revisiones Pendientes",

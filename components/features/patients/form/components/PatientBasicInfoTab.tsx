@@ -28,7 +28,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
     <Card>
       <CardHeader>
         <CardTitle>{t("personalInformation")}</CardTitle>
-        <CardDescription>Basic patient demographics and contact information</CardDescription>
+        <CardDescription>{t("basicDemographics")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
@@ -38,7 +38,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
               id="firstName"
               value={patientData.firstName}
               onChange={(e) => onInputChange("firstName", e.target.value)}
-              placeholder="Enter first name"
+              placeholder={t("enterFirstName")}
               disabled={isReadOnly}
             />
           </div>
@@ -48,7 +48,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
               id="lastName"
               value={patientData.lastName}
               onChange={(e) => onInputChange("lastName", e.target.value)}
-              placeholder="Enter last name"
+              placeholder={t("enterLastName")}
               disabled={isReadOnly}
             />
           </div>
@@ -56,13 +56,13 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
             <Label htmlFor="gender">{t("gender")} *</Label>
             <Select value={patientData.gender} onValueChange={(value) => onInputChange("gender", value)} disabled={isReadOnly}>
               <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
+                <SelectValue placeholder={t("selectGender")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="MALE">Male</SelectItem>
-                <SelectItem value="FEMALE">Female</SelectItem>
-                <SelectItem value="OTHER">Other</SelectItem>
-                <SelectItem value="PREFER_NOT_TO_SAY">Prefer not to say</SelectItem>
+                <SelectItem value="MALE">{t("male")}</SelectItem>
+                <SelectItem value="FEMALE">{t("female")}</SelectItem>
+                <SelectItem value="OTHER">{t("other")}</SelectItem>
+                <SelectItem value="PREFER_NOT_TO_SAY">{t("preferNotToSay")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -115,14 +115,14 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
         </div>
 
         <div>
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">{t("address")}</Label>
           <div className="relative">
             <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <Textarea
               id="address"
               value={patientData.address}
               onChange={(e) => onInputChange("address", e.target.value)}
-              placeholder="Enter full address"
+              placeholder={t("streetAddressPlaceholder")}
               className="pl-10"
               disabled={isReadOnly}
             />
@@ -133,17 +133,17 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
+            <Label htmlFor="emergencyContactName">{t("contactName")}</Label>
             <Input
               id="emergencyContactName"
               value={patientData.emergencyContactName}
               onChange={(e) => onInputChange("emergencyContactName", e.target.value)}
-              placeholder="Contact person name"
+              placeholder={t("contactNamePlaceholder")}
               disabled={isReadOnly}
             />
           </div>
           <div>
-            <Label htmlFor="emergencyContact">Emergency Contact Phone</Label>
+            <Label htmlFor="emergencyContact">{t("contactPhone")}</Label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -157,12 +157,12 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
             </div>
           </div>
           <div>
-            <Label htmlFor="emergencyRelationship">Relationship</Label>
+            <Label htmlFor="emergencyRelationship">{t("relationship")}</Label>
             <Input
               id="emergencyRelationship"
               value={patientData.emergencyContactRelationship}
               onChange={(e) => onInputChange("emergencyContactRelationship", e.target.value)}
-              placeholder="Spouse, Parent, etc."
+              placeholder={t("relationshipPlaceholder")}
               disabled={isReadOnly}
             />
           </div>
@@ -170,12 +170,12 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
 
         <Separator />
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <Label htmlFor="bloodType">{t("bloodType")}</Label>
             <Select value={patientData.bloodType} onValueChange={(value) => onInputChange("bloodType", value)} disabled={isReadOnly}>
               <SelectTrigger>
-                <SelectValue placeholder="Select blood type" />
+                <SelectValue placeholder={t("selectBloodType")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="O_POSITIVE">O+</SelectItem>
@@ -189,11 +189,17 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <Separator />
+
+        <div className="text-sm font-semibold text-gray-700 mb-3">{t("insuranceInformation")}</div>
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="insuranceProvider">{t("insuranceProvider")}</Label>
             <Select value={patientData.insuranceProvider} onValueChange={(value) => onInputChange("insuranceProvider", value)} disabled={isReadOnly}>
               <SelectTrigger>
-                <SelectValue placeholder="Select insurance" />
+                <SelectValue placeholder={t("selectInsurance")} />
               </SelectTrigger>
               <SelectContent>
                 {INSURANCE_OPTIONS.map((insurance) => (
@@ -210,7 +216,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
               id="insurancePolicyNumber"
               value={patientData.insurancePolicyNumber}
               onChange={(e) => onInputChange("insurancePolicyNumber", e.target.value)}
-              placeholder="Policy number"
+              placeholder={t("policyNumber")}
               disabled={isReadOnly}
             />
           </div>
@@ -218,12 +224,12 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
 
         <Separator />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="assignedDoctor">{t("assignedDoctor")}</Label>
             <Select value={patientData.assignedDoctor} onValueChange={(value) => onInputChange("assignedDoctor", value)} disabled={isReadOnly}>
               <SelectTrigger>
-                <SelectValue placeholder="Select doctor" />
+                <SelectValue placeholder={t("selectDoctor")} />
               </SelectTrigger>
               <SelectContent>
                 {Array.isArray(doctors) && doctors.map((doctor) => (
@@ -240,30 +246,30 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
               id="allergies"
               value={patientData.allergies}
               onChange={(e) => onInputChange("allergies", e.target.value)}
-              placeholder="List any known allergies"
+              placeholder={t("allergiesPlaceholder")}
               disabled={isReadOnly}
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="chronicConditions">{t("chronicConditions")}</Label>
             <Textarea
               id="chronicConditions"
               value={patientData.chronicConditions}
               onChange={(e) => onInputChange("chronicConditions", e.target.value)}
-              placeholder="List chronic conditions"
+              placeholder={t("chronicConditionsPlaceholder")}
               disabled={isReadOnly}
             />
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <Label htmlFor="currentMedications">{t("currentMedications")}</Label>
             <Textarea
               id="currentMedications"
               value={patientData.currentMedications}
               onChange={(e) => onInputChange("currentMedications", e.target.value)}
-              placeholder="List current medications"
+              placeholder={t("currentMedicationsPlaceholder")}
               disabled={isReadOnly}
             />
           </div>

@@ -1,20 +1,43 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Calendar, Mail, MapPin, Phone, Save, User, Heart, Shield, FileText, CheckCircle2 } from 'lucide-react';
-import { patientService } from '@/lib/services/patient';
-import { userService } from '@/lib/services/user';
-import { useAppData } from '@/lib/hooks/useAppData';
-import { useAppSelector } from '@/lib/store';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  ArrowLeft,
+  Calendar,
+  Mail,
+  MapPin,
+  Phone,
+  Save,
+  User,
+  Heart,
+  Shield,
+  FileText,
+  CheckCircle2,
+} from "lucide-react";
+import { patientService } from "@/lib/services/patient";
+import { userService } from "@/lib/services/user";
+import { useAppData } from "@/lib/hooks/useAppData";
+import { useAppSelector } from "@/lib/store";
 
 interface PatientFormData {
   firstName: string;
@@ -22,7 +45,7 @@ interface PatientFormData {
   email: string;
   phone: string;
   dateOfBirth: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY' | '';
+  gender: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY" | "";
   address: string;
   city: string;
   state: string;
@@ -31,7 +54,16 @@ interface PatientFormData {
   emergencyContactName: string;
   emergencyContactPhone: string;
   emergencyContactRelationship: string;
-  bloodType: 'A_POSITIVE' | 'A_NEGATIVE' | 'B_POSITIVE' | 'B_NEGATIVE' | 'AB_POSITIVE' | 'AB_NEGATIVE' | 'O_POSITIVE' | 'O_NEGATIVE' | '';
+  bloodType:
+    | "A_POSITIVE"
+    | "A_NEGATIVE"
+    | "B_POSITIVE"
+    | "B_NEGATIVE"
+    | "AB_POSITIVE"
+    | "AB_NEGATIVE"
+    | "O_POSITIVE"
+    | "O_NEGATIVE"
+    | "";
   allergies: string;
   chronicConditions: string;
   currentMedications: string;
@@ -41,7 +73,7 @@ interface PatientFormData {
 }
 
 export default function AddPatientPage() {
-  const t = useTranslations('common');
+  const t = useTranslations("common");
   const router = useRouter();
   const { refetch } = useAppData();
   const reduxDoctors = useAppSelector((state) => state.app.doctors || []);
@@ -49,50 +81,53 @@ export default function AddPatientPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [patientData, setPatientData] = useState<PatientFormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    gender: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'USA',
-    emergencyContactName: '',
-    emergencyContactPhone: '',
-    emergencyContactRelationship: '',
-    bloodType: '',
-    allergies: '',
-    chronicConditions: '',
-    currentMedications: '',
-    assignedDoctor: '',
-    insuranceProvider: '',
-    insurancePolicyNumber: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    dateOfBirth: "",
+    gender: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "USA",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    emergencyContactRelationship: "",
+    bloodType: "",
+    allergies: "",
+    chronicConditions: "",
+    currentMedications: "",
+    assignedDoctor: "",
+    insuranceProvider: "",
+    insurancePolicyNumber: "",
   });
 
   React.useEffect(() => {
     const loadDoctors = async () => {
       try {
-        const doctorUsers = reduxDoctors && reduxDoctors.length ? reduxDoctors : await userService.getUsersByRole('DOCTOR');
+        const doctorUsers =
+          reduxDoctors && reduxDoctors.length
+            ? reduxDoctors
+            : await userService.getUsersByRole("DOCTOR");
         setDoctors(doctorUsers);
       } catch (error) {
-        console.error('Failed to load doctors:', error);
+        console.error("Failed to load doctors:", error);
       }
     };
     loadDoctors();
   }, [reduxDoctors]);
 
   const insuranceOptions = [
-    { value: 'blue-cross', label: 'Blue Cross Blue Shield' },
-    { value: 'aetna', label: 'Aetna' },
-    { value: 'kaiser', label: 'Kaiser Permanente' },
-    { value: 'cigna', label: 'Cigna' },
-    { value: 'united', label: 'United Healthcare' },
-    { value: 'medicare', label: 'Medicare' },
-    { value: 'medicaid', label: 'Medicaid' },
-    { value: 'self-pay', label: 'Self Pay' },
+    { value: "blue-cross", label: "Blue Cross Blue Shield" },
+    { value: "aetna", label: "Aetna" },
+    { value: "kaiser", label: "Kaiser Permanente" },
+    { value: "cigna", label: "Cigna" },
+    { value: "united", label: "United Healthcare" },
+    { value: "medicare", label: "Medicare" },
+    { value: "medicaid", label: "Medicaid" },
+    { value: "self-pay", label: "Self Pay" },
   ];
 
   const handleInputChange = (field: keyof PatientFormData, value: string) => {
@@ -104,8 +139,14 @@ export default function AddPatientPage() {
     setIsSubmitting(true);
 
     try {
-      if (!patientData.firstName || !patientData.lastName || !patientData.email) {
-        alert('Please fill in all required fields (First Name, Last Name, Email)');
+      if (
+        !patientData.firstName ||
+        !patientData.lastName ||
+        !patientData.email
+      ) {
+        alert(
+          "Please fill in all required fields (First Name, Last Name, Email)"
+        );
         return;
       }
 
@@ -113,17 +154,22 @@ export default function AddPatientPage() {
         firstName: patientData.firstName.trim(),
         lastName: patientData.lastName.trim(),
         dateOfBirth: patientData.dateOfBirth,
-        gender: patientData.gender as 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY',
+        gender: patientData.gender as
+          | "MALE"
+          | "FEMALE"
+          | "OTHER"
+          | "PREFER_NOT_TO_SAY",
         phone: patientData.phone || undefined,
         email: patientData.email.trim(),
         address: patientData.address || undefined,
         city: patientData.city || undefined,
         state: patientData.state || undefined,
         zipCode: patientData.zipCode || undefined,
-        country: patientData.country || 'USA',
+        country: patientData.country || "USA",
         emergencyContactName: patientData.emergencyContactName || undefined,
         emergencyContactPhone: patientData.emergencyContactPhone || undefined,
-        emergencyContactRelationship: patientData.emergencyContactRelationship || undefined,
+        emergencyContactRelationship:
+          patientData.emergencyContactRelationship || undefined,
         bloodType: patientData.bloodType || undefined,
         allergies: patientData.allergies || undefined,
         chronicConditions: patientData.chronicConditions || undefined,
@@ -135,10 +181,11 @@ export default function AddPatientPage() {
 
       await patientService.createPatient(apiData);
       refetch.patients();
-      router.push('/en/patients');
+      router.push("/en/patients");
     } catch (error) {
-      console.error('Failed to save patient:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error("Failed to save patient:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       alert(`Failed to save patient: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
@@ -149,12 +196,14 @@ export default function AddPatientPage() {
     <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{t('addNewPatient')}</h1>
-          <p className="text-muted-foreground mt-1">{t('enterPatientDetails')}</p>
+          <h1 className="text-3xl font-bold">{t("addNewPatient")}</h1>
+          <p className="text-muted-foreground mt-1">
+            {t("enterPatientDetails")}
+          </p>
         </div>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('back')}
+          {t("back")}
         </Button>
       </div>
 
@@ -166,8 +215,8 @@ export default function AddPatientPage() {
                 <User className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <CardTitle>{t('personalInformation')}</CardTitle>
-                <CardDescription>{t('basicDemographics')}</CardDescription>
+                <CardTitle>{t("personalInformation")}</CardTitle>
+                <CardDescription>{t("basicDemographics")}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -176,40 +225,49 @@ export default function AddPatientPage() {
               <div>
                 <Label htmlFor="firstName" className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  {t('firstName')} *
+                  {t("firstName")} *
                 </Label>
                 <Input
                   id="firstName"
                   value={patientData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  placeholder={t('enterFirstName')}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
+                  placeholder={t("enterFirstName")}
                   required
                 />
               </div>
               <div>
                 <Label htmlFor="lastName" className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  {t('lastName')} *
+                  {t("lastName")} *
                 </Label>
                 <Input
                   id="lastName"
                   value={patientData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  placeholder={t('enterLastName')}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
+                  placeholder={t("enterLastName")}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="gender">{t('gender')} *</Label>
-                <Select value={patientData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                <Label htmlFor="gender">{t("gender")} *</Label>
+                <Select
+                  value={patientData.gender}
+                  onValueChange={(value) => handleInputChange("gender", value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('selectGender')} />
+                    <SelectValue placeholder={t("selectGender")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MALE">{t('male')}</SelectItem>
-                    <SelectItem value="FEMALE">{t('female')}</SelectItem>
-                    <SelectItem value="OTHER">{t('other')}</SelectItem>
-                    <SelectItem value="PREFER_NOT_TO_SAY">{t('preferNotToSay')}</SelectItem>
+                    <SelectItem value="MALE">{t("male")}</SelectItem>
+                    <SelectItem value="FEMALE">{t("female")}</SelectItem>
+                    <SelectItem value="OTHER">{t("other")}</SelectItem>
+                    <SelectItem value="PREFER_NOT_TO_SAY">
+                      {t("preferNotToSay")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -219,13 +277,13 @@ export default function AddPatientPage() {
               <div>
                 <Label htmlFor="email" className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  {t('emailAddress')} *
+                  {t("emailAddress")} *
                 </Label>
                 <Input
                   id="email"
                   type="email"
                   value={patientData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="patient@example.com"
                   required
                 />
@@ -233,29 +291,33 @@ export default function AddPatientPage() {
               <div>
                 <Label htmlFor="phone" className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  {t('phoneNumber')} *
+                  {t("phoneNumber")} *
                 </Label>
                 <Input
                   id="phone"
                   value={patientData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
                   placeholder="+1-555-0123"
                 />
               </div>
               <div>
-                <Label htmlFor="dateOfBirth" className="flex items-center gap-2">
+                <Label
+                  htmlFor="dateOfBirth"
+                  className="flex items-center gap-2"
+                >
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {t('dateOfBirth')} *
+                  {t("dateOfBirth")} *
                 </Label>
                 <Input
                   id="dateOfBirth"
                   type="date"
                   value={patientData.dateOfBirth}
-                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("dateOfBirth", e.target.value)
+                  }
                 />
               </div>
             </div>
-
           </CardContent>
         </Card>
 
@@ -266,61 +328,60 @@ export default function AddPatientPage() {
                 <MapPin className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <CardTitle>{t('addressInformation')}</CardTitle>
-                <CardDescription>{t('residentialAddress')}</CardDescription>
+                <CardTitle>{t("addressInformation")}</CardTitle>
+                <CardDescription>{t("residentialAddress")}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="address">{t('streetAddress')}</Label>
+              <Label htmlFor="address">{t("streetAddress")}</Label>
               <Input
                 id="address"
                 value={patientData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                placeholder={t('streetAddressPlaceholder')}
+                onChange={(e) => handleInputChange("address", e.target.value)}
+                placeholder={t("streetAddressPlaceholder")}
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="city">{t('city')}</Label>
+                <Label htmlFor="city">{t("city")}</Label>
                 <Input
                   id="city"
                   value={patientData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  placeholder={t('city')}
+                  onChange={(e) => handleInputChange("city", e.target.value)}
+                  placeholder={t("city")}
                 />
               </div>
               <div>
-                <Label htmlFor="state">{t('state')}</Label>
+                <Label htmlFor="state">{t("state")}</Label>
                 <Input
                   id="state"
                   value={patientData.state}
-                  onChange={(e) => handleInputChange('state', e.target.value)}
-                  placeholder={t('state')}
+                  onChange={(e) => handleInputChange("state", e.target.value)}
+                  placeholder={t("state")}
                 />
               </div>
               <div>
-                <Label htmlFor="zipCode">{t('zipCode')}</Label>
+                <Label htmlFor="zipCode">{t("zipCode")}</Label>
                 <Input
                   id="zipCode"
                   value={patientData.zipCode}
-                  onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                  placeholder={t('zipCode')}
+                  onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                  placeholder={t("zipCode")}
                 />
               </div>
               <div>
-                <Label htmlFor="country">{t('country')}</Label>
+                <Label htmlFor="country">{t("country")}</Label>
                 <Input
                   id="country"
                   value={patientData.country}
-                  onChange={(e) => handleInputChange('country', e.target.value)}
-                  placeholder={t('country')}
+                  onChange={(e) => handleInputChange("country", e.target.value)}
+                  placeholder={t("country")}
                 />
               </div>
             </div>
-
           </CardContent>
         </Card>
 
@@ -331,38 +392,51 @@ export default function AddPatientPage() {
                 <Phone className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <CardTitle>{t('emergencyContact')}</CardTitle>
-                <CardDescription>{t('emergencyContactDescription')}</CardDescription>
+                <CardTitle>{t("emergencyContact")}</CardTitle>
+                <CardDescription>
+                  {t("emergencyContactDescription")}
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="emergencyContactName">{t('contactName')}</Label>
+                <Label htmlFor="emergencyContactName">{t("contactName")}</Label>
                 <Input
                   id="emergencyContactName"
                   value={patientData.emergencyContactName}
-                  onChange={(e) => handleInputChange('emergencyContactName', e.target.value)}
-                  placeholder={t('contactNamePlaceholder')}
+                  onChange={(e) =>
+                    handleInputChange("emergencyContactName", e.target.value)
+                  }
+                  placeholder={t("contactNamePlaceholder")}
                 />
               </div>
               <div>
-                <Label htmlFor="emergencyContact">{t('contactPhone')}</Label>
+                <Label htmlFor="emergencyContact">{t("contactPhone")}</Label>
                 <Input
                   id="emergencyContact"
                   value={patientData.emergencyContactPhone}
-                  onChange={(e) => handleInputChange('emergencyContactPhone', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("emergencyContactPhone", e.target.value)
+                  }
                   placeholder="+1-555-0124"
                 />
               </div>
               <div>
-                <Label htmlFor="emergencyRelationship">{t('relationship')}</Label>
+                <Label htmlFor="emergencyRelationship">
+                  {t("relationship")}
+                </Label>
                 <Input
                   id="emergencyRelationship"
                   value={patientData.emergencyContactRelationship}
-                  onChange={(e) => handleInputChange('emergencyContactRelationship', e.target.value)}
-                  placeholder={t('relationshipPlaceholder')}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "emergencyContactRelationship",
+                      e.target.value
+                    )
+                  }
+                  placeholder={t("relationshipPlaceholder")}
                 />
               </div>
             </div>
@@ -376,18 +450,25 @@ export default function AddPatientPage() {
                 <Heart className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <CardTitle>{t('medicalInformation')}</CardTitle>
-                <CardDescription>{t('medicalInformationDescription')}</CardDescription>
+                <CardTitle>{t("medicalInformation")}</CardTitle>
+                <CardDescription>
+                  {t("medicalInformationDescription")}
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="bloodType">{t('bloodType')}</Label>
-                <Select value={patientData.bloodType} onValueChange={(value) => handleInputChange('bloodType', value)}>
+                <Label htmlFor="bloodType">{t("bloodType")}</Label>
+                <Select
+                  value={patientData.bloodType}
+                  onValueChange={(value) =>
+                    handleInputChange("bloodType", value)
+                  }
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('selectBloodType')} />
+                    <SelectValue placeholder={t("selectBloodType")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="O_POSITIVE">O+</SelectItem>
@@ -402,16 +483,22 @@ export default function AddPatientPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="assignedDoctor">{t('assignedDoctor')}</Label>
-                <Select value={patientData.assignedDoctor} onValueChange={(value) => handleInputChange('assignedDoctor', value)}>
+                <Label htmlFor="assignedDoctor">{t("assignedDoctor")}</Label>
+                <Select
+                  value={patientData.assignedDoctor}
+                  onValueChange={(value) =>
+                    handleInputChange("assignedDoctor", value)
+                  }
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('selectDoctor')} />
+                    <SelectValue placeholder={t("selectDoctor")} />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.isArray(doctors) &&
                       doctors.map((doctor) => (
                         <SelectItem key={doctor.id} value={doctor.id}>
-                          {doctor.name} - {doctor.specialization || doctor.department}
+                          {doctor.name} -{" "}
+                          {doctor.specialization || doctor.department}
                         </SelectItem>
                       ))}
                   </SelectContent>
@@ -421,32 +508,42 @@ export default function AddPatientPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="allergies">{t('allergies')}</Label>
+                <Label htmlFor="allergies">{t("allergies")}</Label>
                 <Textarea
                   id="allergies"
                   value={patientData.allergies}
-                  onChange={(e) => handleInputChange('allergies', e.target.value)}
-                  placeholder={t('allergiesPlaceholder')}
+                  onChange={(e) =>
+                    handleInputChange("allergies", e.target.value)
+                  }
+                  placeholder={t("allergiesPlaceholder")}
                   rows={3}
                 />
               </div>
               <div>
-                <Label htmlFor="chronicConditions">{t('chronicConditions')}</Label>
+                <Label htmlFor="chronicConditions">
+                  {t("chronicConditions")}
+                </Label>
                 <Textarea
                   id="chronicConditions"
                   value={patientData.chronicConditions}
-                  onChange={(e) => handleInputChange('chronicConditions', e.target.value)}
-                  placeholder={t('chronicConditionsPlaceholder')}
+                  onChange={(e) =>
+                    handleInputChange("chronicConditions", e.target.value)
+                  }
+                  placeholder={t("chronicConditionsPlaceholder")}
                   rows={3}
                 />
               </div>
               <div>
-                <Label htmlFor="currentMedications">{t('currentMedications')}</Label>
+                <Label htmlFor="currentMedications">
+                  {t("currentMedications")}
+                </Label>
                 <Textarea
                   id="currentMedications"
                   value={patientData.currentMedications}
-                  onChange={(e) => handleInputChange('currentMedications', e.target.value)}
-                  placeholder={t('currentMedicationsPlaceholder')}
+                  onChange={(e) =>
+                    handleInputChange("currentMedications", e.target.value)
+                  }
+                  placeholder={t("currentMedicationsPlaceholder")}
                   rows={3}
                 />
               </div>
@@ -461,18 +558,25 @@ export default function AddPatientPage() {
                 <Shield className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <CardTitle>{t('insuranceInformation')}</CardTitle>
-                <CardDescription>{t('insuranceDescription')}</CardDescription>
+                <CardTitle>{t("insuranceInformation")}</CardTitle>
+                <CardDescription>{t("insuranceDescription")}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="insuranceProvider">{t('insuranceProvider')}</Label>
-                <Select value={patientData.insuranceProvider} onValueChange={(value) => handleInputChange('insuranceProvider', value)}>
+                <Label htmlFor="insuranceProvider">
+                  {t("insuranceProvider")}
+                </Label>
+                <Select
+                  value={patientData.insuranceProvider}
+                  onValueChange={(value) =>
+                    handleInputChange("insuranceProvider", value)
+                  }
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('selectInsurance')} />
+                    <SelectValue placeholder={t("selectInsurance")} />
                   </SelectTrigger>
                   <SelectContent>
                     {insuranceOptions.map((insurance) => (
@@ -484,12 +588,16 @@ export default function AddPatientPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="insurancePolicyNumber">{t('policyNumber')}</Label>
+                <Label htmlFor="insurancePolicyNumber">
+                  {t("policyNumber")}
+                </Label>
                 <Input
                   id="insurancePolicyNumber"
                   value={patientData.insurancePolicyNumber}
-                  onChange={(e) => handleInputChange('insurancePolicyNumber', e.target.value)}
-                  placeholder={t('policyNumber')}
+                  onChange={(e) =>
+                    handleInputChange("insurancePolicyNumber", e.target.value)
+                  }
+                  placeholder={t("policyNumber")}
                 />
               </div>
             </div>
@@ -497,19 +605,28 @@ export default function AddPatientPage() {
         </Card>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-end">
-          <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
-            {t('cancel')}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={isSubmitting}
+          >
+            {t("cancel")}
           </Button>
-          <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-green-600 hover:bg-green-700"
+          >
             {isSubmitting ? (
               <>
                 <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                {t('creating')}
+                {t("creating")}
               </>
             ) : (
               <>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                {t('createPatient')}
+                {t("createPatient")}
               </>
             )}
           </Button>

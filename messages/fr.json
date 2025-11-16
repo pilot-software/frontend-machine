@@ -151,6 +151,8 @@
     "insuranceInformation": "Informations d'Assurance",
     "insuranceDescription": "Fournisseur d'assurance et détails de la police",
     "selectInsurance": "Sélectionnez l'assurance",
+    "medicalInformation": "Informations Médicales",
+    "bedManagement": "Gestion des Lits",
     "myPatients": "Mes Patients",
     "todaysAppointments": "Rendez-vous d'Aujourd'hui",
     "pendingReviews": "Examens en Attente",
