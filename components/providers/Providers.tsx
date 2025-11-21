@@ -8,6 +8,7 @@ import {
 } from "@/components/shared/utils/ErrorBoundary";
 import { AuthProvider } from "@/components/providers/AuthContext";
 import { BranchProvider } from "@/components/providers/BranchContext";
+import { AlertProvider } from "@/components/AlertProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +16,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <StoreProvider>
         <ThemeProvider>
           <AuthProvider>
-            <BranchProvider>{children}</BranchProvider>
+            <BranchProvider>
+              <AlertProvider>{children}</AlertProvider>
+            </BranchProvider>
           </AuthProvider>
         </ThemeProvider>
       </StoreProvider>

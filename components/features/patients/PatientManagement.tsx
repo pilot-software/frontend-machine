@@ -464,10 +464,13 @@ export function PatientManagement() {
             Comprehensive patient care and record management
           </p>
         </div>
-        <AnimatedAddPrompt
-          text="Add New Patient"
+        <Button
           onClick={() => router.push(`/${locale}/patients/add`)}
-        />
+          className="bg-black dark:bg-white hover:bg-gray-900 dark:hover:bg-gray-100 text-white dark:text-black"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Patient
+        </Button>
       </div>
 
       <PatientStats stats={stats || {}} />

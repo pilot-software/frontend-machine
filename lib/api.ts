@@ -261,11 +261,13 @@ export class ApiClient {
 
     // Use new routing logic
     const routedEndpoint = getEndpoint(role, endpoint);
-    
+
     // Get microservice URL based on endpoint
-    const { getMicroserviceUrl } = await import('./config/microservices.config');
+    const { getMicroserviceUrl } = await import(
+      "./config/microservices.config"
+    );
     const baseUrl = getMicroserviceUrl(routedEndpoint);
-    
+
     const url =
       baseUrl +
       routedEndpoint +
@@ -291,12 +293,17 @@ export class ApiClient {
 export const apiClient = new ApiClient();
 
 // Get base URL based on environment and endpoint
-const getBaseUrl = async (endpoint: string = '') => {
+const getBaseUrl = async (endpoint: string = "") => {
   if (process.env.NODE_ENV === "production") {
-    const { getMicroserviceUrl } = await import('./config/microservices.config');
+    const { getMicroserviceUrl } = await import(
+      "./config/microservices.config"
+    );
     return getMicroserviceUrl(endpoint);
   }
-  return process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") || "http://localhost:8080";
+  return (
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") ||
+    "http://localhost:8080"
+  );
 };
 
 class SimpleApi {

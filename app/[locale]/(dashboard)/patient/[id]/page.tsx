@@ -96,11 +96,9 @@ export default function PatientDetailPage() {
 
     if (!patient) {
         return (
-            <div className="container mx-auto p-6">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold">Patient not found</h1>
-                    <p className="text-muted-foreground mt-2">The requested patient could not be found.</p>
-                </div>
+            <div className="text-center">
+                <h1 className="text-2xl font-bold">Patient not found</h1>
+                <p className="text-muted-foreground mt-2">The requested patient could not be found.</p>
             </div>
         );
     }
@@ -193,21 +191,20 @@ export default function PatientDetailPage() {
     const mockConditions = patient.chronicConditions?.split(',').map(c => c.trim()) || ['Hypertension', 'Type 2 Diabetes'];
 
     return (
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="space-y-6">
             <div className="flex items-center justify-between print:hidden">
-                <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="icon" onClick={() => {
+                <h1 className="text-3xl font-bold">{isPatientRole ? 'My Medical Record' : 'Patient Medical Record'}</h1>
+                <div className="flex space-x-2">
+                    <Button variant="outline" onClick={() => {
                         if (isPatientRole) {
                             router.push('/dashboard');
                         } else {
                             window.close();
                         }
                     }}>
-                        <ArrowLeft className="h-5 w-5"/>
+                        <ArrowLeft className="h-4 w-4 mr-2"/>
+                        Back
                     </Button>
-                    <h1 className="text-3xl font-bold">{isPatientRole ? 'My Medical Record' : 'Patient Medical Record'}</h1>
-                </div>
-                <div className="flex space-x-2">
                     <Button onClick={handlePrint} variant="outline">
                         <Printer className="h-4 w-4 mr-2"/>
                         Print

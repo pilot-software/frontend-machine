@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAlert } from "@/components/AlertProvider";
 import {
   Card,
   CardContent,
@@ -79,6 +80,8 @@ export default function AddPatientPage() {
   const reduxDoctors = useAppSelector((state) => state.app.doctors || []);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { showAlert } = useAlert();
 
   const [patientData, setPatientData] = useState<PatientFormData>({
     firstName: "",
@@ -91,7 +94,7 @@ export default function AddPatientPage() {
     city: "",
     state: "",
     zipCode: "",
-    country: "USA",
+    country: "",
     emergencyContactName: "",
     emergencyContactPhone: "",
     emergencyContactRelationship: "",
@@ -132,24 +135,53 @@ export default function AddPatientPage() {
 
   const handleInputChange = (field: keyof PatientFormData, value: string) => {
     setPatientData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const validatePersonalInfo = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "dateOfBirth",
+      "gender",
+    ];
+
+    requiredFields.forEach((field) => {
+      if (!patientData[field as keyof PatientFormData]?.trim()) {
+        newErrors[field] = `${t(field)} is required`;
+      }
+    });
+
+    if (
+      patientData.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientData.email)
+    ) {
+      newErrors.email = "Invalid email format";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      if (
-        !patientData.firstName ||
-        !patientData.lastName ||
-        !patientData.email
-      ) {
-        alert(
-          "Please fill in all required fields (First Name, Last Name, Email)"
-        );
-        return;
-      }
+    if (!validatePersonalInfo()) {
+      setIsSubmitting(false);
+      showAlert(
+        "warning",
+        "Please fill in all required fields in Personal Information"
+      );
+      return;
+    }
 
+    try {
       const apiData = {
         firstName: patientData.firstName.trim(),
         lastName: patientData.lastName.trim(),
@@ -159,13 +191,13 @@ export default function AddPatientPage() {
           | "FEMALE"
           | "OTHER"
           | "PREFER_NOT_TO_SAY",
-        phone: patientData.phone || undefined,
+        phone: patientData.phone,
         email: patientData.email.trim(),
         address: patientData.address || undefined,
         city: patientData.city || undefined,
         state: patientData.state || undefined,
         zipCode: patientData.zipCode || undefined,
-        country: patientData.country || "USA",
+        country: patientData.country || undefined,
         emergencyContactName: patientData.emergencyContactName || undefined,
         emergencyContactPhone: patientData.emergencyContactPhone || undefined,
         emergencyContactRelationship:
@@ -179,14 +211,18 @@ export default function AddPatientPage() {
         insurancePolicyNumber: patientData.insurancePolicyNumber || undefined,
       };
 
-      await patientService.createPatient(apiData);
+      const response = await patientService.createPatient(apiData);
+      showAlert("success", "Patient created successfully!");
       refetch.patients();
-      router.push("/en/patients");
+      const patientId = response?.id;
+      if (patientId) {
+        setTimeout(() => router.push(`/en/patients/edit/${patientId}`), 1500);
+      }
     } catch (error) {
       console.error("Failed to save patient:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      alert(`Failed to save patient: ${errorMessage}`);
+      showAlert("error", `Failed to save patient: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -234,8 +270,13 @@ export default function AddPatientPage() {
                     handleInputChange("firstName", e.target.value)
                   }
                   placeholder={t("enterFirstName")}
-                  required
+                  aria-invalid={!!errors.firstName}
                 />
+                {errors.firstName && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.firstName}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="lastName" className="flex items-center gap-2">
@@ -249,8 +290,13 @@ export default function AddPatientPage() {
                     handleInputChange("lastName", e.target.value)
                   }
                   placeholder={t("enterLastName")}
-                  required
+                  aria-invalid={!!errors.lastName}
                 />
+                {errors.lastName && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.lastName}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="gender">{t("gender")} *</Label>
@@ -258,7 +304,7 @@ export default function AddPatientPage() {
                   value={patientData.gender}
                   onValueChange={(value) => handleInputChange("gender", value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-invalid={!!errors.gender}>
                     <SelectValue placeholder={t("selectGender")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -270,6 +316,11 @@ export default function AddPatientPage() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.gender && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.gender}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -285,8 +336,13 @@ export default function AddPatientPage() {
                   value={patientData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="patient@example.com"
-                  required
+                  aria-invalid={!!errors.email}
                 />
+                {errors.email && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.email}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="phone" className="flex items-center gap-2">
@@ -298,7 +354,13 @@ export default function AddPatientPage() {
                   value={patientData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   placeholder="+1-555-0123"
+                  aria-invalid={!!errors.phone}
                 />
+                {errors.phone && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.phone}
+                  </p>
+                )}
               </div>
               <div>
                 <Label
@@ -315,7 +377,14 @@ export default function AddPatientPage() {
                   onChange={(e) =>
                     handleInputChange("dateOfBirth", e.target.value)
                   }
+                  className="dark:text-white dark:[color-scheme:dark]"
+                  aria-invalid={!!errors.dateOfBirth}
                 />
+                {errors.dateOfBirth && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.dateOfBirth}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
