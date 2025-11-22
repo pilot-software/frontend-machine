@@ -14,9 +14,14 @@ const floatingStyles = `
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-15px); }
   }
+  @keyframes ecg-draw {
+    0% { stroke-dashoffset: 1000; }
+    100% { stroke-dashoffset: 0; }
+  }
   .animate-float { animation: float 4s ease-in-out infinite; }
   .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
   .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  .ecg-line { animation: ecg-draw 2s linear infinite; stroke-dasharray: 1000; }
 `;
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
@@ -34,6 +39,8 @@ import {
   Stethoscope,
   Cpu,
   Heart,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 import {
@@ -61,6 +68,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
   const [selectedConfig, setSelectedConfig] =
     useState<HospitalType>("hospital");
   const [isSubdomain, setIsSubdomain] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const [branding, setBranding] = useState({
     systemName: "Healthcare System",
     loginTitle: "Healthcare System",
@@ -93,8 +101,20 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
           (localStorage.getItem("hospitalType") as HospitalType) || "hospital";
         setSelectedConfig(currentConfig);
       }
+      
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
     }
   }, []);
+
+  const toggleDarkMode = () => {
+    if (typeof window !== "undefined") {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      setIsDark(!isDark);
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -229,7 +249,22 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                     {branding.systemName}
                   </h1>
                 </div>
-                <LanguageSwitcher />
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleDarkMode}
+                    className="h-10 w-10"
+                  >
+                    {isDark ? (
+                      <Sun className="h-5 w-5" />
+                    ) : (
+                      <Moon className="h-5 w-5" />
+                    )}
+                  </Button>
+                  <LanguageSwitcher />
+                </div>
               </div>
               <p className="text-muted-foreground text-lg ml-11">
                 {branding.loginSubtitle}
@@ -338,10 +373,17 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                     disabled={isLoading}
                   >
                     {isLoading ? (
-                      <>
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        {t("signingIn")}
-                      </>
+                      <svg className="w-full h-12" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                        <polyline
+                          points="0,20 10,20 15,10 20,30 25,20 35,20 40,15 45,25 50,20 60,20 65,5 70,35 75,20 85,20 100,20"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="ecg-line"
+                        />
+                      </svg>
                     ) : (
                       t("signIn")
                     )}

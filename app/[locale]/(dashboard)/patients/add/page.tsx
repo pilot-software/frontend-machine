@@ -39,39 +39,7 @@ import { patientService } from "@/lib/services/patient";
 import { userService } from "@/lib/services/user";
 import { useAppData } from "@/lib/hooks/useAppData";
 import { useAppSelector } from "@/lib/store";
-
-interface PatientFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY" | "";
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  emergencyContactRelationship: string;
-  bloodType:
-    | "A_POSITIVE"
-    | "A_NEGATIVE"
-    | "B_POSITIVE"
-    | "B_NEGATIVE"
-    | "AB_POSITIVE"
-    | "AB_NEGATIVE"
-    | "O_POSITIVE"
-    | "O_NEGATIVE"
-    | "";
-  allergies: string;
-  chronicConditions: string;
-  currentMedications: string;
-  assignedDoctor: string;
-  insuranceProvider: string;
-  insurancePolicyNumber: string;
-}
+import { PatientFormData, validatePersonalInfo } from "@/lib/utils";
 
 export default function AddPatientPage() {
   const t = useTranslations("common");
@@ -123,14 +91,14 @@ export default function AddPatientPage() {
   }, [reduxDoctors]);
 
   const insuranceOptions = [
-    { value: "blue-cross", label: "Blue Cross Blue Shield" },
-    { value: "aetna", label: "Aetna" },
-    { value: "kaiser", label: "Kaiser Permanente" },
-    { value: "cigna", label: "Cigna" },
-    { value: "united", label: "United Healthcare" },
-    { value: "medicare", label: "Medicare" },
-    { value: "medicaid", label: "Medicaid" },
-    { value: "self-pay", label: "Self Pay" },
+    { value: "blue-cross", label: t("blueCross") },
+    { value: "aetna", label: t("aetna") },
+    { value: "kaiser", label: t("kaiser") },
+    { value: "cigna", label: t("cigna") },
+    { value: "united", label: t("united") },
+    { value: "medicare", label: t("medicare") },
+    { value: "medicaid", label: t("medicaid") },
+    { value: "self-pay", label: t("selfPay") },
   ];
 
   const handleInputChange = (field: keyof PatientFormData, value: string) => {
@@ -140,30 +108,8 @@ export default function AddPatientPage() {
     }
   };
 
-  const validatePersonalInfo = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    const requiredFields = [
-      "firstName",
-      "lastName",
-      "email",
-      "phone",
-      "dateOfBirth",
-      "gender",
-    ];
-
-    requiredFields.forEach((field) => {
-      if (!patientData[field as keyof PatientFormData]?.trim()) {
-        newErrors[field] = `${t(field)} is required`;
-      }
-    });
-
-    if (
-      patientData.email &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientData.email)
-    ) {
-      newErrors.email = "Invalid email format";
-    }
-
+  const handleValidatePersonalInfo = (): boolean => {
+    const newErrors = validatePersonalInfo(patientData, t);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -172,11 +118,11 @@ export default function AddPatientPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!validatePersonalInfo()) {
+    if (!handleValidatePersonalInfo()) {
       setIsSubmitting(false);
       showAlert(
         "warning",
-        "Please fill in all required fields in Personal Information"
+        t("fillRequiredFields")
       );
       return;
     }
@@ -212,7 +158,7 @@ export default function AddPatientPage() {
       };
 
       const response = await patientService.createPatient(apiData);
-      showAlert("success", "Patient created successfully!");
+      showAlert("success", t("patientCreatedSuccess"));
       refetch.patients();
       const patientId = response?.id;
       if (patientId) {
@@ -222,7 +168,7 @@ export default function AddPatientPage() {
       console.error("Failed to save patient:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      showAlert("error", `Failed to save patient: ${errorMessage}`);
+      showAlert("error", t("failedSavePatient").replace("{error}", errorMessage));
     } finally {
       setIsSubmitting(false);
     }
@@ -335,7 +281,7 @@ export default function AddPatientPage() {
                   type="email"
                   value={patientData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder="patient@example.com"
+                  placeholder={t("emailPlaceholder")}
                   aria-invalid={!!errors.email}
                 />
                 {errors.email && (
@@ -353,7 +299,7 @@ export default function AddPatientPage() {
                   id="phone"
                   value={patientData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
-                  placeholder="+1-555-0123"
+                  placeholder={t("phonePlaceholder")}
                   aria-invalid={!!errors.phone}
                 />
                 {errors.phone && (
@@ -489,7 +435,7 @@ export default function AddPatientPage() {
                   onChange={(e) =>
                     handleInputChange("emergencyContactPhone", e.target.value)
                   }
-                  placeholder="+1-555-0124"
+                  placeholder={t("emergencyPhonePlaceholder")}
                 />
               </div>
               <div>
@@ -666,7 +612,7 @@ export default function AddPatientPage() {
                   onChange={(e) =>
                     handleInputChange("insurancePolicyNumber", e.target.value)
                   }
-                  placeholder={t("policyNumber")}
+                  placeholder={t("policyNumberPlaceholder")}
                 />
               </div>
             </div>

@@ -22,14 +22,10 @@ export default async function LocaleLayout({
     const messages = await getMessages({locale});
 
     return (
-        <html lang={locale}>
-        <body className={poppins.className} suppressHydrationWarning={true}>
         <NextIntlClientProvider messages={messages} locale={locale}>
             <Providers>
                 {children}
             </Providers>
         </NextIntlClientProvider>
-        </body>
-        </html>
     );
 }

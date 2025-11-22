@@ -78,3 +78,57 @@ export function getPriorityColor(priority: string): string {
             return 'bg-gray-100 text-gray-800 border-gray-200';
     }
 }
+
+export interface PatientFormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    dateOfBirth: string;
+    gender: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY" | "";
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
+    emergencyContactRelationship?: string;
+    bloodType?: "A_POSITIVE" | "A_NEGATIVE" | "B_POSITIVE" | "B_NEGATIVE" | "AB_POSITIVE" | "AB_NEGATIVE" | "O_POSITIVE" | "O_NEGATIVE" | "";
+    allergies?: string;
+    chronicConditions?: string;
+    currentMedications?: string;
+    assignedDoctor?: string;
+    insuranceProvider?: string;
+    insurancePolicyNumber?: string;
+}
+
+export function validatePersonalInfo(
+    patientData: PatientFormData,
+    t: (key: string, options?: Record<string, string>) => string
+): Record<string, string> {
+    const newErrors: Record<string, string> = {};
+    const requiredFields = [
+        "firstName",
+        "lastName",
+        "email",
+        "phone",
+        "dateOfBirth",
+        "gender",
+    ];
+
+    requiredFields.forEach((field) => {
+        if (!patientData[field as keyof PatientFormData]?.trim?.()) {
+            newErrors[field] = t("isRequired", { field: t(field) });
+        }
+    });
+
+    if (
+        patientData.email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientData.email)
+    ) {
+        newErrors.email = t("invalidEmailFormat");
+    }
+
+    return newErrors;
+}
