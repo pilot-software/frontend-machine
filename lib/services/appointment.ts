@@ -20,6 +20,24 @@ export interface ApiAppointment extends BaseEntity {
 export type CreateAppointment = Omit<ApiAppointment, keyof BaseEntity | 'organizationId'>;
 export type UpdateAppointment = Partial<ApiAppointment>;
 
+export interface DoctorAvailabilitySlot {
+    id: string;
+    organizationId: string;
+    doctorId: string;
+    slotDate: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+    patientId: string | null;
+    appointmentId: string | null;
+    branchId: string;
+    notes: string;
+    createdBy: string;
+    updatedBy: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export class AppointmentService implements IBaseService<ApiAppointment, CreateAppointment, UpdateAppointment> {
     async getAll(): Promise<ApiAppointment[]> {
         return apiClient.getAppointments();
@@ -75,6 +93,11 @@ export class AppointmentService implements IBaseService<ApiAppointment, CreateAp
         return api.get('/api/appointments/today');
     }
 
+    async getDoctorAvailability(doctorId: string, date: string): Promise<DoctorAvailabilitySlot[]> {
+        const {api} = await import('../api');
+        return api.get(`/api/doctor-availability/doctor/${doctorId}/available?date=${date}`);
+    }
+
     private formatAppointmentData(appointment: Partial<ApiAppointment>) {
         return {
             ...appointment,
@@ -84,14 +107,22 @@ export class AppointmentService implements IBaseService<ApiAppointment, CreateAp
     }
 
     private formatDate(dateInput: string): string {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+            return dateInput;
+        }
         const date = new Date(dateInput);
         if (isNaN(date.getTime())) throw new Error('Invalid date format');
         return date.toISOString().split('T')[0];
     }
 
     private formatTime(timeInput: string): string {
-        if (!/^\d{2}:\d{2}$/.test(timeInput)) throw new Error('Invalid time format');
-        return timeInput;
+        if (/^\d{2}:\d{2}:\d{2}$/.test(timeInput)) {
+            return timeInput;
+        }
+        if (/^\d{2}:\d{2}$/.test(timeInput)) {
+            return `${timeInput}:00`;
+        }
+        throw new Error('Invalid time format');
     }
 }
 

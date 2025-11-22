@@ -53,8 +53,11 @@ import {
   ChevronRight,
   FileText,
   BedDouble,
+  Trash2,
 } from "lucide-react";
 import { redirect, useRouter } from "next/navigation";
+import { appointmentService } from '@/lib/services/appointment';
+import { useAuth } from '@/components/providers/AuthContext';
 import {
   format,
   addDays,
@@ -237,7 +240,9 @@ const STATIC_DATA: Appointment[] = [
 export function AppointmentSystemModern() {
   const t = useTranslations("common");
   const router = useRouter();
-  const [appointments, setAppointments] = useState<Appointment[]>(STATIC_DATA);
+  const { user } = useAuth();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -254,6 +259,37 @@ export function AppointmentSystemModern() {
   >([]);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
 
+  React.useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const data = await appointmentService.getTodayAppointments();
+        const formattedData = data.map((apt: any) => ({
+          id: apt.id,
+          patientName: apt.patientId,
+          patientPhone: '',
+          doctorName: apt.doctorId,
+          department: '',
+          date: new Date(apt.appointmentDate),
+          time: apt.appointmentTime.substring(0, 5),
+          duration: apt.durationMinutes,
+          type: 'routine' as const,
+          status: apt.status.toLowerCase().replace('_', '-') as Appointment['status'],
+          reason: apt.chiefComplaint || '',
+          notes: apt.notes,
+          roomNumber: apt.roomNumber,
+          priority: 'medium' as const,
+        }));
+        setAppointments(formattedData);
+      } catch (error) {
+        console.error('Failed to fetch appointments:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAppointments();
+  }, []);
+
   const filteredAppointments = useMemo(() => {
     return appointments.filter((apt) => {
       const matchesSearch =
@@ -268,9 +304,14 @@ export function AppointmentSystemModern() {
     });
   }, [appointments, searchTerm, filterType, filterStatus]);
 
-  const todayAppointments = filteredAppointments.filter((apt) =>
-    isSameDay(apt.date, new Date())
-  );
+  const todayAppointments = useMemo(() => {
+    const filtered = filteredAppointments.filter((apt) => isSameDay(apt.date, new Date()));
+    return filtered.sort((a, b) => {
+      if (a.status === 'cancelled' && b.status !== 'cancelled') return 1;
+      if (a.status !== 'cancelled' && b.status === 'cancelled') return -1;
+      return 0;
+    });
+  }, [filteredAppointments]);
 
   const stats = {
     total: todayAppointments.length,
@@ -316,6 +357,19 @@ export function AppointmentSystemModern() {
     setAppointments((prev) =>
       prev.map((apt) => (apt.id === id ? { ...apt, status: newStatus } : apt))
     );
+  };
+
+  const handleDeleteAppointment = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this appointment?')) return;
+    try {
+      await appointmentService.delete(id);
+    } catch (error) {
+      console.error('Failed to delete appointment:', error);
+    } finally {
+      setAppointments((prev) =>
+        prev.map((apt) => (apt.id === id ? { ...apt, status: 'cancelled' as const } : apt))
+      );
+    }
   };
 
   const handleScheduleAppointment = () => {
@@ -487,10 +541,13 @@ export function AppointmentSystemModern() {
               <div className="space-y-3">
                 {todayAppointments.map((apt) => {
                   const TypeIcon = getTypeIcon(apt.type);
+                  const isCancelled = apt.status === 'cancelled';
                   return (
                     <div
                       key={apt.id}
-                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3"
+                      className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3 ${
+                        isCancelled ? 'bg-muted/50 opacity-60' : ''
+                      }`}
                     >
                       <div className="flex items-center gap-2 sm:gap-4 flex-1 w-full">
                         <div className="flex items-center gap-2">
@@ -582,12 +639,31 @@ export function AppointmentSystemModern() {
                                   setSelectedAppointment(apt);
                                   setIsModalOpen(true);
                                 }}
+                                disabled={isCancelled}
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>{t("editAppointment")}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDeleteAppointment(apt.id)}
+                                disabled={isCancelled}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete Appointment</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -625,6 +701,7 @@ export function AppointmentSystemModern() {
                               val as Appointment["status"]
                             )
                           }
+                          disabled={isCancelled}
                         >
                           <SelectTrigger className="w-[110px] sm:w-[130px] h-8 text-xs sm:text-sm">
                             <SelectValue />
@@ -651,7 +728,13 @@ export function AppointmentSystemModern() {
                     </div>
                   );
                 })}
-                {todayAppointments.length === 0 && (
+                {isLoading && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+                    <p>Loading appointments...</p>
+                  </div>
+                )}
+                {!isLoading && todayAppointments.length === 0 && (
                   <div className="text-center py-12 text-muted-foreground">
                     <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>{t("noAppointmentsFound")}</p>
