@@ -1,40 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ArrowLeft, Calendar as CalendarIcon, Clock, Save } from "lucide-react";
-import { appointmentService } from "@/lib/services/appointment";
-import { useAuth } from "@/components/providers/AuthContext";
-import { useAppDispatch, useAppSelector } from "@/lib/store";
-import { fetchDoctors, fetchPatients } from "@/lib/store/slices/appSlice";
-import { ROLES } from "@/lib/constants";
-import { cn } from "@/components/ui/utils";
-import { format } from "date-fns";
+import React, { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, Clock, Save } from 'lucide-react';
+import { appointmentService, DoctorAvailabilitySlot } from '@/lib/services/appointment';
+import { useAuth } from '@/components/providers/AuthContext';
+import { useAppDispatch, useAppSelector } from '@/lib/store';
+import { fetchDoctors, fetchPatients } from '@/lib/store/slices/appSlice';
+import { ROLES } from '@/lib/constants';
+import { cn } from '@/components/ui/utils';
+import { format } from 'date-fns';
 
 interface AppointmentFormData {
   patientId: string;
@@ -45,6 +27,7 @@ interface AppointmentFormData {
   chiefComplaint: string;
   notes: string;
   roomNumber: string;
+  slotId: string;
 }
 
 export default function AddAppointmentPage() {
@@ -55,7 +38,8 @@ export default function AddAppointmentPage() {
   const dispatch = useAppDispatch();
   const { patients, doctors, loading } = useAppSelector((state) => state.app);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [availableSlots, setAvailableSlots] = useState<DoctorAvailabilitySlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   const [appointmentData, setAppointmentData] = useState<AppointmentFormData>({
     patientId: "",
@@ -66,6 +50,7 @@ export default function AddAppointmentPage() {
     chiefComplaint: "",
     notes: "",
     roomNumber: "",
+    slotId: "",
   });
 
   React.useEffect(() => {
@@ -105,25 +90,71 @@ export default function AddAppointmentPage() {
     { value: 120, label: "2 hours" },
   ];
 
-  const handleInputChange = (
-    field: keyof AppointmentFormData,
-    value: string | number
-  ) => {
-    setAppointmentData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    if (date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      setAppointmentData((prev) => ({
+  const handleTimeSlotChange = (slotId: string) => {
+    const selectedSlot = availableSlots.find(slot => slot.id === slotId);
+    if (selectedSlot) {
+      const [startHour, startMin] = selectedSlot.startTime.split(':').map(Number);
+      const [endHour, endMin] = selectedSlot.endTime.split(':').map(Number);
+      const duration = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+      
+      setAppointmentData(prev => ({
         ...prev,
-        appointmentDate: `${year}-${month}-${day}`,
+        appointmentTime: selectedSlot.startTime,
+        slotId: selectedSlot.id,
+        durationMinutes: duration
       }));
     }
   };
+
+
+
+  const getSelectedSlot = () => {
+    return availableSlots.find(slot => slot.id === appointmentData.slotId);
+  };
+
+  const getBranchId = () => {
+    const selectedSlot = getSelectedSlot();
+    return selectedSlot?.branchId || 'branch_main';
+  };
+
+  const handleInputChange = async (field: keyof AppointmentFormData, value: string | number) => {
+    if (field === 'appointmentTime') {
+      handleTimeSlotChange(value as string);
+      return;
+    }
+
+    setAppointmentData((prev) => ({ ...prev, [field]: value }));
+
+    if (field === 'doctorId' && appointmentData.appointmentDate) {
+      setLoadingSlots(true);
+      setAppointmentData((prev) => ({ ...prev, appointmentTime: '', slotId: '', durationMinutes: 30 }));
+      try {
+        const slots = await appointmentService.getDoctorAvailability(value as string, appointmentData.appointmentDate);
+        setAvailableSlots(slots);
+      } catch (error) {
+        console.error('Failed to fetch available slots:', error);
+        setAvailableSlots([]);
+      } finally {
+        setLoadingSlots(false);
+      }
+    }
+
+    if (field === 'appointmentDate' && appointmentData.doctorId) {
+      setLoadingSlots(true);
+      setAppointmentData((prev) => ({ ...prev, appointmentTime: '', slotId: '', durationMinutes: 30 }));
+      try {
+        const slots = await appointmentService.getDoctorAvailability(appointmentData.doctorId, value as string);
+        setAvailableSlots(slots);
+      } catch (error) {
+        console.error('Failed to fetch available slots:', error);
+        setAvailableSlots([]);
+      } finally {
+        setLoadingSlots(false);
+      }
+    }
+  };
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,11 +178,10 @@ export default function AddAppointmentPage() {
         doctorId: appointmentData.doctorId,
         appointmentDate: appointmentData.appointmentDate,
         appointmentTime: appointmentData.appointmentTime,
-        durationMinutes: appointmentData.durationMinutes || 30,
-        status: "SCHEDULED" as const,
+        durationMinutes: appointmentData.durationMinutes,
         chiefComplaint: appointmentData.chiefComplaint || undefined,
-        notes: appointmentData.notes || undefined,
-        roomNumber: appointmentData.roomNumber || undefined,
+        branchId: getBranchId(),
+        slotId: appointmentData.slotId,
         createdBy: user?.id || "system",
       };
       await appointmentService.createAppointment(apiData);
@@ -160,8 +190,7 @@ export default function AddAppointmentPage() {
     } catch (error) {
       console.error("Failed to save appointment:", error);
       alert(
-        `Failed to save appointment: ${
-          error instanceof Error ? error.message : "Unknown error"
+        `Failed to save appointment: ${error instanceof Error ? error.message : "Unknown error"
         }`
       );
     } finally {
@@ -274,53 +303,30 @@ export default function AddAppointmentPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <Label>Date *</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !selectedDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {selectedDate
-                            ? format(selectedDate, "PPP")
-                            : "Pick a date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={selectedDate}
-                          onSelect={handleDateSelect}
-                          disabled={(date) => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            return date < today;
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Label htmlFor="date">Date *</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={appointmentData.appointmentDate}
+                      onChange={(e) => handleInputChange('appointmentDate', e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="time">Time *</Label>
                     <Select
-                      value={appointmentData.appointmentTime}
-                      onValueChange={(value) =>
-                        handleInputChange("appointmentTime", value)
-                      }
+                      value={appointmentData.slotId}
+                      onValueChange={(value) => handleInputChange('appointmentTime', value)}
+                      disabled={!appointmentData.doctorId || !appointmentData.appointmentDate || loadingSlots}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select time" />
+                        <SelectValue placeholder={loadingSlots ? 'Loading slots...' : availableSlots.length === 0 && appointmentData.appointmentDate ? 'No slots available' : 'Select time'} />
                       </SelectTrigger>
                       <SelectContent>
-                        {timeSlots.map((time) => (
-                          <SelectItem key={time} value={time}>
-                            {time}
+                        {availableSlots.map((slot) => (
+                          <SelectItem key={slot.id} value={slot.id}>
+                            {slot.startTime} - {slot.endTime}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -329,26 +335,12 @@ export default function AddAppointmentPage() {
 
                   <div>
                     <Label htmlFor="duration">Duration</Label>
-                    <Select
-                      value={appointmentData.durationMinutes.toString()}
-                      onValueChange={(value) =>
-                        handleInputChange("durationMinutes", parseInt(value))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {durations.map((duration) => (
-                          <SelectItem
-                            key={duration.value}
-                            value={duration.value.toString()}
-                          >
-                            {duration.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      id="duration"
+                      value={`${appointmentData.durationMinutes} minutes`}
+                      disabled
+                      className="bg-muted"
+                    />
                   </div>
                 </div>
 
@@ -425,16 +417,11 @@ export default function AddAppointmentPage() {
                   </div>
                 )}
 
-                {selectedDate && appointmentData.appointmentTime && (
+                {appointmentData.appointmentDate && appointmentData.appointmentTime && (
                   <div>
                     <p className="text-sm text-muted-foreground">Date & Time</p>
-                    <p className="font-medium">
-                      {format(selectedDate, "EEEE, MMMM d, yyyy")}
-                    </p>
-                    <p className="text-sm">
-                      {appointmentData.appointmentTime} (
-                      {appointmentData.durationMinutes} minutes)
-                    </p>
+                    <p className="font-medium">{format(new Date(appointmentData.appointmentDate), 'EEEE, MMMM d, yyyy')}</p>
+                    <p className="text-sm">{appointmentData.appointmentTime} ({appointmentData.durationMinutes} minutes)</p>
                   </div>
                 )}
 
