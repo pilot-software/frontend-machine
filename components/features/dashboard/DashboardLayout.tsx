@@ -7,7 +7,12 @@ import { ROUTES, ROLES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { LanguageSwitcher } from "@/components/shared/navigation/LanguageSwitcher";
 import {
   DropdownMenu,
@@ -99,8 +104,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <nav className="p-4 space-y-2">
       {menuItems.map((item) => {
         const ItemIcon = item.icon;
-        const isActive = pathname.includes(item.path) || 
-          (item.path === '/patients' && pathname.includes('/patient/'));
+        const isActive =
+          pathname.includes(item.path) ||
+          (item.path === "/patients" && pathname.includes("/patient/"));
         return (
           <Button
             key={item.path}
@@ -252,7 +258,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <DropdownMenuLabel className="p-0">
                     <div className="relative overflow-hidden rounded-t-lg">
                       {/* Gradient background */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10" />
+                      <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10" />
 
                       {/* Floating orb effect */}
                       <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
@@ -268,7 +274,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                             alt={user.name}
                             className="transition-all duration-300 hover:brightness-110"
                           />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-base">
+                          <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white font-bold text-base">
                             {getInitials(user.name)}
                           </AvatarFallback>
                         </Avatar>
@@ -342,12 +348,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex pt-[73px]">
         {/* Desktop Sidebar */}
         <aside
-          className={`hidden md:block fixed left-0 top-[73px] bottom-0 bg-gradient-to-b from-card via-card to-card/95 backdrop-blur-sm transition-all duration-300 ease-in-out ${
+          className={`hidden md:block fixed left-0 top-[73px] bottom-0 bg-linear-to-b from-card via-card to-card/95 backdrop-blur-sm transition-all duration-300 ease-in-out ${
             desktopSidebarCollapsed ? "w-20" : "w-64"
           } group/sidebar`}
         >
           {/* Sidebar border with gradient */}
-          <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
+          <div className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-border to-transparent" />
 
           {/* Navigation */}
           <nav
@@ -362,7 +368,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setDesktopSidebarCollapsed(false)}
-                  className="w-full justify-center p-2.5 h-12 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300"
+                  className="w-full justify-center p-2.5 h-12 rounded-lg bg-linear-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300"
                 >
                   <ChevronRight className="h-5 w-5 text-blue-600" />
                 </Button>
@@ -385,8 +391,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="space-y-1">
               {menuItems.map((item) => {
                 const ItemIcon = item.icon;
-                const isActive = pathname.includes(item.path) || 
-                  (item.path === '/patients' && pathname.includes('/patient/'));
+                const isActive =
+                  pathname.includes(item.path) ||
+                  (item.path === "/patients" && pathname.includes("/patient/"));
                 return (
                   <Button
                     key={item.path}
@@ -399,7 +406,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         : "justify-start px-3 h-11"
                     } ${
                       isActive
-                        ? "bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-blue-600 font-medium shadow-sm"
+                        ? "bg-linear-to-r from-blue-500/15 to-purple-500/15 text-blue-600 font-medium shadow-sm"
                         : "hover:bg-muted/50"
                     }`}
                   >

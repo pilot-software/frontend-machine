@@ -3,8 +3,10 @@ import { useAppSelector } from "@/lib/store";
 import { useAppData } from "@/lib/hooks/useAppData";
 import { patientService } from "@/lib/services/patient";
 import { userService } from "@/lib/services/user";
-import { medicalService, MedicalData } from "@/lib/services/medical";
-import { PatientFormData, INITIAL_FORM_DATA } from "../types/patient-form.types";
+import {
+  PatientFormData,
+  INITIAL_FORM_DATA,
+} from "../types/patient-form.types";
 
 const BLOOD_TYPE_MAP: Record<string, string> = {
   "O+": "O_POSITIVE",
@@ -28,7 +30,7 @@ export function usePatientForm(
   const [patientData, setPatientData] =
     useState<PatientFormData>(INITIAL_FORM_DATA);
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
-  const [medicalData, setMedicalData] = useState<MedicalData | null>(null);
+  const [medicalData, setMedicalData] = useState<null>(null);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [loading, setLoading] = useState({
     selectedPatient: false,
@@ -68,8 +70,6 @@ export function usePatientForm(
           } finally {
             setLoading((prev) => ({ ...prev, selectedPatient: false }));
           }
-
-
         }
       }
     };
@@ -136,16 +136,25 @@ export function usePatientForm(
     }
   }, [isOpen]);
 
-  const handleInputChange = useCallback((field: keyof PatientFormData, value: string) => {
-    setPatientData((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const handleInputChange = useCallback(
+    (field: keyof PatientFormData, value: string) => {
+      setPatientData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   const handleSubmit = useCallback(
     async (onClose: () => void) => {
       setIsSubmitting(true);
       try {
-        if (!patientData.firstName || !patientData.lastName || !patientData.email) {
-          alert("Please fill in all required fields (First Name, Last Name, Email)");
+        if (
+          !patientData.firstName ||
+          !patientData.lastName ||
+          !patientData.email
+        ) {
+          alert(
+            "Please fill in all required fields (First Name, Last Name, Email)"
+          );
           return;
         }
         const apiData = {
@@ -157,7 +166,7 @@ export function usePatientForm(
             | "FEMALE"
             | "OTHER"
             | "PREFER_NOT_TO_SAY",
-          phone: patientData.phone || undefined,
+          phone: patientData.phone,
           email: patientData.email.trim(),
           address: patientData.address || undefined,
           city: patientData.city || undefined,

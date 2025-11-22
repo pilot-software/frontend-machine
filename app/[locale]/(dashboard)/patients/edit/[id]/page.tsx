@@ -196,10 +196,6 @@ export default function EditPatientPage() {
           <h1 className="text-3xl font-bold">{t('editPatient')}</h1>
           <p className="text-muted-foreground mt-1">{t('updatePatientDetails')}</p>
         </div>
-        <Button variant="outline" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('back')}
-        </Button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

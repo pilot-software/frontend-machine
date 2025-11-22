@@ -137,17 +137,6 @@ export function ForgotPassword({onBackToLogin}: ForgotPasswordProps) {
                                         'Send Reset Link'
                                     )}
                                 </Button>
-
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={onBackToLogin}
-                                    disabled={isLoading}
-                                >
-                                    <ArrowLeft className="h-4 w-4 mr-2"/>
-                                    Back to Login
-                                </Button>
                             </div>
                         </form>
 

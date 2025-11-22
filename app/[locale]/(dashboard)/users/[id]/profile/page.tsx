@@ -127,10 +127,6 @@ export default function UserProfilePage() {
                     <p className="text-muted-foreground mt-1">View and manage user information</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => router.push('/users')}>
-                        <ArrowLeft className="h-4 w-4 mr-2"/>
-                        Back
-                    </Button>
                     {!isEditing ? (
                         <Button onClick={handleEdit}>
                             <Edit className="h-4 w-4 mr-2"/>

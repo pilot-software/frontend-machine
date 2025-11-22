@@ -195,16 +195,6 @@ export default function PatientDetailPage() {
             <div className="flex items-center justify-between print:hidden">
                 <h1 className="text-3xl font-bold">{isPatientRole ? 'My Medical Record' : 'Patient Medical Record'}</h1>
                 <div className="flex space-x-2">
-                    <Button variant="outline" onClick={() => {
-                        if (isPatientRole) {
-                            router.push('/dashboard');
-                        } else {
-                            window.close();
-                        }
-                    }}>
-                        <ArrowLeft className="h-4 w-4 mr-2"/>
-                        Back
-                    </Button>
                     <Button onClick={handlePrint} variant="outline">
                         <Printer className="h-4 w-4 mr-2"/>
                         Print

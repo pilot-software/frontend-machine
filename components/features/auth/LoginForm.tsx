@@ -50,7 +50,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HospitalType, setLocalConfig, getHospitalOrgId, isSubdomainMode, getBranding } from "@/lib/runtimeConfig";
+import {
+  HospitalType,
+  setLocalConfig,
+  getHospitalOrgId,
+  isSubdomainMode,
+  getBranding,
+} from "@/lib/runtimeConfig";
 import hospitalFlags from "@/config/hospital-flags.json";
 import { ROUTES } from "@/lib/constants";
 
@@ -74,7 +80,8 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
     loginTitle: "Healthcare System",
     loginSubtitle: "Sign in to your account",
     welcomeMessage: "Welcome to Healthcare System",
-    welcomeDescription: "Comprehensive patient care with advanced medical technology"
+    welcomeDescription:
+      "Comprehensive patient care with advanced medical technology",
   });
   const router = useRouter();
 
@@ -89,20 +96,20 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       const subdomain = isSubdomainMode();
       setIsSubdomain(subdomain);
       setBranding(getBranding());
-      
+
       // Set config based on subdomain
       const hostname = window.location.host;
-      if (hostname.startsWith('clinic.localhost')) {
-        setSelectedConfig('clinic');
-      } else if (hostname.startsWith('hospital.localhost')) {
-        setSelectedConfig('hospital');
+      if (hostname.startsWith("clinic.localhost")) {
+        setSelectedConfig("clinic");
+      } else if (hostname.startsWith("hospital.localhost")) {
+        setSelectedConfig("hospital");
       } else {
         const currentConfig =
           (localStorage.getItem("hospitalType") as HospitalType) || "hospital";
         setSelectedConfig(currentConfig);
       }
-      
-      const isDarkMode = document.documentElement.classList.contains('dark');
+
+      const isDarkMode = document.documentElement.classList.contains("dark");
       setIsDark(isDarkMode);
     }
   }, []);
@@ -110,9 +117,9 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
   const toggleDarkMode = () => {
     if (typeof window !== "undefined") {
       const html = document.documentElement;
-      html.classList.toggle('dark');
+      html.classList.toggle("dark");
       setIsDark(!isDark);
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      localStorage.setItem("theme", isDark ? "light" : "dark");
     }
   };
 
@@ -135,9 +142,11 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       return;
     }
 
-    const orgId = isSubdomainMode() 
+    const orgId = isSubdomainMode()
       ? getHospitalOrgId()
-      : selectedConfig === "hospital" ? "hospital_org1" : "hospital_org2";
+      : selectedConfig === "hospital"
+      ? "hospital_org1"
+      : "hospital_org2";
     const success = await login(email, password, orgId);
     if (!success) {
       setError(t("invalidCredentials"));
@@ -148,8 +157,8 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
   const getConfigType = () => {
     if (typeof window !== "undefined") {
       const hostname = window.location.host;
-      if (hostname.startsWith('clinic.localhost')) return 'clinic';
-      if (hostname.startsWith('hospital.localhost')) return 'hospital';
+      if (hostname.startsWith("clinic.localhost")) return "clinic";
+      if (hostname.startsWith("hospital.localhost")) return "hospital";
     }
     return selectedConfig;
   };
@@ -281,34 +290,34 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                   )}
 
                   {!isSubdomain && (
-                  <div className="space-y-2">
-                    <Label htmlFor="config" className="text-base font-medium">
-                      {t("healthcareConfiguration")}
-                    </Label>
-                    <Select
-                      value={selectedConfig}
-                      onValueChange={handleConfigChange}
-                    >
-                      <SelectTrigger className="h-12">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(hospitalFlags.availableConfigurations)
-                          .filter(([_, config]) => config.enabled)
-                          .map(([key, config]) => (
-                            <SelectItem key={key} value={key}>
-                              {config.name}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-sm text-muted-foreground">
-                      {
-                        hospitalFlags.availableConfigurations[selectedConfig]
-                          ?.description
-                      }
-                    </p>
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="config" className="text-base font-medium">
+                        {t("healthcareConfiguration")}
+                      </Label>
+                      <Select
+                        value={selectedConfig}
+                        onValueChange={handleConfigChange}
+                      >
+                        <SelectTrigger className="h-12">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(hospitalFlags.availableConfigurations)
+                            .filter(([_, config]) => config.enabled)
+                            .map(([key, config]) => (
+                              <SelectItem key={key} value={key}>
+                                {config.name}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-sm text-muted-foreground">
+                        {
+                          hospitalFlags.availableConfigurations[selectedConfig]
+                            ?.description
+                        }
+                      </p>
+                    </div>
                   )}
 
                   <div className="space-y-2">
@@ -369,16 +378,21 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full h-16 text-base font-semibold bg-green-600 hover:bg-green-700 text-white"
                     disabled={isLoading}
                   >
                     {isLoading ? (
-                      <svg className="w-full h-12" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                      <svg
+                        className="w-full h-full"
+                        viewBox="0 0 100 40"
+                        xmlns="http://www.w3.org/2000/svg"
+                        preserveAspectRatio="none"
+                      >
                         <polyline
-                          points="0,20 10,20 15,10 20,30 25,20 35,20 40,15 45,25 50,20 60,20 65,5 70,35 75,20 85,20 100,20"
+                          points="0,20 10,20 15,5 20,35 25,20 35,20 40,10 45,30 50,20 60,20 65,2 70,38 75,20 85,20 100,20"
                           fill="none"
                           stroke="white"
-                          strokeWidth="1.5"
+                          strokeWidth="6"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           className="ecg-line"
@@ -435,22 +449,34 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                   <Stethoscope className="h-8 w-8 text-blue-600" />
                 </div>
               </div>
-              <div className="absolute -top-10 right-10 animate-bounce-slow" style={{animationDelay: '0.5s'}}>
+              <div
+                className="absolute -top-10 right-10 animate-bounce-slow"
+                style={{ animationDelay: "0.5s" }}
+              >
                 <div className="w-14 h-14 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center shadow-lg">
                   <Heart className="h-7 w-7 text-green-600 animate-pulse" />
                 </div>
               </div>
-              <div className="absolute top-20 -right-20 animate-float" style={{animationDelay: '1s'}}>
+              <div
+                className="absolute top-20 -right-20 animate-float"
+                style={{ animationDelay: "1s" }}
+              >
                 <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center shadow-lg">
                   <Monitor className="h-8 w-8 text-purple-600" />
                 </div>
               </div>
-              <div className="absolute bottom-10 -left-16 animate-bounce-slow" style={{animationDelay: '1.5s'}}>
+              <div
+                className="absolute bottom-10 -left-16 animate-bounce-slow"
+                style={{ animationDelay: "1.5s" }}
+              >
                 <div className="w-14 h-14 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center shadow-lg">
                   <Cpu className="h-7 w-7 text-red-600" />
                 </div>
               </div>
-              <div className="absolute -bottom-10 right-20 animate-float" style={{animationDelay: '2s'}}>
+              <div
+                className="absolute -bottom-10 right-20 animate-float"
+                style={{ animationDelay: "2s" }}
+              >
                 <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center shadow-lg">
                   <Eye className="h-6 w-6 text-yellow-600" />
                 </div>
@@ -464,8 +490,14 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
               </p>
               <div className="mt-8 flex justify-center space-x-3">
                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+                <div
+                  className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
+                  style={{ animationDelay: "0.2s" }}
+                />
+                <div
+                  className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"
+                  style={{ animationDelay: "0.4s" }}
+                />
               </div>
             </div>
           </div>

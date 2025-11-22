@@ -183,10 +183,6 @@ export default function AddPatientPage() {
             {t("enterPatientDetails")}
           </p>
         </div>
-        <Button variant="outline" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t("back")}
-        </Button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

@@ -193,13 +193,6 @@ export default function PermissionAuditPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => router.push("/permissions/overview")}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <Button
-            variant="outline"
             className="flex items-center gap-2"
             onClick={fetchAuditLogs}
           >

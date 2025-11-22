@@ -90,10 +90,6 @@ export default function PermissionGroupsPage() {
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Permission Groups</h1>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => router.push('/permissions/overview')}>
-                        <ArrowLeft className="h-4 w-4 mr-2"/>
-                        Back
-                    </Button>
                     <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">

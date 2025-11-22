@@ -93,9 +93,6 @@ export default function TemporaryRolesPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" onClick={() => router.push(`/users/${params.id}/profile`)}>
-                        <ArrowLeft className="h-4 w-4"/>
-                    </Button>
                     <h1 className="text-2xl font-bold">Temporary Roles</h1>
                 </div>
                 <Dialog open={isGrantModalOpen} onOpenChange={setIsGrantModalOpen}>

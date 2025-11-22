@@ -339,13 +339,6 @@ export default function RolePermissionsPage() {
                 <div className="flex items-center gap-2">
                     {saveError && <div className="text-sm text-red-600">{saveError}</div>}
                     <Button
-                        variant="outline"
-                        onClick={() => router.push("/permissions/overview")}
-                    >
-                        <ArrowLeft className="h-4 w-4 mr-2"/>
-                        Back
-                    </Button>
-                    <Button
                         className="flex items-center gap-2"
                         onClick={saveRolePermissions}
                         disabled={saving}

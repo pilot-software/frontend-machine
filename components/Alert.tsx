@@ -47,7 +47,7 @@ export function Alert({ type, message, duration = 4000, onClose }: AlertProps) {
 
     const timer = setTimeout(() => {
       setIsClosing(true);
-      setTimeout(onClose, 300);
+      if (onClose) setTimeout(onClose, 300);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -55,7 +55,7 @@ export function Alert({ type, message, duration = 4000, onClose }: AlertProps) {
 
   const handleClose = () => {
     setIsClosing(true);
-    setTimeout(onClose, 300);
+    if (onClose) setTimeout(onClose, 300);
   };
 
   return (
