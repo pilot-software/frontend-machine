@@ -349,9 +349,9 @@ class ExtendedApi extends SimpleApi {
     this.get(`/api/users/${userId}/permissions/audit`);
   getPermissionAuditLog = () => this.get("/api/permissions/audit");
   getUserPermissions = (userId: string) =>
-    this.get(`/api/users/${userId}/permissions/effective`);
+    this.get(`/api/permissions/user/${userId}`);
   assignUserPermissions = (userId: string, permissions: any) =>
-    this.post(`/api/users/${userId}/permissions/override`, permissions);
+    this.put(`/api/permissions/user/${userId}`, permissions);
   getRolePermissions = (role: string) =>
     this.get(`/api/permissions/role/${role}`);
   updateRolePermissions = (role: string, permissions: any) =>

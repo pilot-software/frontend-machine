@@ -17,6 +17,37 @@ export interface ApiPrescriptionFull {
     updatedAt: string;
 }
 
+export interface PrescriptionCondition {
+    code: string;
+    title: string;
+    system: 'icd10' | 'icd11';
+}
+
+export interface PrescriptionMedicine {
+    drugId: number;
+    brandName: string;
+    genericName: string;
+    dosage?: string;
+    frequency?: string;
+    duration?: string;
+    quantity?: number;
+    instructions?: string;
+}
+
+export interface PrescriptionProcedure {
+    code: string;
+    name: string;
+    specialty?: string;
+}
+
+export interface CreatePrescriptionRequest {
+    patientId: string;
+    doctorId: string;
+    conditions: PrescriptionCondition[];
+    medicines: PrescriptionMedicine[];
+    procedures?: PrescriptionProcedure[];
+}
+
 export class PrescriptionService {
     async getPrescriptions(): Promise<ApiPrescriptionFull[]> {
         return api.get('/api/prescriptions');
@@ -28,6 +59,10 @@ export class PrescriptionService {
 
     async createPrescription(prescription: Omit<ApiPrescriptionFull, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiPrescriptionFull> {
         return api.post('/api/prescriptions', prescription);
+    }
+
+    async createPrescriptionWithTerminology(data: CreatePrescriptionRequest): Promise<any> {
+        return api.post('/api/prescriptions/create', data);
     }
 
     async updatePrescription(id: string, prescription: Partial<ApiPrescriptionFull>): Promise<ApiPrescriptionFull> {

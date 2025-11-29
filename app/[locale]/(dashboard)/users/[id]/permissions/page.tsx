@@ -44,14 +44,15 @@ export default function UserPermissionsPage() {
     const fetchUserPermissions = async () => {
         try {
             setLoading(true);
-            const userPerms = await api.get(`/api/users/${params.id}/permissions/effective`);
+            const data = await api.get(`/api/permissions/user/${params.id}`);
+            const permList = data.permissions || [];
             const formattedPerms = PERMISSION_MODULES.map(module => ({
                 module: module.key,
-                create: userPerms[`${module.key}.create`] || false,
-                read: userPerms[`${module.key}.read`] || false,
-                update: userPerms[`${module.key}.update`] || false,
-                delete: userPerms[`${module.key}.delete`] || false,
-                special: module.special.filter(sp => userPerms[`${module.key}.${sp.toLowerCase().replace(' ', '_')}`])
+                create: permList.includes(`${module.key.toUpperCase()}_CREATE`),
+                read: permList.includes(`${module.key.toUpperCase()}_VIEW`),
+                update: permList.includes(`${module.key.toUpperCase()}_UPDATE`),
+                delete: permList.includes(`${module.key.toUpperCase()}_DELETE`),
+                special: []
             }));
             setPermissions(formattedPerms);
         } catch (error) {
@@ -63,17 +64,18 @@ export default function UserPermissionsPage() {
 
     const savePermissions = async () => {
         try {
-            const permissionData: Record<string, boolean> = {};
+            const permissionsList: string[] = [];
             permissions.forEach(perm => {
-                permissionData[`${perm.module}.create`] = perm.create;
-                permissionData[`${perm.module}.read`] = perm.read;
-                permissionData[`${perm.module}.update`] = perm.update;
-                permissionData[`${perm.module}.delete`] = perm.delete;
-                perm.special.forEach(sp => {
-                    permissionData[`${perm.module}.${sp.toLowerCase().replace(' ', '_')}`] = true;
-                });
+                if (perm.create) permissionsList.push(`${perm.module.toUpperCase()}_CREATE`);
+                if (perm.read) permissionsList.push(`${perm.module.toUpperCase()}_VIEW`);
+                if (perm.update) permissionsList.push(`${perm.module.toUpperCase()}_UPDATE`);
+                if (perm.delete) permissionsList.push(`${perm.module.toUpperCase()}_DELETE`);
             });
-            await api.post(`/api/users/${params.id}/permissions/override`, permissionData);
+            await api.put(`/api/permissions/user/${params.id}`, {
+                permissions: permissionsList,
+                groups: [],
+                branchPermissions: {}
+            });
         } catch (error) {
             console.error('Failed to save permissions:', error);
         }
