@@ -322,13 +322,20 @@ class SimpleApi {
     method: string = "GET",
     data?: any
   ) {
+    if (typeof window === "undefined") {
+      throw new Error("API calls must be made from client side");
+    }
     const token = localStorage.getItem("auth_token");
+    const user = localStorage.getItem("healthcare_user");
+    const userData = user ? JSON.parse(user) : null;
+    const organizationId = userData?.organizationId || "hospital_org1";
     const baseUrl = await getBaseUrl(endpoint);
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method,
       headers: {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
+        "X-Organization-ID": organizationId,
       },
       ...(data && { body: JSON.stringify(data) }),
     });

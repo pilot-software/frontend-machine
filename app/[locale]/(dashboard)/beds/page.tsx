@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { bedService, ApiBed } from "@/lib/services/bed";
 import { AuthGuard } from "@/components/shared/guards/AuthGuard";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ViewToggle } from "@/components/shared/ViewToggle";
@@ -42,174 +43,52 @@ import {
 
 interface BedInfo {
   id: string;
-  number: string;
+  bedNumber: string;
   ward: string;
-  floor: number;
-  status: "available" | "occupied" | "maintenance" | "reserved";
-  patient?: {
-    name: string;
-    id: string;
-    admissionDate: string;
-    condition: string;
-  };
-  lastCleaned?: string;
+  floor: string;
+  status: "AVAILABLE" | "OCCUPIED" | "MAINTENANCE" | "RESERVED";
+  patientId: string | null;
+  patientName: string | null;
+  condition: string | null;
+  lastCleaned: string;
 }
 
 export default function BedManagementPage() {
-  // Note: AuthGuard will check if user has ANY of the required permissions
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedWard, setSelectedWard] = useState("all");
   const [isAddBedOpen, setIsAddBedOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [beds, setBeds] = useState<BedInfo[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newBed, setNewBed] = useState({
-    number: "",
+    bedNumber: "",
     ward: "",
     floor: "",
-    status: "available" as const,
+    status: "AVAILABLE" as const,
+    branchId: "branch_main"
   });
 
-  const beds: BedInfo[] = [
-    {
-      id: "1",
-      number: "101-A",
-      ward: "General",
-      floor: 1,
-      status: "occupied",
-      patient: {
-        name: "John Doe",
-        id: "P001",
-        admissionDate: "2024-01-15",
-        condition: "Stable",
-      },
-      lastCleaned: "2h ago",
-    },
-    {
-      id: "2",
-      number: "101-B",
-      ward: "General",
-      floor: 1,
-      status: "available",
-      lastCleaned: "1h ago",
-    },
-    {
-      id: "3",
-      number: "102-A",
-      ward: "General",
-      floor: 1,
-      status: "occupied",
-      patient: {
-        name: "Jane Smith",
-        id: "P002",
-        admissionDate: "2024-01-16",
-        condition: "Critical",
-      },
-      lastCleaned: "3h ago",
-    },
-    {
-      id: "4",
-      number: "102-B",
-      ward: "General",
-      floor: 1,
-      status: "maintenance",
-      lastCleaned: "5h ago",
-    },
-    {
-      id: "5",
-      number: "201-A",
-      ward: "ICU",
-      floor: 2,
-      status: "occupied",
-      patient: {
-        name: "Bob Wilson",
-        id: "P003",
-        admissionDate: "2024-01-14",
-        condition: "Critical",
-      },
-      lastCleaned: "2h ago",
-    },
-    {
-      id: "6",
-      number: "201-B",
-      ward: "ICU",
-      floor: 2,
-      status: "available",
-      lastCleaned: "30m ago",
-    },
-    {
-      id: "7",
-      number: "202-A",
-      ward: "ICU",
-      floor: 2,
-      status: "occupied",
-      patient: {
-        name: "Alice Brown",
-        id: "P004",
-        admissionDate: "2024-01-17",
-        condition: "Stable",
-      },
-      lastCleaned: "1h ago",
-    },
-    {
-      id: "8",
-      number: "202-B",
-      ward: "ICU",
-      floor: 2,
-      status: "reserved",
-      lastCleaned: "45m ago",
-    },
-    {
-      id: "9",
-      number: "301-A",
-      ward: "Pediatric",
-      floor: 3,
-      status: "occupied",
-      patient: {
-        name: "Tommy Lee",
-        id: "P005",
-        admissionDate: "2024-01-18",
-        condition: "Stable",
-      },
-      lastCleaned: "2h ago",
-    },
-    {
-      id: "10",
-      number: "301-B",
-      ward: "Pediatric",
-      floor: 3,
-      status: "available",
-      lastCleaned: "1h ago",
-    },
-    {
-      id: "11",
-      number: "302-A",
-      ward: "Pediatric",
-      floor: 3,
-      status: "available",
-      lastCleaned: "2h ago",
-    },
-    {
-      id: "12",
-      number: "302-B",
-      ward: "Pediatric",
-      floor: 3,
-      status: "occupied",
-      patient: {
-        name: "Emma Davis",
-        id: "P006",
-        admissionDate: "2024-01-19",
-        condition: "Stable",
-      },
-      lastCleaned: "3h ago",
-    },
-  ];
+  useEffect(() => {
+    loadBeds();
+  }, []);
+
+  const loadBeds = async () => {
+    try {
+      setLoading(true);
+      const data = await bedService.getAll();
+      setBeds(data);
+    } catch (error) {
+      console.error('Failed to load beds:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const wards = ["all", "General", "ICU", "Pediatric"];
 
   const filteredBeds = beds.filter((bed) => {
-    const matchesSearch =
-      bed.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bed.patient?.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = bed.bedNumber.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesWard = selectedWard === "all" || bed.ward === selectedWard;
     return matchesSearch && matchesWard;
   });
@@ -219,35 +98,24 @@ export default function BedManagementPage() {
 
   const stats = {
     total: beds.length,
-    available: beds.filter((b) => b.status === "available").length,
-    occupied: beds.filter((b) => b.status === "occupied").length,
-    maintenance: beds.filter((b) => b.status === "maintenance").length,
-    reserved: beds.filter((b) => b.status === "reserved").length,
+    available: beds.filter((b) => b.status === "AVAILABLE").length,
+    occupied: beds.filter((b) => b.status === "OCCUPIED").length,
+    maintenance: beds.filter((b) => b.status === "MAINTENANCE").length,
+    reserved: beds.filter((b) => b.status === "RESERVED").length,
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "available":
+      case "AVAILABLE":
         return "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200";
-      case "occupied":
+      case "OCCUPIED":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200";
-      case "maintenance":
+      case "MAINTENANCE":
         return "bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200";
-      case "reserved":
+      case "RESERVED":
         return "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200";
       default:
         return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case "Critical":
-        return "text-red-600 dark:text-red-400";
-      case "Stable":
-        return "text-green-600 dark:text-green-400";
-      default:
-        return "text-gray-600";
     }
   };
 
@@ -349,13 +217,13 @@ export default function BedManagementPage() {
                 <CardContent className="p-3 space-y-2">
                   <div className="flex flex-col items-center text-center">
                     <Bed className="h-8 w-8 mb-2 text-muted-foreground" />
-                    <h3 className="font-semibold text-sm">{bed.number}</h3>
+                    <h3 className="font-semibold text-sm">{bed.bedNumber}</h3>
                     <p className="text-xs text-muted-foreground">{bed.ward}</p>
                     <Badge className={`${getStatusColor(bed.status)} text-xs mt-1`}>
                       {bed.status}
                     </Badge>
-                    {bed.patient && (
-                      <p className="text-xs font-medium mt-2 truncate w-full">{bed.patient.name}</p>
+                    {bed.patientId && (
+                      <p className="text-xs font-medium mt-2 truncate w-full">{bed.patientId}</p>
                     )}
                   </div>
                 </CardContent>
@@ -384,7 +252,7 @@ export default function BedManagementPage() {
                 <TableBody>
                   {paginatedBeds.map((bed) => (
                     <TableRow key={bed.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">{bed.number}</TableCell>
+                      <TableCell className="font-medium">{bed.bedNumber}</TableCell>
                       <TableCell>{bed.ward}</TableCell>
                       <TableCell>{bed.floor}</TableCell>
                       <TableCell>
@@ -393,30 +261,12 @@ export default function BedManagementPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {bed.patient ? (
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback>{bed.patient.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium">{bed.patient.name}</p>
-                              <p className="text-sm text-muted-foreground">{bed.patient.id}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
+                        {bed.patientName || <span className="text-muted-foreground">-</span>}
                       </TableCell>
                       <TableCell>
-                        {bed.patient ? (
-                          <span className={`font-medium ${getConditionColor(bed.patient.condition)}`}>
-                            {bed.patient.condition}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
+                        {bed.condition || <span className="text-muted-foreground">-</span>}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{bed.lastCleaned}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{bed.lastCleaned || '-'}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="outline" size="sm">Manage</Button>
                       </TableCell>
@@ -477,9 +327,9 @@ export default function BedManagementPage() {
               <Input
                 id="bedNumber"
                 placeholder="e.g., 101-A"
-                value={newBed.number}
+                value={newBed.bedNumber}
                 onChange={(e) =>
-                  setNewBed({ ...newBed, number: e.target.value })
+                  setNewBed({ ...newBed, bedNumber: e.target.value })
                 }
               />
             </div>
@@ -525,25 +375,31 @@ export default function BedManagementPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="reserved">Reserved</SelectItem>
+                  <SelectItem value="AVAILABLE">Available</SelectItem>
+                  <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                  <SelectItem value="RESERVED">Reserved</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button
-              onClick={() => {
-                // TODO: Add API call to create bed
-                console.log("Creating bed:", newBed);
-                setIsAddBedOpen(false);
-                setNewBed({
-                  number: "",
-                  ward: "",
-                  floor: "",
-                  status: "available",
-                });
+              onClick={async () => {
+                try {
+                  await bedService.create(newBed);
+                  await loadBeds();
+                  setIsAddBedOpen(false);
+                  setNewBed({
+                    bedNumber: "",
+                    ward: "",
+                    floor: "",
+                    status: "AVAILABLE",
+                    branchId: "branch_main"
+                  });
+                } catch (error) {
+                  console.error('Failed to create bed:', error);
+                  alert('Failed to create bed');
+                }
               }}
             >
               Add Bed
