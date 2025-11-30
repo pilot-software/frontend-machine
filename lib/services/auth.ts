@@ -24,7 +24,14 @@ export class AuthService {
 
     async logout(): Promise<{ message: string }> {
         const baseUrl = await this.getBaseUrl('/api/auth/logout');
-        const response = await fetch(`${baseUrl}/api/auth/logout`, {method: 'POST'});
+        const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+        const response = await fetch(`${baseUrl}/api/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { Authorization: `Bearer ${token}` })
+            }
+        });
         return response.json();
     }
 
