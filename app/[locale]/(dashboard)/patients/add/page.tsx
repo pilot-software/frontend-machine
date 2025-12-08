@@ -126,10 +126,7 @@ export default function AddPatientPage() {
 
     if (!handleValidatePersonalInfo()) {
       setIsSubmitting(false);
-      showAlert(
-        "warning",
-        t("fillRequiredFields")
-      );
+      showAlert("warning", t("fillRequiredFields"));
       return;
     }
 
@@ -174,7 +171,10 @@ export default function AddPatientPage() {
       console.error("Failed to save patient:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      showAlert("error", t("failedSavePatient").replace("{error}", errorMessage));
+      showAlert(
+        "error",
+        t("failedSavePatient").replace("{error}", errorMessage)
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -192,7 +192,11 @@ export default function AddPatientPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Accordion type="multiple" defaultValue={["personal"]} className="space-y-4">
+        <Accordion
+          type="multiple"
+          defaultValue={["personal"]}
+          className="space-y-4"
+        >
           <AccordionItem value="personal">
             <Card>
               <CardHeader>
@@ -204,150 +208,178 @@ export default function AddPatientPage() {
                     <div className="text-left">
                       <CardTitle className="flex items-center gap-2">
                         {t("personalInformation")}
-                        <span className="text-xs font-normal text-red-600 bg-red-50 px-2 py-0.5 rounded">Mandatory</span>
+                        <span className="text-xs font-normal text-red-600 bg-red-50 px-2 py-0.5 rounded">
+                          Mandatory
+                        </span>
                       </CardTitle>
-                      <CardDescription>{t("basicDemographics")}</CardDescription>
+                      <CardDescription>
+                        {t("basicDemographics")}
+                      </CardDescription>
                     </div>
                   </div>
                 </AccordionTrigger>
               </CardHeader>
               <AccordionContent>
                 <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="firstName" className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  {t("firstName")} *
-                </Label>
-                <Input
-                  id="firstName"
-                  value={patientData.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
-                  placeholder={t("enterFirstName")}
-                  aria-invalid={!!errors.firstName}
-                />
-                {errors.firstName && (
-                  <p className="text-destructive text-sm mt-1">
-                    {errors.firstName}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="lastName" className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  {t("lastName")} *
-                </Label>
-                <Input
-                  id="lastName"
-                  value={patientData.lastName}
-                  onChange={(e) =>
-                    handleInputChange("lastName", e.target.value)
-                  }
-                  placeholder={t("enterLastName")}
-                  aria-invalid={!!errors.lastName}
-                />
-                {errors.lastName && (
-                  <p className="text-destructive text-sm mt-1">
-                    {errors.lastName}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="gender">{t("gender")} *</Label>
-                <Select
-                  value={patientData.gender}
-                  onValueChange={(value) => handleInputChange("gender", value)}
-                >
-                  <SelectTrigger aria-invalid={!!errors.gender}>
-                    <SelectValue placeholder={t("selectGender")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MALE">{t("male")}</SelectItem>
-                    <SelectItem value="FEMALE">{t("female")}</SelectItem>
-                    <SelectItem value="OTHER">{t("other")}</SelectItem>
-                    <SelectItem value="PREFER_NOT_TO_SAY">
-                      {t("preferNotToSay")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.gender && (
-                  <p className="text-destructive text-sm mt-1">
-                    {errors.gender}
-                  </p>
-                )}
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <Label
+                        htmlFor="firstName"
+                        className="flex items-center gap-2"
+                      >
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        {t("firstName")} *
+                      </Label>
+                      <Input
+                        id="firstName"
+                        value={patientData.firstName}
+                        onChange={(e) =>
+                          handleInputChange("firstName", e.target.value)
+                        }
+                        placeholder={t("enterFirstName")}
+                        aria-invalid={!!errors.firstName}
+                      />
+                      {errors.firstName && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.firstName}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="lastName"
+                        className="flex items-center gap-2"
+                      >
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        {t("lastName")} *
+                      </Label>
+                      <Input
+                        id="lastName"
+                        value={patientData.lastName}
+                        onChange={(e) =>
+                          handleInputChange("lastName", e.target.value)
+                        }
+                        placeholder={t("enterLastName")}
+                        aria-invalid={!!errors.lastName}
+                      />
+                      {errors.lastName && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.lastName}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <Label htmlFor="gender">{t("gender")} *</Label>
+                      <Select
+                        value={patientData.gender}
+                        onValueChange={(value) =>
+                          handleInputChange("gender", value)
+                        }
+                      >
+                        <SelectTrigger aria-invalid={!!errors.gender}>
+                          <SelectValue placeholder={t("selectGender")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MALE">{t("male")}</SelectItem>
+                          <SelectItem value="FEMALE">{t("female")}</SelectItem>
+                          <SelectItem value="OTHER">{t("other")}</SelectItem>
+                          <SelectItem value="PREFER_NOT_TO_SAY">
+                            {t("preferNotToSay")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.gender && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.gender}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  {t("emailAddress")} *
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={patientData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder={t("emailPlaceholder")}
-                  aria-invalid={!!errors.email}
-                />
-                {errors.email && (
-                  <p className="text-destructive text-sm mt-1">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="phone" className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  {t("phoneNumber")} *
-                </Label>
-                <Input
-                  id="phone"
-                  value={patientData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  placeholder={t("phonePlaceholder")}
-                  aria-invalid={!!errors.phone}
-                />
-                {errors.phone && (
-                  <p className="text-destructive text-sm mt-1">
-                    {errors.phone}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label
-                  htmlFor="dateOfBirth"
-                  className="flex items-center gap-2"
-                >
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {t("dateOfBirth")} *
-                  {patientData.dateOfBirth && (
-                    <span className="text-xs font-normal text-muted-foreground">
-                      ({Math.floor((new Date().getTime() - new Date(patientData.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years)
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={patientData.dateOfBirth}
-                  onChange={(e) =>
-                    handleInputChange("dateOfBirth", e.target.value)
-                  }
-                  className="dark:text-white dark:[color-scheme:dark]"
-                  aria-invalid={!!errors.dateOfBirth}
-                />
-                {errors.dateOfBirth && (
-                  <p className="text-destructive text-sm mt-1">
-                    {errors.dateOfBirth}
-                  </p>
-                )}
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <Label
+                        htmlFor="email"
+                        className="flex items-center gap-2"
+                      >
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        {t("emailAddress")}
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={patientData.email}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
+                        placeholder={t("emailPlaceholder")}
+                        aria-invalid={!!errors.email}
+                      />
+                      {errors.email && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="phone"
+                        className="flex items-center gap-2"
+                      >
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        {t("phoneNumber")} *
+                      </Label>
+                      <Input
+                        id="phone"
+                        value={patientData.phone}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
+                        placeholder={t("phonePlaceholder")}
+                        aria-invalid={!!errors.phone}
+                      />
+                      {errors.phone && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.phone}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="dateOfBirth"
+                        className="flex items-center gap-2"
+                      >
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        {t("dateOfBirth")} *
+                        {patientData.dateOfBirth && (
+                          <span className="text-xs font-normal text-muted-foreground">
+                            (
+                            {Math.floor(
+                              (new Date().getTime() -
+                                new Date(patientData.dateOfBirth).getTime()) /
+                                (365.25 * 24 * 60 * 60 * 1000)
+                            )}{" "}
+                            years)
+                          </span>
+                        )}
+                      </Label>
+                      <Input
+                        id="dateOfBirth"
+                        type="date"
+                        value={patientData.dateOfBirth}
+                        onChange={(e) =>
+                          handleInputChange("dateOfBirth", e.target.value)
+                        }
+                        className="dark:text-white dark:[color-scheme:dark]"
+                        aria-invalid={!!errors.dateOfBirth}
+                      />
+                      {errors.dateOfBirth && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.dateOfBirth}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>
@@ -363,61 +395,73 @@ export default function AddPatientPage() {
                     </div>
                     <div className="text-left">
                       <CardTitle>{t("addressInformation")}</CardTitle>
-                      <CardDescription>{t("residentialAddress")}</CardDescription>
+                      <CardDescription>
+                        {t("residentialAddress")}
+                      </CardDescription>
                     </div>
                   </div>
                 </AccordionTrigger>
               </CardHeader>
               <AccordionContent>
                 <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="address">{t("streetAddress")}</Label>
-              <Input
-                id="address"
-                value={patientData.address}
-                onChange={(e) => handleInputChange("address", e.target.value)}
-                placeholder={t("streetAddressPlaceholder")}
-              />
-            </div>
+                  <div>
+                    <Label htmlFor="address">{t("streetAddress")}</Label>
+                    <Input
+                      id="address"
+                      value={patientData.address}
+                      onChange={(e) =>
+                        handleInputChange("address", e.target.value)
+                      }
+                      placeholder={t("streetAddressPlaceholder")}
+                    />
+                  </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <Label htmlFor="city">{t("city")}</Label>
-                <Input
-                  id="city"
-                  value={patientData.city}
-                  onChange={(e) => handleInputChange("city", e.target.value)}
-                  placeholder={t("city")}
-                />
-              </div>
-              <div>
-                <Label htmlFor="state">{t("state")}</Label>
-                <Input
-                  id="state"
-                  value={patientData.state}
-                  onChange={(e) => handleInputChange("state", e.target.value)}
-                  placeholder={t("state")}
-                />
-              </div>
-              <div>
-                <Label htmlFor="zipCode">{t("zipCode")}</Label>
-                <Input
-                  id="zipCode"
-                  value={patientData.zipCode}
-                  onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                  placeholder={t("zipCode")}
-                />
-              </div>
-              <div>
-                <Label htmlFor="country">{t("country")}</Label>
-                <Input
-                  id="country"
-                  value={patientData.country}
-                  onChange={(e) => handleInputChange("country", e.target.value)}
-                  placeholder={t("country")}
-                />
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="city">{t("city")}</Label>
+                      <Input
+                        id="city"
+                        value={patientData.city}
+                        onChange={(e) =>
+                          handleInputChange("city", e.target.value)
+                        }
+                        placeholder={t("city")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="state">{t("state")}</Label>
+                      <Input
+                        id="state"
+                        value={patientData.state}
+                        onChange={(e) =>
+                          handleInputChange("state", e.target.value)
+                        }
+                        placeholder={t("state")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="zipCode">{t("zipCode")}</Label>
+                      <Input
+                        id="zipCode"
+                        value={patientData.zipCode}
+                        onChange={(e) =>
+                          handleInputChange("zipCode", e.target.value)
+                        }
+                        placeholder={t("zipCode")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="country">{t("country")}</Label>
+                      <Input
+                        id="country"
+                        value={patientData.country}
+                        onChange={(e) =>
+                          handleInputChange("country", e.target.value)
+                        }
+                        placeholder={t("country")}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>
@@ -442,46 +486,56 @@ export default function AddPatientPage() {
               </CardHeader>
               <AccordionContent>
                 <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="emergencyContactName">{t("contactName")}</Label>
-                <Input
-                  id="emergencyContactName"
-                  value={patientData.emergencyContactName}
-                  onChange={(e) =>
-                    handleInputChange("emergencyContactName", e.target.value)
-                  }
-                  placeholder={t("contactNamePlaceholder")}
-                />
-              </div>
-              <div>
-                <Label htmlFor="emergencyContact">{t("contactPhone")}</Label>
-                <Input
-                  id="emergencyContact"
-                  value={patientData.emergencyContactPhone}
-                  onChange={(e) =>
-                    handleInputChange("emergencyContactPhone", e.target.value)
-                  }
-                  placeholder={t("emergencyPhonePlaceholder")}
-                />
-              </div>
-              <div>
-                <Label htmlFor="emergencyRelationship">
-                  {t("relationship")}
-                </Label>
-                <Input
-                  id="emergencyRelationship"
-                  value={patientData.emergencyContactRelationship}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "emergencyContactRelationship",
-                      e.target.value
-                    )
-                  }
-                  placeholder={t("relationshipPlaceholder")}
-                />
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="emergencyContactName">
+                        {t("contactName")}
+                      </Label>
+                      <Input
+                        id="emergencyContactName"
+                        value={patientData.emergencyContactName}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emergencyContactName",
+                            e.target.value
+                          )
+                        }
+                        placeholder={t("contactNamePlaceholder")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="emergencyContact">
+                        {t("contactPhone")}
+                      </Label>
+                      <Input
+                        id="emergencyContact"
+                        value={patientData.emergencyContactPhone}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emergencyContactPhone",
+                            e.target.value
+                          )
+                        }
+                        placeholder={t("emergencyPhonePlaceholder")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="emergencyRelationship">
+                        {t("relationship")}
+                      </Label>
+                      <Input
+                        id="emergencyRelationship"
+                        value={patientData.emergencyContactRelationship}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emergencyContactRelationship",
+                            e.target.value
+                          )
+                        }
+                        placeholder={t("relationshipPlaceholder")}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>
@@ -498,7 +552,9 @@ export default function AddPatientPage() {
                     <div className="text-left">
                       <CardTitle className="flex items-center gap-2">
                         {t("medicalInformation")}
-                        <span className="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Recommended</span>
+                        <span className="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                          Recommended
+                        </span>
                       </CardTitle>
                       <CardDescription>
                         {t("medicalInformationDescription")}
@@ -508,97 +564,78 @@ export default function AddPatientPage() {
                 </AccordionTrigger>
               </CardHeader>
               <AccordionContent>
-                <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="bloodType">{t("bloodType")}</Label>
-                <Select
-                  value={patientData.bloodType}
-                  onValueChange={(value) =>
-                    handleInputChange("bloodType", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("selectBloodType")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="O_POSITIVE">O+</SelectItem>
-                    <SelectItem value="O_NEGATIVE">O-</SelectItem>
-                    <SelectItem value="A_POSITIVE">A+</SelectItem>
-                    <SelectItem value="A_NEGATIVE">A-</SelectItem>
-                    <SelectItem value="B_POSITIVE">B+</SelectItem>
-                    <SelectItem value="B_NEGATIVE">B-</SelectItem>
-                    <SelectItem value="AB_POSITIVE">AB+</SelectItem>
-                    <SelectItem value="AB_NEGATIVE">AB-</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="assignedDoctor">{t("assignedDoctor")}</Label>
-                <Select
-                  value={patientData.assignedDoctor}
-                  onValueChange={(value) =>
-                    handleInputChange("assignedDoctor", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("selectDoctor")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.isArray(doctors) &&
-                      doctors.map((doctor) => (
-                        <SelectItem key={doctor.id} value={doctor.id}>
-                          {doctor.name} -{" "}
-                          {doctor.specialization || doctor.department}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="bloodType">{t("bloodType")}</Label>
+                      <Select
+                        value={patientData.bloodType}
+                        onValueChange={(value) =>
+                          handleInputChange("bloodType", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("selectBloodType")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="O_POSITIVE">O+</SelectItem>
+                          <SelectItem value="O_NEGATIVE">O-</SelectItem>
+                          <SelectItem value="A_POSITIVE">A+</SelectItem>
+                          <SelectItem value="A_NEGATIVE">A-</SelectItem>
+                          <SelectItem value="B_POSITIVE">B+</SelectItem>
+                          <SelectItem value="B_NEGATIVE">B-</SelectItem>
+                          <SelectItem value="AB_POSITIVE">AB+</SelectItem>
+                          <SelectItem value="AB_NEGATIVE">AB-</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="allergies">{t("allergies")}</Label>
+                      <Textarea
+                        id="allergies"
+                        value={patientData.allergies}
+                        onChange={(e) =>
+                          handleInputChange("allergies", e.target.value)
+                        }
+                        placeholder={t("allergiesPlaceholder")}
+                        rows={3}
+                      />
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="allergies">{t("allergies")}</Label>
-                <Textarea
-                  id="allergies"
-                  value={patientData.allergies}
-                  onChange={(e) =>
-                    handleInputChange("allergies", e.target.value)
-                  }
-                  placeholder={t("allergiesPlaceholder")}
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="chronicConditions">
-                  {t("chronicConditions")}
-                </Label>
-                <Textarea
-                  id="chronicConditions"
-                  value={patientData.chronicConditions}
-                  onChange={(e) =>
-                    handleInputChange("chronicConditions", e.target.value)
-                  }
-                  placeholder={t("chronicConditionsPlaceholder")}
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="currentMedications">
-                  {t("currentMedications")}
-                </Label>
-                <Textarea
-                  id="currentMedications"
-                  value={patientData.currentMedications}
-                  onChange={(e) =>
-                    handleInputChange("currentMedications", e.target.value)
-                  }
-                  placeholder={t("currentMedicationsPlaceholder")}
-                  rows={3}
-                />
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="chronicConditions">
+                        {t("chronicConditions")}
+                      </Label>
+                      <Textarea
+                        id="chronicConditions"
+                        value={patientData.chronicConditions}
+                        onChange={(e) =>
+                          handleInputChange("chronicConditions", e.target.value)
+                        }
+                        placeholder={t("chronicConditionsPlaceholder")}
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="currentMedications">
+                        {t("currentMedications")}
+                      </Label>
+                      <Textarea
+                        id="currentMedications"
+                        value={patientData.currentMedications}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "currentMedications",
+                            e.target.value
+                          )
+                        }
+                        placeholder={t("currentMedicationsPlaceholder")}
+                        rows={3}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>
@@ -614,50 +651,58 @@ export default function AddPatientPage() {
                     </div>
                     <div className="text-left">
                       <CardTitle>{t("insuranceInformation")}</CardTitle>
-                      <CardDescription>{t("insuranceDescription")}</CardDescription>
+                      <CardDescription>
+                        {t("insuranceDescription")}
+                      </CardDescription>
                     </div>
                   </div>
                 </AccordionTrigger>
               </CardHeader>
               <AccordionContent>
                 <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="insuranceProvider">
-                  {t("insuranceProvider")}
-                </Label>
-                <Select
-                  value={patientData.insuranceProvider}
-                  onValueChange={(value) =>
-                    handleInputChange("insuranceProvider", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("selectInsurance")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {insuranceOptions.map((insurance) => (
-                      <SelectItem key={insurance.value} value={insurance.value}>
-                        {insurance.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="insurancePolicyNumber">
-                  {t("policyNumber")}
-                </Label>
-                <Input
-                  id="insurancePolicyNumber"
-                  value={patientData.insurancePolicyNumber}
-                  onChange={(e) =>
-                    handleInputChange("insurancePolicyNumber", e.target.value)
-                  }
-                  placeholder={t("policyNumberPlaceholder")}
-                />
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="insuranceProvider">
+                        {t("insuranceProvider")}
+                      </Label>
+                      <Select
+                        value={patientData.insuranceProvider}
+                        onValueChange={(value) =>
+                          handleInputChange("insuranceProvider", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("selectInsurance")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {insuranceOptions.map((insurance) => (
+                            <SelectItem
+                              key={insurance.value}
+                              value={insurance.value}
+                            >
+                              {insurance.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="insurancePolicyNumber">
+                        {t("policyNumber")}
+                      </Label>
+                      <Input
+                        id="insurancePolicyNumber"
+                        value={patientData.insurancePolicyNumber}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "insurancePolicyNumber",
+                            e.target.value
+                          )
+                        }
+                        placeholder={t("policyNumberPlaceholder")}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>
