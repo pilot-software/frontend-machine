@@ -142,11 +142,15 @@ export default function AddPatientPage() {
           | "PREFER_NOT_TO_SAY",
         phone: patientData.phone,
         email: patientData.email.trim(),
-        address: patientData.address || undefined,
-        city: patientData.city || undefined,
-        state: patientData.state || undefined,
-        zipCode: patientData.zipCode || undefined,
-        country: patientData.country || undefined,
+        address: {
+          line: patientData.address || "",
+          city: patientData.city || "",
+          state: patientData.state || "",
+          zip: patientData.zipCode || "",
+          country: patientData.country || "",
+        },
+        assignedDoctor: patientData.assignedDoctor || undefined,
+        branchId: "branch_001",
         emergencyContactName: patientData.emergencyContactName || undefined,
         emergencyContactPhone: patientData.emergencyContactPhone || undefined,
         emergencyContactRelationship:
@@ -155,7 +159,6 @@ export default function AddPatientPage() {
         allergies: patientData.allergies || undefined,
         chronicConditions: patientData.chronicConditions || undefined,
         currentMedications: patientData.currentMedications || undefined,
-        assignedDoctor: patientData.assignedDoctor || undefined,
         insuranceProvider: patientData.insuranceProvider || undefined,
         insurancePolicyNumber: patientData.insurancePolicyNumber || undefined,
       };
