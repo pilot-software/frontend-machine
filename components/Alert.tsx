@@ -62,7 +62,7 @@ export function Alert({ type, message, duration = 4000, onClose }: AlertProps) {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`fixed top-4 left-4 right-4 md:left-auto md:right-4 z-50 transition-all duration-700 ${
+      className={`fixed top-4 left-4 right-4 md:left-auto md:right-4 z-[9999] transition-all duration-700 ${
         isClosing
           ? 'translate-x-full opacity-0'
           : 'translate-x-0 opacity-100 animate-bounce-in'

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
-import { HealthcareDashboard } from '@/components/features/dashboard/HealthcareDashboard';
+import { HealthcareDashboard } from "@/components/features/dashboard/HealthcareDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PermissionGuard } from "@/components/shared/guards/PermissionGuard";
 import { usePermissions } from "@/lib/hooks/usePermissions";
@@ -63,20 +63,22 @@ function FinanceDashboard() {
       </div>
 
       {/* Finance Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {financeStats.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <Card key={index}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600">{stat.label}</p>
-                    <p className="text-2xl font-semibold text-slate-900 mt-1">
+              <CardContent className="p-3 sm:p-4 md:p-6">
+                <div className="flex items-start sm:items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm text-slate-600 truncate">
+                      {stat.label}
+                    </p>
+                    <p className="text-lg sm:text-2xl font-semibold text-slate-900 mt-1">
                       {stat.value}
                     </p>
                     <p
-                      className={`text-sm mt-1 ${
+                      className={`text-xs sm:text-sm mt-1 ${
                         stat.change.startsWith("+")
                           ? "text-green-600"
                           : "text-red-600"
@@ -85,7 +87,9 @@ function FinanceDashboard() {
                       {stat.change} from last month
                     </p>
                   </div>
-                  <Icon className={`h-8 w-8 ${stat.color}`} />
+                  <Icon
+                    className={`h-6 w-6 sm:h-8 sm:w-8 ${stat.color} shrink-0`}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -98,12 +102,12 @@ function FinanceDashboard() {
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
           <Button
             variant="outline"
-            className="h-auto p-4 flex flex-col items-center"
+            className="h-auto p-3 sm:p-4 flex flex-col items-center text-xs sm:text-sm"
           >
-            <TrendingUp className="h-6 w-6 mb-2" />
+            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
             Revenue Reports
           </Button>
           <Button
@@ -134,7 +138,7 @@ function FinanceDashboard() {
 }
 
 export function RoleDashboards() {
-  const t = useTranslations('common');
+  const t = useTranslations("common");
   const { user } = useAuth();
 
   if (!user) return null;

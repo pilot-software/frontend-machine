@@ -27,11 +27,11 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {[...Array(4)].map((_, i) => (
           <Card key={i} className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 opacity-50" />
-            <CardContent className="card-responsive relative">
+            <div className="absolute inset-0 bg-linear-to-br from-blue-50 to-green-50 opacity-50" />
+            <CardContent className="card-responsive relative p-3 sm:p-4 md:p-5">
               <div className="animate-pulse">
                 <div className="h-3 sm:h-4 bg-muted rounded w-3/4 mb-2"></div>
                 <div className="h-6 sm:h-8 bg-muted rounded w-1/2"></div>
@@ -212,7 +212,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
   const dashboardCards = getRoleSpecificCards();
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {dashboardCards.map((card, index) => (
         <StatsCard
           key={index}

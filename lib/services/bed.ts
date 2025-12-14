@@ -1,5 +1,4 @@
-import { BaseEntity, IBaseService } from '../abstractions/service.interface';
-import { api } from '../api';
+import { api } from "../api";
 
 export interface ApiBed {
   id: string;
@@ -13,22 +12,77 @@ export interface ApiBed {
   lastCleaned: string;
 }
 
-export type CreateBed = Omit<ApiBed, 'id' | 'patientId' | 'patientName' | 'condition' | 'lastCleaned'> & {
+export interface Room {
+  id: string;
+  roomNumber: string;
+  wardId: string;
+  roomType: string;
+  capacity: number;
+  floor: string;
+  branchId: string;
+}
+
+export interface Ward {
+  id: string;
+  name: string;
+  branchId: string;
+  capacity: number;
+  wardType: string;
+}
+
+export type CreateBed = {
+  bedNumber: string;
+  roomId: string;
+  bedType: "STANDARD" | "ICU" | "PRIVATE" | "ISOLATION";
+  status: "AVAILABLE" | "OCCUPIED" | "MAINTENANCE" | "RESERVED";
   branchId: string;
 };
+
+export type CreateRoom = {
+  roomNumber: string;
+  wardId: string;
+  roomType: string;
+  capacity: number;
+  floor: string;
+  branchId: string;
+};
+
+export type CreateWard = {
+  name: string;
+  branchId: string;
+  capacity: number;
+  wardType: string;
+};
+
 export type UpdateBed = Partial<CreateBed>;
 
 export class BedService {
   async getAll(): Promise<ApiBed[]> {
-    return api.get('/api/admin/bed-management/beds/branch/branch_main');
+    return api.get("/api/admin/bed-management/beds/branch/branch_main");
   }
 
   async getById(id: string): Promise<ApiBed> {
     return api.get(`/api/admin/bed-management/beds/${id}`);
   }
 
+  async getRooms(): Promise<Room[]> {
+    return api.get("/api/admin/bed-management/rooms/branch/branch_main");
+  }
+
+  async getWards(): Promise<Ward[]> {
+    return api.get("/api/admin/bed-management/wards/branch/branch_main");
+  }
+
   async create(bed: CreateBed): Promise<ApiBed> {
-    return api.post('/api/admin/bed-management/beds', bed);
+    return api.post("/api/admin/bed-management/beds", bed);
+  }
+
+  async createRoom(room: CreateRoom): Promise<Room> {
+    return api.post("/api/admin/bed-management/rooms", room);
+  }
+
+  async createWard(ward: CreateWard): Promise<Ward> {
+    return api.post("/api/admin/bed-management/wards", ward);
   }
 
   async update(id: string, bed: UpdateBed): Promise<ApiBed> {

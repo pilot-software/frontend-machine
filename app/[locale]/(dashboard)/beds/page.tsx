@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { bedService, ApiBed } from "@/lib/services/bed";
+import { bedService, ApiBed, Room } from "@/lib/services/bed";
 import { AuthGuard } from "@/components/shared/guards/AuthGuard";
+import { useAlert } from "@/components/AlertProvider";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ViewToggle } from "@/components/shared/ViewToggle";
 import { SearchFilter } from "@/components/shared/SearchFilter";
@@ -11,8 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatsCard } from "@/components/ui/stats-card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -30,8 +37,6 @@ import {
 } from "@/components/ui/select";
 import {
   Bed,
-  Search,
-  Filter,
   Plus,
   User,
   Clock,
@@ -39,6 +44,11 @@ import {
   CheckCircle,
   Wrench,
   Calendar as CalendarIcon,
+  Activity,
+  Heart,
+  Baby,
+  DoorOpen,
+  Building2,
 } from "lucide-react";
 
 interface BedInfo {
@@ -54,47 +64,87 @@ interface BedInfo {
 }
 
 export default function BedManagementPage() {
+  const { showAlert } = useAlert();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedWard, setSelectedWard] = useState("all");
   const [isAddBedOpen, setIsAddBedOpen] = useState(false);
+  const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
+  const [isAddWardOpen, setIsAddWardOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [beds, setBeds] = useState<BedInfo[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newBed, setNewBed] = useState({
-    bedNumber: "",
+  const [validationErrors, setValidationErrors] = useState({
+    bed: "",
+    room: "",
     ward: "",
-    floor: "",
+  });
+
+  // Form states
+  const [bedForm, setBedForm] = useState({
+    bedNumber: "",
+    roomId: "",
+    bedType: "STANDARD" as const,
     status: "AVAILABLE" as const,
-    branchId: "branch_main"
+    branchId: "branch_main",
+  });
+
+  const [roomForm, setRoomForm] = useState({
+    roomNumber: "",
+    wardId: "",
+    roomType: "PRIVATE",
+    capacity: 2,
+    floor: "1",
+    branchId: "branch_main",
+  });
+
+  const [wardForm, setWardForm] = useState({
+    name: "",
+    branchId: "branch_main",
+    capacity: 20,
+    wardType: "ICU",
   });
 
   useEffect(() => {
-    loadBeds();
+    loadData();
   }, []);
 
-  const loadBeds = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const data = await bedService.getAll();
-      setBeds(data);
+      const [bedsData, roomsData] = await Promise.all([
+        bedService.getAll(),
+        bedService.getRooms(),
+      ]);
+      setBeds(bedsData);
+      setRooms(roomsData);
     } catch (error) {
-      console.error('Failed to load beds:', error);
+      console.error("Failed to load beds and rooms:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const wards = ["all", "General", "ICU", "Pediatric"];
+  const wards = ["all", "General Ward", "ICU", "Pediatric"];
 
   const filteredBeds = beds.filter((bed) => {
-    const matchesSearch = bed.bedNumber.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      bed.bedNumber.toLowerCase().includes(searchLower) ||
+      bed.ward.toLowerCase().includes(searchLower) ||
+      bed.floor.toLowerCase().includes(searchLower) ||
+      (bed.patientName?.toLowerCase().includes(searchLower) ?? false) ||
+      (bed.condition?.toLowerCase().includes(searchLower) ?? false);
     const matchesWard = selectedWard === "all" || bed.ward === selectedWard;
     return matchesSearch && matchesWard;
   });
 
   const totalPages = Math.ceil(filteredBeds.length / pageSize);
-  const paginatedBeds = filteredBeds.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedBeds = filteredBeds.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const stats = {
     total: beds.length,
@@ -119,6 +169,18 @@ export default function BedManagementPage() {
     }
   };
 
+  const getWardIcon = (wardName: string) => {
+    const name = wardName.toLowerCase();
+    if (name.includes("icu") || name.includes("intensive care")) {
+      return <Activity className="h-4 w-4" />;
+    } else if (name.includes("cardiac") || name.includes("heart")) {
+      return <Heart className="h-4 w-4" />;
+    } else if (name.includes("pediatric") || name.includes("child")) {
+      return <Baby className="h-4 w-4" />;
+    }
+    return <Bed className="h-4 w-4" />;
+  };
+
   return (
     <AuthGuard
       requiredPermissions={[
@@ -133,10 +195,36 @@ export default function BedManagementPage() {
           title="Bed Management"
           description="Monitor and manage hospital bed availability"
           action={
-            <Button onClick={() => setIsAddBedOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Bed
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <Button
+                onClick={() => setIsAddBedOpen(true)}
+                className="relative group bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+              >
+                <span className="absolute inset-0 bg-blue-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
+                <Bed className="h-4 w-4 mr-2 relative shrink-0" />
+                <span className="relative font-semibold truncate">Add Bed</span>
+              </Button>
+              <Button
+                onClick={() => setIsAddRoomOpen(true)}
+                className="relative group bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+              >
+                <span className="absolute inset-0 bg-purple-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
+                <DoorOpen className="h-4 w-4 mr-2 relative shrink-0" />
+                <span className="relative font-semibold truncate">
+                  Add Room
+                </span>
+              </Button>
+              <Button
+                onClick={() => setIsAddWardOpen(true)}
+                className="relative group bg-linear-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 text-sm sm:text-base"
+              >
+                <span className="absolute inset-0 bg-emerald-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
+                <Building2 className="h-4 w-4 mr-2 relative shrink-0" />
+                <span className="relative font-semibold truncate">
+                  Add Ward
+                </span>
+              </Button>
+            </div>
           }
         />
 
@@ -200,8 +288,9 @@ export default function BedManagementPage() {
                   key={ward}
                   variant={selectedWard === ward ? "default" : "outline"}
                   onClick={() => setSelectedWard(ward)}
-                  className="capitalize"
+                  className="capitalize flex items-center gap-1"
                 >
+                  {ward !== "all" && getWardIcon(ward)}
                   {ward}
                 </Button>
               ))}
@@ -211,71 +300,131 @@ export default function BedManagementPage() {
 
         {/* Mobile: 2-column grid */}
         <div className="lg:hidden">
-          <div className="grid grid-cols-2 gap-3">
-            {paginatedBeds.map((bed) => (
-              <Card key={bed.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-3 space-y-2">
-                  <div className="flex flex-col items-center text-center">
-                    <Bed className="h-8 w-8 mb-2 text-muted-foreground" />
-                    <h3 className="font-semibold text-sm">{bed.bedNumber}</h3>
-                    <p className="text-xs text-muted-foreground">{bed.ward}</p>
-                    <Badge className={`${getStatusColor(bed.status)} text-xs mt-1`}>
-                      {bed.status}
-                    </Badge>
-                    {bed.patientId && (
-                      <p className="text-xs font-medium mt-2 truncate w-full">{bed.patientId}</p>
-                    )}
+          {paginatedBeds.length === 0 ? (
+            <Card>
+              <CardContent className="p-8">
+                <div className="flex flex-col items-center justify-center text-center space-y-3">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground/50" />
+                  <div>
+                    <h3 className="font-semibold text-foreground">
+                      No beds found
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {searchTerm || selectedWard !== "all"
+                        ? "Try adjusting your search or filter criteria"
+                        : "No beds available at the moment"}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {paginatedBeds.map((bed) => (
+                <Card
+                  key={bed.id}
+                  className="hover:shadow-md transition-shadow"
+                >
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex flex-col items-center text-center">
+                      {getWardIcon(bed.ward)}
+                      <h3 className="font-semibold text-sm">{bed.bedNumber}</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {bed.ward}
+                      </p>
+                      <Badge
+                        className={`${getStatusColor(bed.status)} text-xs mt-1`}
+                      >
+                        {bed.status}
+                      </Badge>
+                      {bed.patientId && (
+                        <p className="text-xs font-medium mt-2 truncate w-full">
+                          {bed.patientId}
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Desktop: Table view */}
         <Card className="hidden lg:block">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Bed Number</TableHead>
-                    <TableHead>Ward</TableHead>
-                    <TableHead>Floor</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Patient</TableHead>
-                    <TableHead>Condition</TableHead>
-                    <TableHead>Last Cleaned</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedBeds.map((bed) => (
-                    <TableRow key={bed.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">{bed.bedNumber}</TableCell>
-                      <TableCell>{bed.ward}</TableCell>
-                      <TableCell>{bed.floor}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(bed.status)}>
-                          {bed.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {bed.patientName || <span className="text-muted-foreground">-</span>}
-                      </TableCell>
-                      <TableCell>
-                        {bed.condition || <span className="text-muted-foreground">-</span>}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{bed.lastCleaned || '-'}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="outline" size="sm">Manage</Button>
-                      </TableCell>
+          {paginatedBeds.length === 0 ? (
+            <CardContent className="p-8">
+              <div className="flex flex-col items-center justify-center text-center space-y-3">
+                <AlertCircle className="h-12 w-12 text-muted-foreground/50" />
+                <div>
+                  <h3 className="font-semibold text-foreground">
+                    No beds found
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {searchTerm || selectedWard !== "all"
+                      ? "Try adjusting your search or filter criteria"
+                      : "No beds available at the moment"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          ) : (
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Bed Number</TableHead>
+                      <TableHead>Ward</TableHead>
+                      <TableHead>Floor</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Patient</TableHead>
+                      <TableHead>Condition</TableHead>
+                      <TableHead>Last Cleaned</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedBeds.map((bed) => (
+                      <TableRow key={bed.id} className="hover:bg-muted/50">
+                        <TableCell className="font-medium">
+                          {bed.bedNumber}
+                        </TableCell>
+                        <TableCell className="flex items-center gap-2">
+                          {getWardIcon(bed.ward)}
+                          {bed.ward}
+                        </TableCell>
+                        <TableCell>{bed.floor}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(bed.status)}>
+                            {bed.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {bed.patientName || (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {bed.condition || (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {bed.lastCleaned || "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="outline" size="sm">
+                            Manage
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         {/* Pagination */}
@@ -284,30 +433,76 @@ export default function BedManagementPage() {
             <CardContent className="p-3">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="text-sm text-muted-foreground">
-                  Showing <span className="font-medium text-foreground">{(currentPage - 1) * pageSize + 1}</span> to{" "}
-                  <span className="font-medium text-foreground">{Math.min(currentPage * pageSize, filteredBeds.length)}</span> of{" "}
-                  <span className="font-medium text-foreground">{filteredBeds.length}</span> beds
+                  Showing{" "}
+                  <span className="font-medium text-foreground">
+                    {(currentPage - 1) * pageSize + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-medium text-foreground">
+                    {Math.min(currentPage * pageSize, filteredBeds.length)}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-medium text-foreground">
+                    {filteredBeds.length}
+                  </span>{" "}
+                  beds
                 </div>
                 <div className="flex items-center gap-2">
-                  <Select value={`${pageSize}`} onValueChange={(value) => { setPageSize(Number(value)); setCurrentPage(1); }}>
+                  <Select
+                    value={`${pageSize}`}
+                    onValueChange={(value) => {
+                      setPageSize(Number(value));
+                      setCurrentPage(1);
+                    }}
+                  >
                     <SelectTrigger className="h-8 w-[100px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {[10, 25, 50, 100].map((size) => (
-                        <SelectItem key={size} value={`${size}`}>{size} rows</SelectItem>
+                        <SelectItem key={size} value={`${size}`}>
+                          {size} rows
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>First</Button>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>Previous</Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    First
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => p - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
                   <div className="flex items-center gap-1 px-3 py-1 bg-muted rounded-md text-sm font-medium">
                     <span>{currentPage}</span>
                     <span className="text-muted-foreground">/</span>
                     <span>{totalPages}</span>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>Next</Button>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>Last</Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Last
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -317,58 +512,76 @@ export default function BedManagementPage() {
 
       {/* Add Bed Dialog */}
       <Dialog open={isAddBedOpen} onOpenChange={setIsAddBedOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Add New Bed</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Bed className="h-5 w-5 text-blue-600" />
+              Add New Bed
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {/* BED FORM */}
             <div className="space-y-2">
-              <Label htmlFor="bedNumber">Bed Number</Label>
+              <Label htmlFor="bedNumber">Bed Number *</Label>
               <Input
                 id="bedNumber"
-                placeholder="e.g., 101-A"
-                value={newBed.bedNumber}
-                onChange={(e) =>
-                  setNewBed({ ...newBed, bedNumber: e.target.value })
-                }
+                placeholder="e.g., B-101-5"
+                value={bedForm.bedNumber}
+                onChange={(e) => {
+                  setBedForm({ ...bedForm, bedNumber: e.target.value });
+                  if (validationErrors.bed) setValidationErrors(prev => ({ ...prev, bed: "" }));
+                }}
+                className={validationErrors.bed ? "border-red-500" : ""}
               />
+              {validationErrors.bed && (
+                <p className="text-sm text-red-600">{validationErrors.bed}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="ward">Ward</Label>
+              <Label htmlFor="roomId">Room *</Label>
               <Select
-                value={newBed.ward}
-                onValueChange={(value) => setNewBed({ ...newBed, ward: value })}
+                value={bedForm.roomId}
+                onValueChange={(value) =>
+                  setBedForm({ ...bedForm, roomId: value })
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select ward" />
+                  <SelectValue placeholder="Select room" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="General">General</SelectItem>
-                  <SelectItem value="ICU">ICU</SelectItem>
-                  <SelectItem value="Pediatric">Pediatric</SelectItem>
-                  <SelectItem value="Emergency">Emergency</SelectItem>
-                  <SelectItem value="Maternity">Maternity</SelectItem>
+                  {rooms.map((room) => (
+                    <SelectItem key={room.id} value={room.id}>
+                      Room {room.roomNumber} ({room.roomType})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="floor">Floor</Label>
-              <Input
-                id="floor"
-                type="number"
-                placeholder="e.g., 1"
-                value={newBed.floor}
-                onChange={(e) =>
-                  setNewBed({ ...newBed, floor: e.target.value })
+              <Label htmlFor="bedType">Bed Type *</Label>
+              <Select
+                value={bedForm.bedType}
+                onValueChange={(value: any) =>
+                  setBedForm({ ...bedForm, bedType: value })
                 }
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="STANDARD">Standard</SelectItem>
+                  <SelectItem value="ICU">ICU</SelectItem>
+                  <SelectItem value="PRIVATE">Private</SelectItem>
+                  <SelectItem value="ISOLATION">Isolation</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                value={newBed.status}
+                value={bedForm.status}
                 onValueChange={(value: any) =>
-                  setNewBed({ ...newBed, status: value })
+                  setBedForm({ ...bedForm, status: value })
                 }
               >
                 <SelectTrigger>
@@ -386,25 +599,266 @@ export default function BedManagementPage() {
             <Button
               onClick={async () => {
                 try {
-                  await bedService.create(newBed);
-                  await loadBeds();
+                  if (!bedForm.bedNumber.trim()) {
+                    setValidationErrors(prev => ({ ...prev, bed: "Please enter a bed number" }));
+                    return;
+                  }
+                  setValidationErrors(prev => ({ ...prev, bed: "" }));
+                  const payload = {
+                    ...bedForm,
+                    roomId: bedForm.roomId || "room_default_001"
+                  };
+                  await bedService.create(payload);
+                  await loadData();
+                  showAlert("success", "Bed created successfully!");
                   setIsAddBedOpen(false);
-                  setNewBed({
+                  setBedForm({
                     bedNumber: "",
-                    ward: "",
-                    floor: "",
+                    roomId: "",
+                    bedType: "STANDARD",
                     status: "AVAILABLE",
-                    branchId: "branch_main"
+                    branchId: "branch_main",
                   });
                 } catch (error) {
-                  console.error('Failed to create bed:', error);
-                  alert('Failed to create bed');
+                  console.error("Failed to create bed:", error);
+                  showAlert("error", `Failed to create bed: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
                 }
               }}
             >
-              Add Bed
+              Create Bed
             </Button>
             <Button variant="outline" onClick={() => setIsAddBedOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Room Dialog */}
+      <Dialog open={isAddRoomOpen} onOpenChange={setIsAddRoomOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <DoorOpen className="h-5 w-5 text-purple-600" />
+              Add New Room
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* ROOM FORM */}
+            <div className="space-y-2">
+              <Label htmlFor="roomNumber">Room Number *</Label>
+              <Input
+                id="roomNumber"
+                placeholder="e.g., Room 101"
+                value={roomForm.roomNumber}
+                onChange={(e) => {
+                  setRoomForm({ ...roomForm, roomNumber: e.target.value });
+                  if (validationErrors.room) setValidationErrors(prev => ({ ...prev, room: "" }));
+                }}
+                className={validationErrors.room ? "border-red-500" : ""}
+              />
+              {validationErrors.room && (
+                <p className="text-sm text-red-600">{validationErrors.room}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wardId">Ward ID *</Label>
+              <Input
+                id="wardId"
+                placeholder="e.g., ward_001"
+                value={roomForm.wardId}
+                onChange={(e) =>
+                  setRoomForm({ ...roomForm, wardId: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="roomType">Room Type *</Label>
+              <Select
+                value={roomForm.roomType}
+                onValueChange={(value) =>
+                  setRoomForm({ ...roomForm, roomType: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PRIVATE">Private</SelectItem>
+                  <SelectItem value="SEMI-PRIVATE">Semi-Private</SelectItem>
+                  <SelectItem value="WARD">Ward</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="capacity">Capacity *</Label>
+              <Input
+                id="capacity"
+                type="number"
+                placeholder="e.g., 2"
+                value={roomForm.capacity}
+                onChange={(e) =>
+                  setRoomForm({
+                    ...roomForm,
+                    capacity: parseInt(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="floor">Floor *</Label>
+              <Input
+                id="floor"
+                placeholder="e.g., 1"
+                value={roomForm.floor}
+                onChange={(e) =>
+                  setRoomForm({ ...roomForm, floor: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={async () => {
+                try {
+                  const errors = [];
+                  if (!roomForm.roomNumber.trim()) errors.push("Room Number");
+                  if (!roomForm.roomType) errors.push("Room Type");
+                  if (!roomForm.capacity || roomForm.capacity <= 0) errors.push("Valid Capacity");
+                  if (!roomForm.floor.trim()) errors.push("Floor");
+                  
+                  if (errors.length > 0) {
+                    setValidationErrors(prev => ({ ...prev, room: `Please enter: ${errors.join(", ")}` }));
+                    return;
+                  }
+                  setValidationErrors(prev => ({ ...prev, room: "" }));
+                  const payload = {
+                    ...roomForm,
+                    wardId: roomForm.wardId || "ward_default_001"
+                  };
+                  await bedService.createRoom(payload);
+                  await loadData();
+                  showAlert("success", "Room created successfully!");
+                  setIsAddRoomOpen(false);
+                  setRoomForm({
+                    roomNumber: "",
+                    wardId: "",
+                    roomType: "PRIVATE",
+                    capacity: 2,
+                    floor: "1",
+                    branchId: "branch_main",
+                  });
+                } catch (error) {
+                  console.error("Failed to create room:", error);
+                  showAlert("error", `Failed to create room: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
+                }
+              }}
+            >
+              Create Room
+            </Button>
+            <Button variant="outline" onClick={() => setIsAddRoomOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Ward Dialog */}
+      <Dialog open={isAddWardOpen} onOpenChange={setIsAddWardOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-emerald-600" />
+              Add New Ward
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* WARD FORM */}
+            <div className="space-y-2">
+              <Label htmlFor="wardName">Ward Name *</Label>
+              <Input
+                id="wardName"
+                placeholder="e.g., ICU Ward"
+                value={wardForm.name}
+                onChange={(e) => {
+                  setWardForm({ ...wardForm, name: e.target.value });
+                  if (validationErrors.ward) setValidationErrors(prev => ({ ...prev, ward: "" }));
+                }}
+                className={validationErrors.ward ? "border-red-500" : ""}
+              />
+              {validationErrors.ward && (
+                <p className="text-sm text-red-600">{validationErrors.ward}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wardType">Ward Type *</Label>
+              <Select
+                value={wardForm.wardType}
+                onValueChange={(value) =>
+                  setWardForm({ ...wardForm, wardType: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ICU">ICU</SelectItem>
+                  <SelectItem value="GENERAL">General</SelectItem>
+                  <SelectItem value="PEDIATRIC">Pediatric</SelectItem>
+                  <SelectItem value="MATERNITY">Maternity</SelectItem>
+                  <SelectItem value="CARDIAC">Cardiac</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wardCapacity">Capacity *</Label>
+              <Input
+                id="wardCapacity"
+                type="number"
+                placeholder="e.g., 20"
+                value={wardForm.capacity}
+                onChange={(e) =>
+                  setWardForm({
+                    ...wardForm,
+                    capacity: parseInt(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={async () => {
+                try {
+                  const errors = [];
+                  if (!wardForm.name.trim()) errors.push("Ward Name");
+                  if (!wardForm.wardType) errors.push("Ward Type");
+                  if (!wardForm.capacity || wardForm.capacity <= 0) errors.push("Valid Capacity");
+                  
+                  if (errors.length > 0) {
+                    setValidationErrors(prev => ({ ...prev, ward: `Please enter: ${errors.join(", ")}` }));
+                    return;
+                  }
+                  setValidationErrors(prev => ({ ...prev, ward: "" }));
+                  await bedService.createWard(wardForm);
+                  await loadData();
+                  showAlert("success", "Ward created successfully!");
+                  setIsAddWardOpen(false);
+                  setWardForm({
+                    name: "",
+                    branchId: "branch_main",
+                    capacity: 20,
+                    wardType: "ICU",
+                  });
+                } catch (error) {
+                  console.error("Failed to create ward:", error);
+                  showAlert("error", `Failed to create ward: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
+                }
+              }}
+            >
+              Create Ward
+            </Button>
+            <Button variant="outline" onClick={() => setIsAddWardOpen(false)}>
               Cancel
             </Button>
           </DialogFooter>
