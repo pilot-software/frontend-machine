@@ -68,12 +68,13 @@ export default function BedManagementPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedWard, setSelectedWard] = useState("all");
   const [isAddBedOpen, setIsAddBedOpen] = useState(false);
-  const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
-  const [isAddWardOpen, setIsAddWardOpen] = useState(false);
+  const [showCreateWard, setShowCreateWard] = useState(false);
+  const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [beds, setBeds] = useState<BedInfo[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [wards, setWards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [validationErrors, setValidationErrors] = useState({
     bed: "",
@@ -113,12 +114,14 @@ export default function BedManagementPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [bedsData, roomsData] = await Promise.all([
+      const [bedsData, roomsData, wardsData] = await Promise.all([
         bedService.getAll(),
         bedService.getRooms(),
+        bedService.getWards(),
       ]);
       setBeds(bedsData);
       setRooms(roomsData);
+      setWards(wardsData);
     } catch (error) {
       console.error("Failed to load beds and rooms:", error);
     } finally {
@@ -126,7 +129,7 @@ export default function BedManagementPage() {
     }
   };
 
-  const wards = ["all", "General Ward", "ICU", "Pediatric"];
+  const wardsList = ["all", "General Ward", "ICU", "Pediatric"];
 
   const filteredBeds = beds.filter((bed) => {
     const searchLower = searchTerm.toLowerCase();
@@ -195,36 +198,14 @@ export default function BedManagementPage() {
           title="Bed Management"
           description="Monitor and manage hospital bed availability"
           action={
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-              <Button
-                onClick={() => setIsAddBedOpen(true)}
-                className="relative group bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 text-sm sm:text-base"
-              >
-                <span className="absolute inset-0 bg-blue-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
-                <Bed className="h-4 w-4 mr-2 relative shrink-0" />
-                <span className="relative font-semibold truncate">Add Bed</span>
-              </Button>
-              <Button
-                onClick={() => setIsAddRoomOpen(true)}
-                className="relative group bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 text-sm sm:text-base"
-              >
-                <span className="absolute inset-0 bg-purple-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
-                <DoorOpen className="h-4 w-4 mr-2 relative shrink-0" />
-                <span className="relative font-semibold truncate">
-                  Add Room
-                </span>
-              </Button>
-              <Button
-                onClick={() => setIsAddWardOpen(true)}
-                className="relative group bg-linear-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 text-sm sm:text-base"
-              >
-                <span className="absolute inset-0 bg-emerald-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
-                <Building2 className="h-4 w-4 mr-2 relative shrink-0" />
-                <span className="relative font-semibold truncate">
-                  Add Ward
-                </span>
-              </Button>
-            </div>
+            <Button
+              onClick={() => setIsAddBedOpen(true)}
+              className="relative group bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+            >
+              <span className="absolute inset-0 bg-blue-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
+              <Plus className="h-4 w-4 mr-2 relative" />
+              <span className="relative font-semibold">Add Bed</span>
+            </Button>
           }
         />
 
@@ -283,7 +264,7 @@ export default function BedManagementPage() {
           placeholder="Search by bed number or patient name..."
           filters={
             <div className="flex gap-2">
-              {wards.map((ward) => (
+              {wardsList.map((ward) => (
                 <Button
                   key={ward}
                   variant={selectedWard === ward ? "default" : "outline"}
@@ -510,356 +491,318 @@ export default function BedManagementPage() {
         )}
       </div>
 
-      {/* Add Bed Dialog */}
+      {/* Unified Add Bed Dialog */}
       <Dialog open={isAddBedOpen} onOpenChange={setIsAddBedOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Bed className="h-5 w-5 text-blue-600" />
               Add New Bed
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* BED FORM */}
+          <div className="space-y-6 py-4">
+            {/* Ward Selection/Creation */}
             <div className="space-y-2">
-              <Label htmlFor="bedNumber">Bed Number *</Label>
-              <Input
-                id="bedNumber"
-                placeholder="e.g., B-101-5"
-                value={bedForm.bedNumber}
-                onChange={(e) => {
-                  setBedForm({ ...bedForm, bedNumber: e.target.value });
-                  if (validationErrors.bed) setValidationErrors(prev => ({ ...prev, bed: "" }));
-                }}
-                className={validationErrors.bed ? "border-red-500" : ""}
-              />
-              {validationErrors.bed && (
-                <p className="text-sm text-red-600">{validationErrors.bed}</p>
+              <Label>Ward *</Label>
+              {!showCreateWard ? (
+                <div className="flex gap-2">
+                  <Select
+                    value={roomForm.wardId}
+                    onValueChange={(value) => {
+                      if (value === "__create__") {
+                        setShowCreateWard(true);
+                      } else {
+                        setRoomForm({ ...roomForm, wardId: value });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select ward" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {wards.map((ward) => (
+                        <SelectItem key={ward.id} value={ward.id}>
+                          {ward.name} ({ward.wardType})
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="__create__">
+                        <span className="flex items-center gap-2 text-blue-600">
+                          <Plus className="h-4 w-4" />
+                          Create New Ward
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <Card className="p-4 space-y-3 border-blue-200 bg-blue-50/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-semibold">Create New Ward</Label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowCreateWard(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="wardName">Ward Name *</Label>
+                    <Input
+                      id="wardName"
+                      placeholder="e.g., ICU Ward"
+                      value={wardForm.name}
+                      onChange={(e) => setWardForm({ ...wardForm, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Ward Type *</Label>
+                      <Select
+                        value={wardForm.wardType}
+                        onValueChange={(value) => setWardForm({ ...wardForm, wardType: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ICU">ICU</SelectItem>
+                          <SelectItem value="GENERAL">General</SelectItem>
+                          <SelectItem value="PEDIATRIC">Pediatric</SelectItem>
+                          <SelectItem value="MATERNITY">Maternity</SelectItem>
+                          <SelectItem value="CARDIAC">Cardiac</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Capacity *</Label>
+                      <Input
+                        type="number"
+                        placeholder="20"
+                        value={wardForm.capacity}
+                        onChange={(e) => setWardForm({ ...wardForm, capacity: parseInt(e.target.value) || 0 })}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        if (!wardForm.name.trim()) {
+                          showAlert("error", "Please enter ward name");
+                          return;
+                        }
+                        const newWard = await bedService.createWard(wardForm);
+                        await loadData();
+                        setRoomForm({ ...roomForm, wardId: newWard.id });
+                        setShowCreateWard(false);
+                        showAlert("success", "Ward created successfully!");
+                        setWardForm({ name: "", branchId: "branch_main", capacity: 20, wardType: "ICU" });
+                      } catch (error) {
+                        showAlert("error", "Failed to create ward");
+                      }
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Ward
+                  </Button>
+                </Card>
               )}
             </div>
+
+            {/* Room Selection/Creation */}
             <div className="space-y-2">
-              <Label htmlFor="roomId">Room *</Label>
-              <Select
-                value={bedForm.roomId}
-                onValueChange={(value) =>
-                  setBedForm({ ...bedForm, roomId: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select room" />
-                </SelectTrigger>
-                <SelectContent>
-                  {rooms.map((room) => (
-                    <SelectItem key={room.id} value={room.id}>
-                      Room {room.roomNumber} ({room.roomType})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Room *</Label>
+              {!showCreateRoom ? (
+                <div className="flex gap-2">
+                  <Select
+                    value={bedForm.roomId}
+                    onValueChange={(value) => {
+                      if (value === "__create__") {
+                        setShowCreateRoom(true);
+                      } else {
+                        setBedForm({ ...bedForm, roomId: value });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select room" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {rooms.filter(r => !roomForm.wardId || r.wardId === roomForm.wardId).map((room) => (
+                        <SelectItem key={room.id} value={room.id}>
+                          Room {room.roomNumber} ({room.roomType})
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="__create__">
+                        <span className="flex items-center gap-2 text-blue-600">
+                          <Plus className="h-4 w-4" />
+                          Create New Room
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <Card className="p-4 space-y-3 border-purple-200 bg-purple-50/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-semibold">Create New Room</Label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowCreateRoom(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Room Number *</Label>
+                    <Input
+                      placeholder="e.g., 101"
+                      value={roomForm.roomNumber}
+                      onChange={(e) => setRoomForm({ ...roomForm, roomNumber: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <Label>Room Type *</Label>
+                      <Select
+                        value={roomForm.roomType}
+                        onValueChange={(value) => setRoomForm({ ...roomForm, roomType: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="SEMI-PRIVATE">Semi-Private</SelectItem>
+                          <SelectItem value="WARD">Ward</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Capacity *</Label>
+                      <Input
+                        type="number"
+                        placeholder="2"
+                        value={roomForm.capacity}
+                        onChange={(e) => setRoomForm({ ...roomForm, capacity: parseInt(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Floor *</Label>
+                      <Input
+                        placeholder="1"
+                        value={roomForm.floor}
+                        onChange={(e) => setRoomForm({ ...roomForm, floor: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        if (!roomForm.roomNumber.trim() || !roomForm.wardId) {
+                          showAlert("error", "Please fill all required fields and select a ward first");
+                          return;
+                        }
+                        const newRoom = await bedService.createRoom(roomForm);
+                        await loadData();
+                        setBedForm({ ...bedForm, roomId: newRoom.id });
+                        setShowCreateRoom(false);
+                        showAlert("success", "Room created successfully!");
+                        setRoomForm({ roomNumber: "", wardId: roomForm.wardId, roomType: "PRIVATE", capacity: 2, floor: "1", branchId: "branch_main" });
+                      } catch (error) {
+                        showAlert("error", "Failed to create room");
+                      }
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Room
+                  </Button>
+                </Card>
+              )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="bedType">Bed Type *</Label>
-              <Select
-                value={bedForm.bedType}
-                onValueChange={(value: any) =>
-                  setBedForm({ ...bedForm, bedType: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="STANDARD">Standard</SelectItem>
-                  <SelectItem value="ICU">ICU</SelectItem>
-                  <SelectItem value="PRIVATE">Private</SelectItem>
-                  <SelectItem value="ISOLATION">Isolation</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={bedForm.status}
-                onValueChange={(value: any) =>
-                  setBedForm({ ...bedForm, status: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="AVAILABLE">Available</SelectItem>
-                  <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                  <SelectItem value="RESERVED">Reserved</SelectItem>
-                </SelectContent>
-              </Select>
+
+            {/* Bed Details */}
+            <div className="space-y-4 pt-4 border-t">
+              <Label className="text-base font-semibold">Bed Details</Label>
+              <div className="space-y-2">
+                <Label htmlFor="bedNumber">Bed Number *</Label>
+                <Input
+                  id="bedNumber"
+                  placeholder="e.g., B-101-5"
+                  value={bedForm.bedNumber}
+                  onChange={(e) => setBedForm({ ...bedForm, bedNumber: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Bed Type *</Label>
+                  <Select
+                    value={bedForm.bedType}
+                    onValueChange={(value: any) => setBedForm({ ...bedForm, bedType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STANDARD">Standard</SelectItem>
+                      <SelectItem value="ICU">ICU</SelectItem>
+                      <SelectItem value="PRIVATE">Private</SelectItem>
+                      <SelectItem value="ISOLATION">Isolation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select
+                    value={bedForm.status}
+                    onValueChange={(value: any) => setBedForm({ ...bedForm, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AVAILABLE">Available</SelectItem>
+                      <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                      <SelectItem value="RESERVED">Reserved</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </div>
           <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsAddBedOpen(false);
+              setShowCreateWard(false);
+              setShowCreateRoom(false);
+            }}>
+              Cancel
+            </Button>
             <Button
               onClick={async () => {
                 try {
-                  if (!bedForm.bedNumber.trim()) {
-                    setValidationErrors(prev => ({ ...prev, bed: "Please enter a bed number" }));
+                  if (!bedForm.bedNumber.trim() || !bedForm.roomId) {
+                    showAlert("error", "Please enter bed number and select a room");
                     return;
                   }
-                  setValidationErrors(prev => ({ ...prev, bed: "" }));
-                  const payload = {
-                    ...bedForm,
-                    roomId: bedForm.roomId || "room_default_001"
-                  };
-                  await bedService.create(payload);
+                  await bedService.create(bedForm);
                   await loadData();
                   showAlert("success", "Bed created successfully!");
                   setIsAddBedOpen(false);
-                  setBedForm({
-                    bedNumber: "",
-                    roomId: "",
-                    bedType: "STANDARD",
-                    status: "AVAILABLE",
-                    branchId: "branch_main",
-                  });
+                  setShowCreateWard(false);
+                  setShowCreateRoom(false);
+                  setBedForm({ bedNumber: "", roomId: "", bedType: "STANDARD", status: "AVAILABLE", branchId: "branch_main" });
+                  setRoomForm({ roomNumber: "", wardId: "", roomType: "PRIVATE", capacity: 2, floor: "1", branchId: "branch_main" });
                 } catch (error) {
-                  console.error("Failed to create bed:", error);
-                  showAlert("error", `Failed to create bed: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
+                  showAlert("error", `Failed to create bed: ${error instanceof Error ? error.message : "Unknown error"}`);
                 }
               }}
             >
+              <Plus className="h-4 w-4 mr-2" />
               Create Bed
-            </Button>
-            <Button variant="outline" onClick={() => setIsAddBedOpen(false)}>
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Room Dialog */}
-      <Dialog open={isAddRoomOpen} onOpenChange={setIsAddRoomOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <DoorOpen className="h-5 w-5 text-purple-600" />
-              Add New Room
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* ROOM FORM */}
-            <div className="space-y-2">
-              <Label htmlFor="roomNumber">Room Number *</Label>
-              <Input
-                id="roomNumber"
-                placeholder="e.g., Room 101"
-                value={roomForm.roomNumber}
-                onChange={(e) => {
-                  setRoomForm({ ...roomForm, roomNumber: e.target.value });
-                  if (validationErrors.room) setValidationErrors(prev => ({ ...prev, room: "" }));
-                }}
-                className={validationErrors.room ? "border-red-500" : ""}
-              />
-              {validationErrors.room && (
-                <p className="text-sm text-red-600">{validationErrors.room}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="wardId">Ward ID *</Label>
-              <Input
-                id="wardId"
-                placeholder="e.g., ward_001"
-                value={roomForm.wardId}
-                onChange={(e) =>
-                  setRoomForm({ ...roomForm, wardId: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="roomType">Room Type *</Label>
-              <Select
-                value={roomForm.roomType}
-                onValueChange={(value) =>
-                  setRoomForm({ ...roomForm, roomType: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PRIVATE">Private</SelectItem>
-                  <SelectItem value="SEMI-PRIVATE">Semi-Private</SelectItem>
-                  <SelectItem value="WARD">Ward</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="capacity">Capacity *</Label>
-              <Input
-                id="capacity"
-                type="number"
-                placeholder="e.g., 2"
-                value={roomForm.capacity}
-                onChange={(e) =>
-                  setRoomForm({
-                    ...roomForm,
-                    capacity: parseInt(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="floor">Floor *</Label>
-              <Input
-                id="floor"
-                placeholder="e.g., 1"
-                value={roomForm.floor}
-                onChange={(e) =>
-                  setRoomForm({ ...roomForm, floor: e.target.value })
-                }
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={async () => {
-                try {
-                  const errors = [];
-                  if (!roomForm.roomNumber.trim()) errors.push("Room Number");
-                  if (!roomForm.roomType) errors.push("Room Type");
-                  if (!roomForm.capacity || roomForm.capacity <= 0) errors.push("Valid Capacity");
-                  if (!roomForm.floor.trim()) errors.push("Floor");
-                  
-                  if (errors.length > 0) {
-                    setValidationErrors(prev => ({ ...prev, room: `Please enter: ${errors.join(", ")}` }));
-                    return;
-                  }
-                  setValidationErrors(prev => ({ ...prev, room: "" }));
-                  const payload = {
-                    ...roomForm,
-                    wardId: roomForm.wardId || "ward_default_001"
-                  };
-                  await bedService.createRoom(payload);
-                  await loadData();
-                  showAlert("success", "Room created successfully!");
-                  setIsAddRoomOpen(false);
-                  setRoomForm({
-                    roomNumber: "",
-                    wardId: "",
-                    roomType: "PRIVATE",
-                    capacity: 2,
-                    floor: "1",
-                    branchId: "branch_main",
-                  });
-                } catch (error) {
-                  console.error("Failed to create room:", error);
-                  showAlert("error", `Failed to create room: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
-                }
-              }}
-            >
-              Create Room
-            </Button>
-            <Button variant="outline" onClick={() => setIsAddRoomOpen(false)}>
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Ward Dialog */}
-      <Dialog open={isAddWardOpen} onOpenChange={setIsAddWardOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-emerald-600" />
-              Add New Ward
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* WARD FORM */}
-            <div className="space-y-2">
-              <Label htmlFor="wardName">Ward Name *</Label>
-              <Input
-                id="wardName"
-                placeholder="e.g., ICU Ward"
-                value={wardForm.name}
-                onChange={(e) => {
-                  setWardForm({ ...wardForm, name: e.target.value });
-                  if (validationErrors.ward) setValidationErrors(prev => ({ ...prev, ward: "" }));
-                }}
-                className={validationErrors.ward ? "border-red-500" : ""}
-              />
-              {validationErrors.ward && (
-                <p className="text-sm text-red-600">{validationErrors.ward}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="wardType">Ward Type *</Label>
-              <Select
-                value={wardForm.wardType}
-                onValueChange={(value) =>
-                  setWardForm({ ...wardForm, wardType: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ICU">ICU</SelectItem>
-                  <SelectItem value="GENERAL">General</SelectItem>
-                  <SelectItem value="PEDIATRIC">Pediatric</SelectItem>
-                  <SelectItem value="MATERNITY">Maternity</SelectItem>
-                  <SelectItem value="CARDIAC">Cardiac</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="wardCapacity">Capacity *</Label>
-              <Input
-                id="wardCapacity"
-                type="number"
-                placeholder="e.g., 20"
-                value={wardForm.capacity}
-                onChange={(e) =>
-                  setWardForm({
-                    ...wardForm,
-                    capacity: parseInt(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={async () => {
-                try {
-                  const errors = [];
-                  if (!wardForm.name.trim()) errors.push("Ward Name");
-                  if (!wardForm.wardType) errors.push("Ward Type");
-                  if (!wardForm.capacity || wardForm.capacity <= 0) errors.push("Valid Capacity");
-                  
-                  if (errors.length > 0) {
-                    setValidationErrors(prev => ({ ...prev, ward: `Please enter: ${errors.join(", ")}` }));
-                    return;
-                  }
-                  setValidationErrors(prev => ({ ...prev, ward: "" }));
-                  await bedService.createWard(wardForm);
-                  await loadData();
-                  showAlert("success", "Ward created successfully!");
-                  setIsAddWardOpen(false);
-                  setWardForm({
-                    name: "",
-                    branchId: "branch_main",
-                    capacity: 20,
-                    wardType: "ICU",
-                  });
-                } catch (error) {
-                  console.error("Failed to create ward:", error);
-                  showAlert("error", `Failed to create ward: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
-                }
-              }}
-            >
-              Create Ward
-            </Button>
-            <Button variant="outline" onClick={() => setIsAddWardOpen(false)}>
-              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>
