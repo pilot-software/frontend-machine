@@ -106,6 +106,13 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
 
             if (response.token) {
                 console.log('Login successful, token received:', response.token.substring(0, 20) + '...');
+                console.log('Login response:', response);
+
+                // Store organizationId from request if not in response
+                if (!response.organizationId) {
+                    response.organizationId = orgId;
+                    console.log('[AuthContext] Using organizationId from request:', orgId);
+                }
 
                 const {apiClient: newApiClient} = await import('@/lib/api/client');
                 const {apiClient: originalApiClient} = await import('@/lib/api');
@@ -172,7 +179,13 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     };
 
     const createUserFromResponse = (response: any): User => {
-        // Map API role names to internal role names
+        console.log('[AuthContext] Creating user from response:', { 
+            id: response.id, 
+            email: response.email, 
+            role: response.role,
+            organizationId: response.organizationId 
+        });
+        
         const roleMapping: Record<string, UserRole> = {
             'ADMIN': 'admin',
             'DOCTOR': 'doctor',
@@ -185,15 +198,19 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
 
         const mappedRole = roleMapping[response.role] || response.role.toLowerCase();
 
-        return {
+        const user = {
             id: response.id,
             email: response.email,
             name: response.email.split('@')[0],
             role: mappedRole as UserRole,
+            organizationId: response.organizationId,
             status: 'active',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
+        
+        console.log('[AuthContext] User created with organizationId:', user.organizationId);
+        return user;
     };
 
     const saveUserSession = (user: User, token: string, permissions: Permission[]) => {

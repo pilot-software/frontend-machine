@@ -9,6 +9,7 @@ export interface LoginResponse {
     email: string;
     role: "ADMIN" | "DOCTOR" | "NURSE" | "PATIENT" | "FINANCE";
     id: string;
+    organizationId?: string;
 }
 
 export class AuthService {

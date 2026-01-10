@@ -328,7 +328,15 @@ class SimpleApi {
     const token = localStorage.getItem("auth_token");
     const user = localStorage.getItem("healthcare_user");
     const userData = user ? JSON.parse(user) : null;
-    const organizationId = userData?.organizationId || "hospital_org1";
+    const organizationId = userData?.organizationId;
+    
+    console.log('[API] Request:', { endpoint, method, organizationId, hasToken: !!token });
+    
+    if (!organizationId) {
+      console.error('[API] Organization ID missing from user data:', userData);
+      throw new Error("Organization ID not found. Please login again.");
+    }
+    
     const baseUrl = await getBaseUrl(endpoint);
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method,
@@ -339,6 +347,8 @@ class SimpleApi {
       },
       ...(data && { body: JSON.stringify(data) }),
     });
+    
+    console.log('[API] Response:', { endpoint, status: response.status, ok: response.ok });
     return handleApiResponse(response);
   }
 }

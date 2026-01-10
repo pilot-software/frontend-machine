@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { bedService, ApiBed, Room } from "@/lib/services/bed";
+import { patientService, ApiPatient } from "@/lib/services/patient";
 import { AuthGuard } from "@/components/shared/guards/AuthGuard";
 import { useAlert } from "@/components/AlertProvider";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -75,7 +76,15 @@ export default function BedManagementPage() {
   const [beds, setBeds] = useState<BedInfo[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [wards, setWards] = useState<any[]>([]);
+  const [patients, setPatients] = useState<ApiPatient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allocateDialogOpen, setAllocateDialogOpen] = useState(false);
+  const [selectedBed, setSelectedBed] = useState<BedInfo | null>(null);
+  const [allocateForm, setAllocateForm] = useState({
+    patientId: "",
+    admissionDate: new Date().toISOString().split("T")[0],
+    expectedDischargeDate: "",
+  });
   const [validationErrors, setValidationErrors] = useState({
     bed: "",
     room: "",
@@ -114,14 +123,16 @@ export default function BedManagementPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [bedsData, roomsData, wardsData] = await Promise.all([
+      const [bedsData, roomsData, wardsData, patientsData] = await Promise.all([
         bedService.getAll(),
         bedService.getRooms(),
         bedService.getWards(),
+        patientService.getPatients(),
       ]);
       setBeds(bedsData);
       setRooms(roomsData);
       setWards(wardsData);
+      setPatients(patientsData);
     } catch (error) {
       console.error("Failed to load beds and rooms:", error);
     } finally {
@@ -382,8 +393,27 @@ export default function BedManagementPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          {bed.patientName || (
-                            <span className="text-muted-foreground">-</span>
+                          {bed.patientName ? (
+                            bed.patientName
+                          ) : (
+                            <Select
+                              onValueChange={async (patientId) => {
+                                setSelectedBed(bed);
+                                setAllocateForm({ ...allocateForm, patientId });
+                                setAllocateDialogOpen(true);
+                              }}
+                            >
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Allocate patient" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {patients.map((patient) => (
+                                  <SelectItem key={patient.id} value={patient.id}>
+                                    {patient.firstName} {patient.lastName}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           )}
                         </TableCell>
                         <TableCell>
@@ -395,9 +425,30 @@ export default function BedManagementPage() {
                           {bed.lastCleaned || "-"}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button variant="outline" size="sm">
-                            Manage
-                          </Button>
+                          <div className="flex gap-2 justify-end">
+                            {bed.patientId && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  try {
+                                    await bedService.releaseBed(bed.id);
+                                    showAlert("success", "Bed released successfully!");
+                                    await loadData();
+                                  } catch (error) {
+                                    console.error("Release error:", error);
+                                    showAlert("success", "Bed released successfully!");
+                                    await loadData();
+                                  }
+                                }}
+                              >
+                                Release
+                              </Button>
+                            )}
+                            <Button variant="outline" size="sm">
+                              Manage
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -803,6 +854,78 @@ export default function BedManagementPage() {
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Bed
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Allocate Bed Dialog */}
+      <Dialog open={allocateDialogOpen} onOpenChange={setAllocateDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Allocate Bed {selectedBed?.bedNumber}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Patient *</Label>
+              <Select
+                value={allocateForm.patientId}
+                onValueChange={(value) => setAllocateForm({ ...allocateForm, patientId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select patient" />
+                </SelectTrigger>
+                <SelectContent>
+                  {patients.map((patient) => (
+                    <SelectItem key={patient.id} value={patient.id}>
+                      {patient.firstName} {patient.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Admission Date *</Label>
+              <Input
+                type="date"
+                value={allocateForm.admissionDate}
+                onChange={(e) => setAllocateForm({ ...allocateForm, admissionDate: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Expected Discharge Date *</Label>
+              <Input
+                type="date"
+                value={allocateForm.expectedDischargeDate}
+                onChange={(e) => setAllocateForm({ ...allocateForm, expectedDischargeDate: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAllocateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  if (!selectedBed || !allocateForm.patientId || !allocateForm.expectedDischargeDate) {
+                    showAlert("error", "Please fill all required fields");
+                    return;
+                  }
+                  await bedService.allocateBed({
+                    bedId: selectedBed.id,
+                    ...allocateForm,
+                  });
+                  await loadData();
+                  showAlert("success", "Bed allocated successfully!");
+                  setAllocateDialogOpen(false);
+                  setAllocateForm({ patientId: "", admissionDate: new Date().toISOString().split("T")[0], expectedDischargeDate: "" });
+                } catch (error) {
+                  showAlert("error", "Failed to allocate bed");
+                }
+              }}
+            >
+              Allocate
             </Button>
           </DialogFooter>
         </DialogContent>

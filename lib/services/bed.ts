@@ -54,6 +54,13 @@ export type CreateWard = {
   wardType: string;
 };
 
+export type AllocateBed = {
+  bedId: string;
+  patientId: string;
+  admissionDate: string;
+  expectedDischargeDate: string;
+};
+
 export type UpdateBed = Partial<CreateBed>;
 
 export class BedService {
@@ -91,6 +98,22 @@ export class BedService {
 
   async delete(id: string): Promise<void> {
     return api.delete(`/api/admin/bed-management/beds/${id}`);
+  }
+
+  async deleteRoom(id: string): Promise<void> {
+    return api.delete(`/api/admin/bed-management/rooms/${id}`);
+  }
+
+  async deleteWard(id: string): Promise<void> {
+    return api.delete(`/api/admin/bed-management/wards/${id}`);
+  }
+
+  async allocateBed(data: AllocateBed): Promise<any> {
+    return api.post("/api/admin/bed-management/allocations", data);
+  }
+
+  async releaseBed(bedId: string): Promise<void> {
+    return api.post(`/api/admin/bed-management/allocations/release/${bedId}`, {});
   }
 }
 
