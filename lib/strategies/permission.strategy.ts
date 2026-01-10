@@ -200,6 +200,13 @@ export class PermissionStrategy {
             menuItems.push({icon: Bed, label: "bedManagement", path: "/beds", permission: 'BEDS_VIEW'});
         }
 
+        // Bed management sub-route (manage page)
+        if (permissionNames.includes('BEDS_MANAGE') ||
+            permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS') ||
+            permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
+            // This route is accessible but not shown in menu (accessed via button)
+        }
+
         if (permissionNames.includes('QUEUES_ADMIN_ALL')) {
             menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'QUEUES_ADMIN_ALL'});
         }

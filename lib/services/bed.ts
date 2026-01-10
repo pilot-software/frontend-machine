@@ -108,6 +108,14 @@ export class BedService {
     return api.delete(`/api/admin/bed-management/wards/${id}`);
   }
 
+  async updateRoom(id: string, room: Partial<CreateRoom>): Promise<Room> {
+    return api.put(`/api/admin/bed-management/rooms/${id}`, room);
+  }
+
+  async updateWard(id: string, ward: Partial<CreateWard>): Promise<Ward> {
+    return api.put(`/api/admin/bed-management/wards/${id}`, ward);
+  }
+
   async allocateBed(data: AllocateBed): Promise<any> {
     return api.post("/api/admin/bed-management/allocations", data);
   }

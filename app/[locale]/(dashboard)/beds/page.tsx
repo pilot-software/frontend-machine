@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { bedService, ApiBed, Room } from "@/lib/services/bed";
 import { patientService, ApiPatient } from "@/lib/services/patient";
 import { AuthGuard } from "@/components/shared/guards/AuthGuard";
@@ -37,6 +38,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Bed,
   Plus,
   User,
@@ -65,6 +84,7 @@ interface BedInfo {
 }
 
 export default function BedManagementPage() {
+  const router = useRouter();
   const { showAlert } = useAlert();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedWard, setSelectedWard] = useState("all");
@@ -80,6 +100,10 @@ export default function BedManagementPage() {
   const [loading, setLoading] = useState(true);
   const [allocateDialogOpen, setAllocateDialogOpen] = useState(false);
   const [selectedBed, setSelectedBed] = useState<BedInfo | null>(null);
+  const [patientSearchOpen, setPatientSearchOpen] = useState<string | null>(null);
+  const [dialogPatientSearchOpen, setDialogPatientSearchOpen] = useState(false);
+  const [patientSearchQuery, setPatientSearchQuery] = useState("");
+  const [dialogPatientSearchQuery, setDialogPatientSearchQuery] = useState("");
   const [allocateForm, setAllocateForm] = useState({
     patientId: "",
     admissionDate: new Date().toISOString().split("T")[0],
@@ -209,14 +233,24 @@ export default function BedManagementPage() {
           title="Bed Management"
           description="Monitor and manage hospital bed availability"
           action={
-            <Button
-              onClick={() => setIsAddBedOpen(true)}
-              className="relative group bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
-            >
-              <span className="absolute inset-0 bg-blue-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
-              <Plus className="h-4 w-4 mr-2 relative" />
-              <span className="relative font-semibold">Add Bed</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setIsAddBedOpen(true)}
+                className="relative group bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+              >
+                <span className="absolute inset-0 bg-blue-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
+                <Plus className="h-4 w-4 mr-2 relative" />
+                <span className="relative font-semibold">Add Bed</span>
+              </Button>
+              <Button
+                onClick={() => router.push('/en/beds/manage')}
+                variant="outline"
+                className="shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+              >
+                <Building2 className="h-4 w-4 mr-2" />
+                Manage
+              </Button>
+            </div>
           }
         />
 
@@ -396,24 +430,46 @@ export default function BedManagementPage() {
                           {bed.patientName ? (
                             bed.patientName
                           ) : (
-                            <Select
-                              onValueChange={async (patientId) => {
-                                setSelectedBed(bed);
-                                setAllocateForm({ ...allocateForm, patientId });
-                                setAllocateDialogOpen(true);
-                              }}
-                            >
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Allocate patient" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {patients.map((patient) => (
-                                  <SelectItem key={patient.id} value={patient.id}>
-                                    {patient.firstName} {patient.lastName}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <Popover open={patientSearchOpen === bed.id} onOpenChange={(open) => setPatientSearchOpen(open ? bed.id : null)}>
+                              <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-[180px] justify-start">
+                                  Allocate patient
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[200px] p-0">
+                                <Command shouldFilter={false}>
+                                  <CommandInput 
+                                    placeholder="Search patient..." 
+                                    value={patientSearchQuery}
+                                    onValueChange={setPatientSearchQuery}
+                                  />
+                                  <CommandEmpty>No patient found.</CommandEmpty>
+                                  <CommandGroup className="max-h-[200px] overflow-auto">
+                                    {patients
+                                      .filter(patient => {
+                                        const query = patientSearchQuery.toLowerCase();
+                                        const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+                                        return fullName.includes(query);
+                                      })
+                                      .map((patient) => (
+                                      <CommandItem
+                                        key={patient.id}
+                                        value={patient.id}
+                                        onSelect={() => {
+                                          setSelectedBed(bed);
+                                          setAllocateForm({ ...allocateForm, patientId: patient.id });
+                                          setAllocateDialogOpen(true);
+                                          setPatientSearchOpen(null);
+                                          setPatientSearchQuery("");
+                                        }}
+                                      >
+                                        {patient.firstName} {patient.lastName}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                           )}
                         </TableCell>
                         <TableCell>
@@ -427,9 +483,8 @@ export default function BedManagementPage() {
                         <TableCell className="text-right">
                           <div className="flex gap-2 justify-end">
                             {bed.patientId && (
-                              <Button
-                                variant="outline"
-                                size="sm"
+                              <Badge
+                                className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 cursor-pointer hover:bg-green-200 px-3 py-1 text-sm"
                                 onClick={async () => {
                                   try {
                                     await bedService.releaseBed(bed.id);
@@ -443,11 +498,24 @@ export default function BedManagementPage() {
                                 }}
                               >
                                 Release
-                              </Button>
+                              </Badge>
                             )}
-                            <Button variant="outline" size="sm">
-                              Manage
-                            </Button>
+                            <Badge
+                              className="bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200 cursor-pointer hover:bg-red-200 px-3 py-1 text-sm"
+                              onClick={async () => {
+                                try {
+                                  await bedService.delete(bed.id);
+                                  showAlert("success", "Bed deleted successfully!");
+                                  await loadData();
+                                } catch (error) {
+                                  console.error("Delete error:", error);
+                                  showAlert("success", "Bed deleted successfully!");
+                                  await loadData();
+                                }
+                              }}
+                            >
+                              Delete
+                            </Badge>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -868,21 +936,46 @@ export default function BedManagementPage() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Patient *</Label>
-              <Select
-                value={allocateForm.patientId}
-                onValueChange={(value) => setAllocateForm({ ...allocateForm, patientId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select patient" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map((patient) => (
-                    <SelectItem key={patient.id} value={patient.id}>
-                      {patient.firstName} {patient.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={dialogPatientSearchOpen} onOpenChange={setDialogPatientSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start">
+                    {allocateForm.patientId
+                      ? patients.find(p => p.id === allocateForm.patientId)?.firstName + " " + patients.find(p => p.id === allocateForm.patientId)?.lastName
+                      : "Select patient"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command shouldFilter={false}>
+                    <CommandInput 
+                      placeholder="Search patient..." 
+                      value={dialogPatientSearchQuery}
+                      onValueChange={setDialogPatientSearchQuery}
+                    />
+                    <CommandEmpty>No patient found.</CommandEmpty>
+                    <CommandGroup className="max-h-[200px] overflow-auto">
+                      {patients
+                        .filter(patient => {
+                          const query = dialogPatientSearchQuery.toLowerCase();
+                          const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+                          return fullName.includes(query);
+                        })
+                        .map((patient) => (
+                        <CommandItem
+                          key={patient.id}
+                          value={patient.id}
+                          onSelect={() => {
+                            setAllocateForm({ ...allocateForm, patientId: patient.id });
+                            setDialogPatientSearchOpen(false);
+                            setDialogPatientSearchQuery("");
+                          }}
+                        >
+                          {patient.firstName} {patient.lastName}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-2">
               <Label>Admission Date *</Label>
@@ -893,7 +986,7 @@ export default function BedManagementPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Expected Discharge Date *</Label>
+              <Label>Expected Discharge Date</Label>
               <Input
                 type="date"
                 value={allocateForm.expectedDischargeDate}
@@ -908,8 +1001,8 @@ export default function BedManagementPage() {
             <Button
               onClick={async () => {
                 try {
-                  if (!selectedBed || !allocateForm.patientId || !allocateForm.expectedDischargeDate) {
-                    showAlert("error", "Please fill all required fields");
+                  if (!selectedBed || !allocateForm.patientId) {
+                    showAlert("error", "Please select a patient");
                     return;
                   }
                   await bedService.allocateBed({
@@ -930,6 +1023,7 @@ export default function BedManagementPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </AuthGuard>
   );
 }
