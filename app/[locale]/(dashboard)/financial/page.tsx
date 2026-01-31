@@ -6,7 +6,7 @@ import {AuthGuard} from '@/components/shared/guards/AuthGuard';
 export default function FinancialPage() {
     return (
         <AuthGuard
-            requiredPermissions={['BILLING_VIEW_INVOICES', 'BILLING_CREATE_INVOICES', 'BILLING_PROCESS_PAYMENTS']}>
+            requiredPermissions={['VIEW_BILLING', 'CREATE_INVOICE', 'PROCESS_PAYMENT']}>
             <FinancialManagement/>
         </AuthGuard>
     );

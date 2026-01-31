@@ -20,10 +20,15 @@ export function AuthGuard({ children, requiredPermissions }: AuthGuardProps) {
       return;
     }
 
-    if (user && requiredPermissions && !hasAnyPermission(requiredPermissions)) {
-      console.log("Access denied: insufficient permissions");
-      router.push(ROUTES.DASHBOARD);
-      return;
+    if (user && requiredPermissions) {
+      console.log('[AuthGuard] Required permissions:', requiredPermissions);
+      console.log('[AuthGuard] User has permissions:', hasAnyPermission(requiredPermissions));
+      
+      if (!hasAnyPermission(requiredPermissions)) {
+        console.log("Access denied: insufficient permissions");
+        router.push(ROUTES.DASHBOARD);
+        return;
+      }
     }
   }, [user, isLoading, requiredPermissions, hasAnyPermission, router]);
 

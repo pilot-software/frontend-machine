@@ -19,7 +19,7 @@ export default function PatientsPage() {
     }, [user, router]);
 
     return (
-        <AuthGuard requiredPermissions={['PATIENTS_VIEW', 'PATIENTS_CREATE', 'PATIENTS_UPDATE']}>
+        <AuthGuard requiredPermissions={['VIEW_PATIENT', 'CREATE_PATIENT', 'UPDATE_PATIENT']}>
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>

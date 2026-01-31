@@ -5,7 +5,7 @@ import {AuthGuard} from '@/components/shared/guards/AuthGuard';
 
 export default function PatientsListPage() {
     return (
-        <AuthGuard requiredPermissions={['PATIENTS_VIEW', 'PATIENTS_CREATE', 'PATIENTS_UPDATE']}>
+        <AuthGuard requiredPermissions={['VIEW_PATIENT', 'CREATE_PATIENT', 'UPDATE_PATIENT']}>
             <PatientManagement/>
         </AuthGuard>
     );

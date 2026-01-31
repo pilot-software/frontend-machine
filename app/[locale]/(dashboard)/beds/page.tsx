@@ -221,12 +221,7 @@ export default function BedManagementPage() {
 
   return (
     <AuthGuard
-      requiredPermissions={[
-        "BEDS_VIEW",
-        "BEDS_MANAGE",
-        "SYSTEM_HOSPITAL_SETTINGS",
-        "USERS_MANAGE_PERMISSIONS",
-      ]}
+      requiredPermissions={['VIEW_LAB_RESULTS', 'CREATE_LAB_ORDER', 'UPDATE_LAB_RESULTS']}
     >
       <div className="space-y-6">
         <PageHeader

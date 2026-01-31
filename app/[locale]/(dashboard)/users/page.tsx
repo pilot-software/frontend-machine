@@ -570,7 +570,7 @@ function UserManagementPageContent() {
 
 export default function UserManagementPage() {
     return (
-        <AuthGuard requiredPermissions={['USERS_VIEW', 'USERS_CREATE_STAFF', 'USERS_UPDATE', 'USERS_DELETE']}>
+        <AuthGuard requiredPermissions={['VIEW_USER', 'CREATE_USER', 'UPDATE_USER', 'DEACTIVATE_USER']}>
             <UserManagementPageContent/>
         </AuthGuard>
     );
