@@ -4,6 +4,21 @@ export interface Permission {
   permissions: string[];
 }
 
+export interface PermissionGroup {
+  id: number;
+  name: string;
+  permissions: string[];
+}
+
+export interface EffectivePermissionsResponse {
+  userId: string;
+  groups: PermissionGroup[];
+  groupPermissions: string[];
+  customPermissions: string[];
+  effectivePermissions: string[];
+  branchPermissions: Record<string, any>;
+}
+
 export interface UserPermissions {
   userId: string;
   permissions: Permission;
@@ -11,8 +26,8 @@ export interface UserPermissions {
 
 export class PermissionService {
   async getAllPermissions(): Promise<Permission> {
-    const baseUrl = await this.getBaseUrl('/api/permissions/all');
-    const response = await fetch(`${baseUrl}/api/permissions/all`, {
+    const baseUrl = await this.getBaseUrl('/api/permissions/organization');
+    const response = await fetch(`${baseUrl}/api/permissions/organization/permissions`, {
       method: "GET",
       headers: this.getHeaders(),
     });
@@ -25,9 +40,9 @@ export class PermissionService {
   }
 
   async getUserPermissions(userId: string): Promise<Permission[]> {
-    const baseUrl = await this.getBaseUrl('/api/permissions/user');
+    const baseUrl = await this.getBaseUrl('/api/permissions/users');
     const response = await fetch(
-      `${baseUrl}/api/permissions/user/${userId}`,
+      `${baseUrl}/api/permissions/users/${userId}`,
       {
         method: "GET",
         headers: this.getHeaders(),
@@ -38,27 +53,14 @@ export class PermissionService {
       throw new Error(`Failed to fetch user permissions: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: EffectivePermissionsResponse = await response.json();
 
-    // Handle case where API returns array of strings instead of Permission objects
-    if (Array.isArray(data.permissions)) {
-      return data.permissions.map((perm: string) => ({
-        name: perm,
-        groups: [perm],
-        permissions: [perm],
-      }));
-    }
-
-    // Handle case where API returns array of strings directly
-    if (Array.isArray(data) && typeof data[0] === "string") {
-      return data.map((perm: string) => ({
-        name: perm,
-        groups: [perm],
-        permissions: [perm],
-      }));
-    }
-
-    return data;
+    // Use effectivePermissions array directly as per integration guide
+    return data.effectivePermissions.map((perm: string) => ({
+      name: perm,
+      groups: [],
+      permissions: [perm],
+    }));
   }
 
   private async getBaseUrl(endpoint: string = '') {

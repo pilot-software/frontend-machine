@@ -1,25 +1,48 @@
-// Permission constants
+// Permission constants matching backend API
 export const PERMISSIONS = {
   // Patient permissions
-  PATIENTS_VIEW: 'patients.view',
-  PATIENTS_CREATE: 'patients.create',
-  PATIENTS_UPDATE: 'patients.update',
-  PATIENTS_DELETE: 'patients.delete',
+  VIEW_PATIENT: 'VIEW_PATIENT',
+  CREATE_PATIENT: 'CREATE_PATIENT',
+  UPDATE_PATIENT: 'UPDATE_PATIENT',
+  DELETE_PATIENT: 'DELETE_PATIENT',
   
   // Appointment permissions
-  APPOINTMENTS_VIEW: 'appointments.view',
-  APPOINTMENTS_CREATE: 'appointments.create',
-  APPOINTMENTS_UPDATE: 'appointments.update',
-  APPOINTMENTS_DELETE: 'appointments.delete',
+  VIEW_APPOINTMENT: 'VIEW_APPOINTMENT',
+  CREATE_APPOINTMENT: 'CREATE_APPOINTMENT',
+  UPDATE_APPOINTMENT: 'UPDATE_APPOINTMENT',
+  CANCEL_APPOINTMENT: 'CANCEL_APPOINTMENT',
   
-  // Financial permissions
-  BILLING_VIEW: 'billing.view',
-  BILLING_CREATE: 'billing.create',
-  BILLING_UPDATE: 'billing.update',
+  // Medical Record permissions
+  VIEW_MEDICAL_RECORD: 'VIEW_MEDICAL_RECORD',
+  CREATE_MEDICAL_RECORD: 'CREATE_MEDICAL_RECORD',
+  UPDATE_MEDICAL_RECORD: 'UPDATE_MEDICAL_RECORD',
   
-  // Admin permissions
-  USERS_MANAGE: 'users.manage',
-  SETTINGS_MANAGE: 'settings.manage',
+  // Prescription permissions
+  VIEW_PRESCRIPTION: 'VIEW_PRESCRIPTION',
+  CREATE_PRESCRIPTION: 'CREATE_PRESCRIPTION',
+  UPDATE_PRESCRIPTION: 'UPDATE_PRESCRIPTION',
+  
+  // Lab permissions
+  VIEW_LAB_RESULTS: 'VIEW_LAB_RESULTS',
+  CREATE_LAB_ORDER: 'CREATE_LAB_ORDER',
+  UPDATE_LAB_RESULTS: 'UPDATE_LAB_RESULTS',
+  
+  // Billing permissions
+  VIEW_BILLING: 'VIEW_BILLING',
+  CREATE_INVOICE: 'CREATE_INVOICE',
+  PROCESS_PAYMENT: 'PROCESS_PAYMENT',
+  
+  // User Management permissions
+  VIEW_USER: 'VIEW_USER',
+  CREATE_USER: 'CREATE_USER',
+  UPDATE_USER: 'UPDATE_USER',
+  DEACTIVATE_USER: 'DEACTIVATE_USER',
+  
+  // Admin-specific permissions (request backend to add these)
+  VIEW_ANALYTICS: 'VIEW_ANALYTICS',
+  VIEW_SECURITY_LOGS: 'VIEW_SECURITY_LOGS',
+  MANAGE_PERMISSIONS: 'MANAGE_PERMISSIONS',
+  MANAGE_SETTINGS: 'MANAGE_SETTINGS',
 } as const;
 
 export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS];

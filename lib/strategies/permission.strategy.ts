@@ -138,7 +138,6 @@ const PERMISSION_MENU_MAP: Record<string, MenuItem> = {
 
 export class PermissionStrategy {
     static getMenuItems(userPermissions: Permission[]): MenuItem[] {
-        // Handle case where userPermissions might not be an array
         if (!Array.isArray(userPermissions)) {
             return [{icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'}];
         }
@@ -146,82 +145,71 @@ export class PermissionStrategy {
         const permissionNames = userPermissions.map(p => p.name).filter(Boolean);
         const menuItems: MenuItem[] = [];
 
-        // Main routes without dashboard prefix
         menuItems.push({icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'});
 
-        if (permissionNames.some(p => p.startsWith('PATIENTS_'))) {
-            menuItems.push({icon: User, label: "patients", path: "/patients", permission: 'PATIENTS_VIEW'});
+        if (permissionNames.some(p => p.includes('_PATIENT'))) {
+            menuItems.push({icon: User, label: "patients", path: "/patients", permission: 'VIEW_PATIENT'});
         }
 
-        if (permissionNames.some(p => p.startsWith('APPOINTMENTS_'))) {
+        if (permissionNames.some(p => p.includes('_APPOINTMENT'))) {
             menuItems.push({
                 icon: Calendar,
                 label: "appointments",
                 path: "/appointments",
-                permission: 'APPOINTMENTS_VIEW'
+                permission: 'VIEW_APPOINTMENT'
             });
         }
 
-        if (permissionNames.some(p => p.startsWith('MEDICAL_RECORDS_'))) {
+        if (permissionNames.some(p => p.includes('_MEDICAL_RECORD'))) {
             menuItems.push({
                 icon: ClipboardList,
                 label: "clinical",
                 path: "/clinical",
-                permission: 'MEDICAL_RECORDS_READ'
+                permission: 'VIEW_MEDICAL_RECORD'
             });
         }
 
-        if (permissionNames.some(p => p.startsWith('MEDICAL_RECORDS_') || p.startsWith('APPOINTMENTS_'))) {
+        if (permissionNames.some(p => p.includes('_PRESCRIPTION'))) {
             menuItems.push({
                 icon: Pill,
                 label: "prescriptions",
                 path: "/prescriptions",
-                permission: 'MEDICAL_RECORDS_READ'
+                permission: 'VIEW_PRESCRIPTION'
             });
         }
 
-        if (permissionNames.some(p => p.startsWith('BILLING_'))) {
+        if (permissionNames.some(p => p.includes('_BILLING') || p.includes('_INVOICE') || p.includes('_PAYMENT'))) {
             menuItems.push({
                 icon: BarChart3,
                 label: "financial",
                 path: "/financial",
-                permission: 'BILLING_VIEW_INVOICES'
+                permission: 'VIEW_BILLING'
             });
         }
 
-        if (permissionNames.some(p => p.startsWith('USERS_'))) {
-            menuItems.push({icon: Users, label: "userManagement", path: "/users", permission: 'USERS_VIEW'});
+        if (permissionNames.some(p => p.includes('_USER'))) {
+            menuItems.push({icon: Users, label: "userManagement", path: "/users", permission: 'VIEW_USER'});
         }
 
-        // Show bed management for admins or users with bed permissions
-        if (permissionNames.some(p => p.includes('BED') || p.includes('BEDS')) || 
-            permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS') ||
-            permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
-            menuItems.push({icon: Bed, label: "bedManagement", path: "/beds", permission: 'BEDS_VIEW'});
+        if (permissionNames.some(p => p.includes('_LAB'))) {
+            menuItems.push({icon: Bed, label: "bedManagement", path: "/beds", permission: 'VIEW_LAB_RESULTS'});
         }
 
-        // Bed management sub-route (manage page)
-        if (permissionNames.includes('BEDS_MANAGE') ||
-            permissionNames.includes('SYSTEM_HOSPITAL_SETTINGS') ||
-            permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
-            // This route is accessible but not shown in menu (accessed via button)
+        // Admin-specific menu items
+        if (permissionNames.includes('VIEW_ANALYTICS')) {
+            menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'VIEW_ANALYTICS'});
         }
 
-        if (permissionNames.includes('QUEUES_ADMIN_ALL')) {
-            menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'QUEUES_ADMIN_ALL'});
+        if (permissionNames.includes('VIEW_SECURITY_LOGS')) {
+            menuItems.push({icon: Lock, label: "security", path: "/security", permission: 'VIEW_SECURITY_LOGS'});
         }
 
-        if (permissionNames.includes('SYSTEM_MANAGE_ROLES')) {
-            menuItems.push({icon: Lock, label: "security", path: "/security", permission: 'SYSTEM_MANAGE_ROLES'});
+        if (permissionNames.includes('MANAGE_PERMISSIONS')) {
+            menuItems.push({icon: Shield, label: "permissions", path: "/permissions", permission: 'MANAGE_PERMISSIONS'});
         }
 
-        if (permissionNames.includes('USERS_MANAGE_PERMISSIONS')) {
-            menuItems.push({
-                icon: Shield,
-                label: "permissions",
-                path: "/permissions",
-                permission: 'USERS_MANAGE_PERMISSIONS'
-            });
+        if (permissionNames.includes('MANAGE_SETTINGS')) {
+            menuItems.push({icon: Settings, label: "settings", path: "/settings", permission: 'MANAGE_SETTINGS'});
         }
 
         return menuItems;
