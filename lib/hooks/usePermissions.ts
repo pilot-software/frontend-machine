@@ -1,29 +1,25 @@
-import { useAuth } from "@/components/providers/AuthContext";
+import { usePermissions as usePermissionsContext, usePermissionChecks } from "@/components/providers/PermissionProvider";
 
 export const usePermissions = () => {
-  const { permissions, hasPermission, hasAnyPermission } = useAuth();
+  const context = usePermissionsContext();
+  const checks = usePermissionChecks();
 
   return {
-    permissions,
-    hasPermission,
-    hasAnyPermission,
-    // Common permission checks
-    canViewPatients: () =>
-      hasAnyPermission(["PATIENT_VIEW", "PATIENT_MANAGEMENT"]),
-    canManagePatients: () => hasPermission("PATIENT_MANAGEMENT"),
-    canViewAppointments: () =>
-      hasAnyPermission(["APPOINTMENT_VIEW", "APPOINTMENT_MANAGEMENT"]),
-    canManageAppointments: () => hasPermission("APPOINTMENT_MANAGEMENT"),
-    canViewClinicalRecords: () => hasPermission("CLINICAL_RECORDS"),
-    canViewPrescriptions: () =>
-      hasAnyPermission(["PRESCRIPTION_VIEW", "PRESCRIPTION_MANAGEMENT"]),
-    canManagePrescriptions: () => hasPermission("PRESCRIPTION_MANAGEMENT"),
-    canViewFinancials: () =>
-      hasAnyPermission(["FINANCIAL_REPORTS", "BILLING_MANAGEMENT"]),
-    canManageBilling: () => hasPermission("BILLING_MANAGEMENT"),
-    canViewAnalytics: () => hasPermission("ANALYTICS_VIEW"),
-    canViewReports: () => hasPermission("REPORTS_VIEW"),
-    canManageUsers: () => hasPermission("USER_MANAGEMENT"),
-    canViewSecurityLogs: () => hasPermission("SECURITY_LOGS"),
+    ...context,
+    ...checks,
+    // Legacy compatibility methods
+    canViewPatients: checks.canViewPatients,
+    canManagePatients: () => context.hasAnyPermission(['CREATE_PATIENT', 'UPDATE_PATIENT', 'DELETE_PATIENT']),
+    canViewAppointments: checks.canViewAppointments,
+    canManageAppointments: () => context.hasAnyPermission(['CREATE_APPOINTMENT', 'UPDATE_APPOINTMENT', 'CANCEL_APPOINTMENT']),
+    canViewClinicalRecords: () => context.hasPermission('VIEW_MEDICAL_RECORD'),
+    canViewPrescriptions: checks.canViewPrescriptions,
+    canManagePrescriptions: () => context.hasAnyPermission(['CREATE_PRESCRIPTION', 'UPDATE_PRESCRIPTION']),
+    canViewFinancials: () => context.hasAnyPermission(['VIEW_BILLING', 'VIEW_ANALYTICS']),
+    canManageBilling: () => context.hasAnyPermission(['CREATE_INVOICE', 'PROCESS_PAYMENT']),
+    canViewAnalytics: checks.canViewAnalytics,
+    canViewReports: () => context.hasPermission('VIEW_ANALYTICS'),
+    canManageUsers: () => context.hasAnyPermission(['CREATE_USER', 'UPDATE_USER', 'DEACTIVATE_USER']),
+    canViewSecurityLogs: checks.canViewSecurityLogs,
   };
 };

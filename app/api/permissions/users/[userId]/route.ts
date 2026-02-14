@@ -1,0 +1,37 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://localhost:8080';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { userId: string } }
+) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    const { userId } = params;
+    
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': authHeader || '',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to fetch user permissions' },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('User permissions API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

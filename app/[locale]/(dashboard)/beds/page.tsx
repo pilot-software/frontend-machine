@@ -231,11 +231,9 @@ export default function BedManagementPage() {
             <div className="flex gap-2">
               <Button
                 onClick={() => setIsAddBedOpen(true)}
-                className="relative group bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
               >
-                <span className="absolute inset-0 bg-blue-400/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 blur-md"></span>
-                <Plus className="h-4 w-4 mr-2 relative" />
-                <span className="relative font-semibold">Add Bed</span>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Bed
               </Button>
               <Button
                 onClick={() => router.push('/en/beds/manage')}
