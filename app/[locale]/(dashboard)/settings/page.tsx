@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Bell, Database, Palette, Shield, User, Lock } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { toast } from "sonner";
-import { ChangePasswordModal } from "@/components/features/settings/ChangePasswordModal";
 
 type SettingsSection = "appearance" | "notifications" | "system" | "security" | "account" | "privacy";
 
@@ -25,7 +24,6 @@ export default function SettingsPage() {
     const [language, setLanguage] = useState(locale);
     const [fontSize, setFontSize] = useState("medium");
     const [timezone, setTimezone] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('timezone') || 'utc' : 'utc');
-    const [passwordModalOpen, setPasswordModalOpen] = useState(false);
 
     const handleLanguageChange = (newLang: string) => {
         setLanguage(newLang);
@@ -284,10 +282,6 @@ export default function SettingsPage() {
                                 <p className="text-sm text-muted-foreground">admin@hospital.com</p>
                             </div>
                             <div className="space-y-2">
-                                <Label>Change Password</Label>
-                                <Button variant="outline" onClick={() => setPasswordModalOpen(true)}>Update Password</Button>
-                            </div>
-                            <div className="space-y-2">
                                 <Label>Delete Account</Label>
                                 <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
                                 <Button variant="destructive">Delete Account</Button>
@@ -328,8 +322,6 @@ export default function SettingsPage() {
                 )}
 
             </div>
-
-            <ChangePasswordModal open={passwordModalOpen} onOpenChange={setPasswordModalOpen} />
         </div>
     );
 }

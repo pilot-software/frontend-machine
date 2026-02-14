@@ -121,10 +121,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       .toUpperCase();
   };
 
-  //   const getRoleDisplayName = (role: UserRole) => {
-  //     return role.charAt(0).toUpperCase() + role.slice(1);
-  //   };
-
   const NavigationContent = () => (
     <nav className="p-4 space-y-2">
       {menuItems.map((item) => {
@@ -243,7 +239,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* User Dropdown */}
             <div className="relative z-40 isolate">
-              <DropdownMenu>
+              <DropdownMenu onOpenChange={(open) => {
+                if (open) {
+                  document.body.setAttribute('data-dropdown-open', 'true');
+                } else {
+                  document.body.removeAttribute('data-dropdown-open');
+                }
+              }}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
@@ -259,21 +261,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
-
-                    <div className="hidden lg:flex flex-col items-start">
-                      <p className="text-sm font-bold text-foreground group-hover:text-blue-600 transition-colors duration-300">
-                        {user.name}
-                      </p>
-                      <Badge
-                        variant="secondary"
-                        className={`${getRoleColor(
-                          user.role
-                        )} text-[10px] font-semibold px-2 py-0 h-5 transition-all duration-300`}
-                      >
-                        <RoleIcon className="h-2.5 w-2.5 mr-1" />
-                        {text.roles[user.role]}
-                      </Badge>
-                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent

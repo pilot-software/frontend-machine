@@ -468,3 +468,8 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px var(--input-background) inset !important;
     -webkit-text-fill-color: var(--foreground) !important;
 }
+
+/* Hide scrollbar when dropdown menu is open */
+body[data-dropdown-open="true"] {
+    overflow: hidden;
+}

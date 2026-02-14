@@ -1,5 +1,6 @@
 'use client';
 
+import {useState} from 'react';
 import {useAuth} from '@/components/providers/AuthContext';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
@@ -7,10 +8,21 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Badge} from '@/components/ui/badge';
-import {Calendar, Edit, Mail, MapPin, Phone, Shield} from 'lucide-react';
+import {Calendar, Edit, Mail, MapPin, Phone, Shield, User, Save, X} from 'lucide-react';
+import {ChangePasswordModal} from '@/components/features/settings/ChangePasswordModal';
+import {useAlert} from '@/components/AlertProvider';
+import {api} from '@/lib/api';
 
 export default function ProfilePage() {
     const {user} = useAuth();
+    const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+    const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        name: user?.name || '',
+        phone: user?.phone || '',
+    });
+    const {success, error} = useAlert();
 
     if (!user) return null;
 
@@ -35,6 +47,35 @@ export default function ProfilePage() {
         }
     };
 
+    const handleSavePersonalInfo = async () => {
+        if (!formData.name.trim()) {
+            error("Name is required");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await api.updateProfile({
+                name: formData.name,
+                phone: formData.phone,
+            });
+            success("Profile updated successfully");
+            setIsEditingPersonal(false);
+        } catch (err: any) {
+            error(err.message || "Failed to update profile");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setFormData({
+            name: user.name,
+            phone: user.phone || '',
+        });
+        setIsEditingPersonal(false);
+    };
+
     return (
         <div className="space-y-6">
             <div>
@@ -46,9 +87,9 @@ export default function ProfilePage() {
             <Card>
                 <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                        <Avatar className="h-20 w-20">
-                            <AvatarImage src={user.avatar} alt={user.name}/>
-                            <AvatarFallback className="text-lg">{getInitials(user.name)}</AvatarFallback>
+                        <Avatar className="h-20 w-20 rounded-full ring-2 ring-blue-500/20 hover:ring-blue-500/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/30">
+                            <AvatarImage src={user.avatar} alt={user.name} className="transition-all duration-300 hover:brightness-110 rounded-full"/>
+                            <AvatarFallback className="text-lg bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white font-bold rounded-full">{getInitials(user.name)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                             <h3 className="text-2xl font-semibold">{user.name}</h3>
@@ -63,10 +104,31 @@ export default function ProfilePage() {
                             </div>
                             <p className="text-muted-foreground mt-1">{user.email}</p>
                         </div>
-                        <Button variant="outline">
-                            <Edit className="h-4 w-4 mr-2"/>
-                            Edit Profile
-                        </Button>
+                        {!isEditingPersonal && (
+                            <Button variant="outline" onClick={() => setIsEditingPersonal(true)}>
+                                <Edit className="h-4 w-4 mr-2"/>
+                                Edit Profile
+                            </Button>
+                        )}
+                        {isEditingPersonal && (
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleCancel}
+                                    disabled={isLoading}
+                                >
+                                    <X className="h-4 w-4 mr-2"/>
+                                    Cancel
+                                </Button>
+                                <Button 
+                                    onClick={handleSavePersonalInfo}
+                                    disabled={isLoading}
+                                >
+                                    <Save className="h-4 w-4 mr-2"/>
+                                    {isLoading ? "Saving..." : "Save Changes"}
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -84,7 +146,14 @@ export default function ProfilePage() {
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
                             <div className="flex items-center space-x-2">
-                                <Input id="name" value={user.name} readOnly/>
+                                <User className="h-4 w-4 text-muted-foreground"/>
+                                <Input 
+                                    id="name" 
+                                    value={formData.name} 
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    readOnly={!isEditingPersonal}
+                                    disabled={isLoading}
+                                />
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -98,7 +167,13 @@ export default function ProfilePage() {
                             <Label htmlFor="phone">Phone Number</Label>
                             <div className="flex items-center space-x-2">
                                 <Phone className="h-4 w-4 text-muted-foreground"/>
-                                <Input id="phone" value={user.phone || 'Not provided'} readOnly/>
+                                <Input 
+                                    id="phone" 
+                                    value={formData.phone} 
+                                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                    readOnly={!isEditingPersonal}
+                                    disabled={isLoading}
+                                />
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -148,7 +223,7 @@ export default function ProfilePage() {
                             <h4 className="font-medium">Change Password</h4>
                             <p className="text-sm text-muted-foreground">Update your account password</p>
                         </div>
-                        <Button variant="outline">Change Password</Button>
+                        <Button variant="outline" onClick={() => setPasswordModalOpen(true)}>Change Password</Button>
                     </div>
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
@@ -159,6 +234,8 @@ export default function ProfilePage() {
                     </div>
                 </CardContent>
             </Card>
+
+            <ChangePasswordModal open={passwordModalOpen} onOpenChange={setPasswordModalOpen} />
         </div>
     );
 }
