@@ -137,6 +137,23 @@
     }
 }
 
+/* Pointer cursor for all interactive elements */
+button,
+a,
+[role="button"],
+[role="link"],
+[role="tab"],
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="submit"],
+input[type="button"],
+label[for],
+summary,
+[onclick] {
+    cursor: pointer !important;
+}
+
 /**
  * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
  */

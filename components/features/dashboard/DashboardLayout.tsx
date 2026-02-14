@@ -13,6 +13,11 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { LanguageSwitcher } from "@/components/shared/navigation/LanguageSwitcher";
 import {
   DropdownMenu,
@@ -34,8 +39,6 @@ import {
   Heart,
   DollarSign,
   UserCog,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { NotificationDropdown } from "@/components/shared/notifications/NotificationDropdown";
@@ -60,7 +63,29 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(256);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const handleMouseDown = () => setIsResizing(true);
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isResizing) return;
+    const newWidth = Math.min(Math.max(e.clientX, 64), 400);
+    setSidebarWidth(newWidth);
+  };
+
+  const handleMouseUp = () => setIsResizing(false);
+
+  React.useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isResizing]);
 
   if (!user) {
     router.replace(ROUTES.LOGIN);
@@ -347,89 +372,66 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex pt-[73px]">
         {/* Desktop Sidebar */}
-        <aside
-          className={`hidden md:block fixed left-0 top-[73px] bottom-0 bg-linear-to-b from-card via-card to-card/95 backdrop-blur-sm transition-all duration-300 ease-in-out ${
-            desktopSidebarCollapsed ? "w-20" : "w-64"
-          } group/sidebar`}
+        <aside 
+          className="hidden md:block fixed left-0 top-[73px] bottom-0 bg-linear-to-b from-card via-card to-card/95 backdrop-blur-sm transition-none"
+          style={{ width: `${sidebarWidth}px` }}
         >
-          {/* Sidebar border with gradient */}
           <div className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-border to-transparent" />
-
-          {/* Navigation */}
-          <nav
-            className={`h-full max-h-[calc(100vh-73px)] overflow-hidden ${
-              desktopSidebarCollapsed ? "px-2 py-4" : "px-3 pt-14 pb-4"
-            }`}
+          
+          {/* Resize Handle */}
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50 active:bg-blue-500 transition-colors group"
+            onMouseDown={handleMouseDown}
           >
-            {/* Toggle button inside collapsed nav */}
-            {desktopSidebarCollapsed && (
-              <div className="mb-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDesktopSidebarCollapsed(false)}
-                  className="w-full justify-center p-2.5 h-12 rounded-lg bg-linear-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300"
-                >
-                  <ChevronRight className="h-5 w-5 text-blue-600" />
-                </Button>
-              </div>
-            )}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-border group-hover:bg-blue-500 rounded-full transition-colors" />
+          </div>
 
-            {/* Toggle button on border when expanded */}
-            {!desktopSidebarCollapsed && (
-              <div className="absolute -right-3 top-6 z-20">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDesktopSidebarCollapsed(true)}
-                  className="h-6 w-6 rounded-full bg-card p-0 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 border border-border"
-                >
-                  <ChevronLeft className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
+          <nav className="h-full max-h-[calc(100vh-73px)] overflow-hidden px-2 py-4">
             <div className="space-y-1">
               {menuItems.map((item) => {
                 const ItemIcon = item.icon;
                 const isActive =
                   pathname.includes(item.path) ||
                   (item.path === "/patients" && pathname.includes("/patient/"));
-                return (
+                const showText = sidebarWidth >= 150;
+                
+                const buttonContent = (
                   <Button
                     key={item.path}
                     variant="ghost"
                     onClick={() => router.push(item.path)}
-                    title={desktopSidebarCollapsed ? item.label : undefined}
-                    className={`w-full transition-all duration-200 ${
-                      desktopSidebarCollapsed
-                        ? "justify-center px-0 h-12"
-                        : "justify-start px-3 h-11"
+                    className={`w-full transition-all duration-200 h-11 ${
+                      showText ? 'justify-start px-3' : 'justify-center px-0'
                     } ${
                       isActive
                         ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium shadow-sm"
                         : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     }`}
                   >
-                    <ItemIcon
-                      className={`${
-                        desktopSidebarCollapsed ? "h-5 w-5" : "h-4 w-4 mr-3"
-                      }`}
-                    />
-                    {!desktopSidebarCollapsed && (
-                      <span className="truncate">{t(item.label)}</span>
-                    )}
+                    <ItemIcon className={`h-4 w-4 ${showText ? 'mr-3 flex-shrink-0' : ''}`} />
+                    {showText && <span className="whitespace-nowrap overflow-hidden text-ellipsis">{t(item.label)}</span>}
                   </Button>
                 );
+
+                return !showText ? (
+                  <Tooltip key={item.path}>
+                    <TooltipTrigger asChild>
+                      {buttonContent}
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      {t(item.label)}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : buttonContent;
               })}
             </div>
           </nav>
         </aside>
 
         {/* Main Content */}
-        <main
-          className={`flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-auto transition-all duration-300 ${
-            desktopSidebarCollapsed ? "md:ml-20" : "md:ml-64"
-          }`}
+        <main 
+          className="flex-1 p-3 sm:p-4 md:p-6 bg-background overflow-x-auto transition-none md:ml-0"
+          style={{ marginLeft: isMobile ? '0' : `${sidebarWidth}px` }}
         >
           {children}
         </main>

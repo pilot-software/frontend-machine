@@ -225,6 +225,13 @@ export class ApiClient {
     return this.request("/api/permissions/audit");
   }
 
+  async changePassword(passwordData: any) {
+    return this.request("/api/auth/change-password", {
+      method: "POST",
+      body: passwordData,
+    });
+  }
+
   private addBranchId(data: any, branchId?: string) {
     const payload = { ...data };
     if (branchId) {
@@ -328,6 +335,8 @@ class ExtendedApi extends SimpleApi {
   getUserAuditLog = (userId: string) =>
     this.get(`/api/users/${userId}/permissions/audit`);
   getPermissionAuditLog = () => this.get("/api/permissions/audit");
+  changePassword = (passwordData: any) =>
+    this.post("/api/auth/change-password", passwordData);
   getUserPermissions = (userId: string) =>
     this.get(`/api/permissions/user/${userId}`);
   assignUserPermissions = (userId: string, permissions: any) =>

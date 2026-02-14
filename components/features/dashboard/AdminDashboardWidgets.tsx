@@ -66,7 +66,7 @@ export function AdminDashboardWidgets({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3">
             <Button
               variant="outline"
               className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
