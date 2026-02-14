@@ -21,174 +21,167 @@ export class ApiClient {
 
   // Patient API
   async getPatients(branchId?: string) {
-    return this.request("/patients", { branchId });
+    return this.request("/api/patients", { branchId });
   }
 
   async createPatient(data: any, branchId?: string) {
-    return this.request("/patients", {
+    return this.request("/api/patients", {
       method: "POST",
       body: this.addBranchId(data, branchId),
     });
   }
 
   async updatePatient(id: string, data: any, branchId?: string) {
-    return this.request(`/patients/${id}`, {
+    return this.request(`/api/patients/${id}`, {
       method: "PUT",
       body: this.addBranchId(data, branchId),
     });
   }
 
-  // Appointment API
   async getAppointments(branchId?: string) {
-    return this.request("/appointments", { branchId });
+    return this.request("/api/appointments", { branchId });
   }
 
   async createAppointment(data: any, branchId?: string) {
-    return this.request("/appointments", {
+    return this.request("/api/appointments", {
       method: "POST",
       body: this.addBranchId(data, branchId),
     });
   }
 
-  // Dashboard API - Now uses role-based routing
   async getDashboardData(branchId?: string) {
-    return this.request("/dashboard/stats", { branchId });
+    return this.request("/api/ops/dashboard/stats", { branchId });
   }
 
   async getPatientStats(branchId?: string) {
-    return this.request("/dashboard/patient-stats", { branchId });
+    return this.request("/api/ops/dashboard/patient-stats", { branchId });
   }
 
   async getFinancialStats(branchId?: string) {
-    return this.request("/dashboard/financial-stats", { branchId });
+    return this.request("/api/ops/dashboard/financial-stats", { branchId });
   }
 
   async getClinicalStats(branchId?: string) {
-    return this.request("/dashboard/clinical-stats", { branchId });
+    return this.request("/api/ops/dashboard/clinical-stats", { branchId });
   }
 
   async getAppointmentStats(branchId?: string) {
-    return this.request("/dashboard/appointment-stats", { branchId });
+    return this.request("/api/ops/dashboard/appointment-stats", { branchId });
   }
 
   async getAnalytics(branchId?: string) {
-    return this.request("/dashboard/analytics", { branchId });
+    return this.request("/api/ops/dashboard/analytics", { branchId });
   }
 
-  // Branch Management API - Now uses ops routing
   async getBranches() {
-    return this.request("/branches");
+    return this.request("/api/ops/branches");
   }
 
   async getBranchDetails(branchId: string) {
-    return this.request(`/branches/${branchId}`);
+    return this.request(`/api/ops/branches/${branchId}`);
   }
 
   async getBranchPermissions(branchId: string) {
-    return this.request(`/branches/${branchId}/permissions`);
+    return this.request(`/api/ops/branches/${branchId}/permissions`);
   }
 
-  // Queue Management API - NEW
   async getQueues() {
-    return this.request("/queues");
+    return this.request("/api/queues");
   }
 
   async assignToQueue(queueData: any) {
-    return this.request("/queues/assign", { method: "POST", body: queueData });
+    return this.request("/api/queues/assign", { method: "POST", body: queueData });
   }
 
   async updateQueueStatus(id: string, statusData: any) {
-    return this.request(`/queues/${id}/status`, {
+    return this.request(`/api/queues/${id}/status`, {
       method: "PUT",
       body: statusData,
     });
   }
 
-  // User Management API - Uses consistent request method
   async getUsers() {
-    return this.request("/users");
+    return this.request("/api/users");
   }
 
   async getUsersByRole(role: string) {
-    return this.request(`/users/role/${role}`);
+    return this.request(`/api/users/role/${role}`);
   }
 
   async createUser(userData: any) {
-    return this.request("/users", { method: "POST", body: userData });
+    return this.request("/api/users", { method: "POST", body: userData });
   }
 
   async updateUser(id: string, userData: any) {
-    return this.request(`/users/${id}`, { method: "PUT", body: userData });
+    return this.request(`/api/users/${id}`, { method: "PUT", body: userData });
   }
 
   async getDoctors() {
-    return this.request("/users/doctors");
+    return this.request("/api/users/doctors");
   }
 
   async getDoctor(id: string) {
-    return this.request(`/users/doctors/${id}`);
+    return this.request(`/api/users/doctors/${id}`);
   }
 
-  // Operations API endpoints
   async updateUserRole(id: string, role: string) {
-    return this.request(`/users/${id}/role`, { method: "PUT", body: { role } });
+    return this.request(`/api/users/${id}/role`, { method: "PUT", body: { role } });
   }
 
   async updateUserStatus(id: string, status: string) {
-    return this.request(`/users/${id}/status`, {
+    return this.request(`/api/users/${id}/status`, {
       method: "PUT",
       body: { status },
     });
   }
 
   async getUserPermissions(userId: string) {
-    return this.request(`/system/permissions/${userId}`);
+    return this.request(`/api/system/permissions/${userId}`);
   }
 
   async getSystemRoles() {
-    return this.request("/system/roles");
+    return this.request("/api/system/roles");
   }
 
   async getSystemSettings() {
-    return this.request("/system/settings");
+    return this.request("/api/system/settings");
   }
 
-  // Permission Management API - NEW
   async getAllPermissions() {
-    return this.request("/permissions/all");
+    return this.request("/api/permissions/all");
   }
 
   async assignUserPermissions(userId: string, permissions: any) {
-    return this.request(`/permissions/user/${userId}`, {
+    return this.request(`/api/permissions/user/${userId}`, {
       method: "POST",
       body: permissions,
     });
   }
 
   async getRolePermissions(role: string) {
-    return this.request(`/permissions/role/${role}`);
+    return this.request(`/api/permissions/role/${role}`);
   }
 
   async updateRolePermissions(role: string, permissions: any) {
-    return this.request(`/permissions/role/${role}`, {
+    return this.request(`/api/permissions/role/${role}`, {
       method: "PUT",
       body: permissions,
     });
   }
 
   async getPermissionGroups() {
-    return this.request("/permissions/groups");
+    return this.request("/api/permissions/groups");
   }
 
   async createPermissionGroup(groupData: any) {
-    return this.request("/permissions/groups", {
+    return this.request("/api/permissions/groups", {
       method: "POST",
       body: groupData,
     });
   }
 
   async getBranchUserPermissions(branchId: string) {
-    return this.request(`/permissions/branch/${branchId}/users`);
+    return this.request(`/api/permissions/branch/${branchId}/users`);
   }
 
   async assignBranchPermissions(
@@ -196,41 +189,40 @@ export class ApiClient {
     userId: string,
     permissions: any
   ) {
-    return this.request(`/permissions/branch/${branchId}/user/${userId}`, {
+    return this.request(`/api/permissions/branch/${branchId}/user/${userId}`, {
       method: "POST",
       body: permissions,
     });
   }
 
-  // User Management Extended API
   async deleteUser(userId: string) {
-    return this.request(`/users/${userId}`, { method: "DELETE" });
+    return this.request(`/api/users/${userId}`, { method: "DELETE" });
   }
 
   async getUserTemporaryRoles(userId: string) {
-    return this.request(`/users/${userId}/temporary-roles`);
+    return this.request(`/api/users/${userId}/temporary-roles`);
   }
 
   async grantTemporaryRole(userId: string, roleData: any) {
-    return this.request(`/users/${userId}/temporary-roles`, {
+    return this.request(`/api/users/${userId}/temporary-roles`, {
       method: "POST",
       body: roleData,
     });
   }
 
   async revokeTemporaryRole(userId: string, roleId: string) {
-    return this.request(`/users/${userId}/temporary-roles/${roleId}/revoke`, {
+    return this.request(`/api/users/${userId}/temporary-roles/${roleId}/revoke`, {
       method: "PUT",
       body: {},
     });
   }
 
   async getUserAuditLog(userId: string) {
-    return this.request(`/users/${userId}/audit`);
+    return this.request(`/api/users/${userId}/audit`);
   }
 
   async getPermissionAuditLog() {
-    return this.request("/permissions/audit");
+    return this.request("/api/permissions/audit");
   }
 
   private addBranchId(data: any, branchId?: string) {
@@ -256,22 +248,10 @@ export class ApiClient {
   }
 
   private async request(endpoint: string, options: ApiOptions = {}) {
-    const { method = "GET", body, branchId, userRole } = options;
-    const role = userRole || this.getUserRole();
+    const { method = "GET", body, branchId } = options;
 
-    // Use new routing logic
-    const routedEndpoint = getEndpoint(role, endpoint);
-
-    // Get microservice URL based on endpoint
-    const { getMicroserviceUrl } = await import(
-      "./config/microservices.config"
-    );
-    const baseUrl = getMicroserviceUrl(routedEndpoint);
-
-    const url =
-      baseUrl +
-      routedEndpoint +
-      (branchId && branchId !== "all" ? `?branchId=${branchId}` : "");
+    const baseUrl = getBaseUrl();
+    const url = baseUrl + endpoint + (branchId && branchId !== "all" ? `?branchId=${branchId}` : "");
 
     const config: RequestInit = {
       method,
@@ -292,18 +272,9 @@ export class ApiClient {
 
 export const apiClient = new ApiClient();
 
-// Get base URL based on environment and endpoint
-const getBaseUrl = async (endpoint: string = "") => {
-  if (process.env.NODE_ENV === "production") {
-    const { getMicroserviceUrl } = await import(
-      "./config/microservices.config"
-    );
-    return getMicroserviceUrl(endpoint);
-  }
-  return (
-    process.env.NEXT_PUBLIC_API_BASE_URL?.replace("/api", "") ||
-    "http://localhost:8080"
-  );
+// Get base URL - always use direct backend
+const getBaseUrl = () => {
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 };
 
 class SimpleApi {
@@ -330,25 +301,17 @@ class SimpleApi {
     const userData = user ? JSON.parse(user) : null;
     const organizationId = userData?.organizationId;
     
-    console.log('[API] Request:', { endpoint, method, organizationId, hasToken: !!token });
-    
-    if (!organizationId) {
-      console.error('[API] Organization ID missing from user data:', userData);
-      throw new Error("Organization ID not found. Please login again.");
-    }
-    
-    const baseUrl = await getBaseUrl(endpoint);
+    const baseUrl = getBaseUrl();
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method,
       headers: {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
-        "X-Organization-ID": organizationId,
+        ...(organizationId && { "X-Organization-ID": organizationId }),
       },
       ...(data && { body: JSON.stringify(data) }),
     });
     
-    console.log('[API] Response:', { endpoint, status: response.status, ok: response.ok });
     return handleApiResponse(response);
   }
 }

@@ -13,11 +13,11 @@ export interface ApiNotification {
 
 export class NotificationService {
     async getNotifications(): Promise<ApiNotification[]> {
-        return api.get('/notifications');
+        return api.get('/api/notifications');
     }
 
     async markAsRead(id: string): Promise<void> {
-        return api.put(`/notifications/${id}/read`, {});
+        return api.put(`/api/notifications/${id}/read`, {});
     }
 }
 

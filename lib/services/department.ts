@@ -15,11 +15,11 @@ export interface ApiDepartment {
 
 export class DepartmentService {
     async getDepartments(): Promise<ApiDepartment[]> {
-        return api.get('/departments');
+        return api.get('/api/departments');
     }
 
     async getDepartment(id: string): Promise<ApiDepartment> {
-        return api.get(`/departments/${id}`);
+        return api.get(`/api/departments/${id}`);
     }
 }
 

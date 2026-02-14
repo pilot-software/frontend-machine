@@ -18,27 +18,27 @@ export interface ApiLabResult {
 
 export class LabService {
     async getLabResults(): Promise<ApiLabResult[]> {
-        return api.get('/lab-results');
+        return api.get('/api/lab-results');
     }
 
     async getLabResult(id: string): Promise<ApiLabResult> {
-        return api.get(`/lab-results/${id}`);
+        return api.get(`/api/lab-results/${id}`);
     }
 
     async createLabResult(labResult: Omit<ApiLabResult, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiLabResult> {
-        return api.post('/lab-results', labResult);
+        return api.post('/api/lab-results', labResult);
     }
 
     async updateLabResult(id: string, labResult: Partial<ApiLabResult>): Promise<ApiLabResult> {
-        return api.put(`/lab-results/${id}`, labResult);
+        return api.put(`/api/lab-results/${id}`, labResult);
     }
 
     async getPatientLabResults(patientId: string): Promise<ApiLabResult[]> {
-        return api.get(`/patients/${patientId}/lab-results`);
+        return api.get(`/api/patients/${patientId}/lab-results`);
     }
 
     async deleteLabResult(id: string): Promise<void> {
-        return api.delete(`/lab-results/${id}`);
+        return api.delete(`/api/lab-results/${id}`);
     }
 }
 

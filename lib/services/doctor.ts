@@ -11,10 +11,10 @@ export interface ApiDoctor {
 
 export const doctorService = {
     async getDoctors(): Promise<ApiDoctor[]> {
-        return await apiClient.get<ApiDoctor[]>('/users/doctors');
+        return await apiClient.get<ApiDoctor[]>('/api/users/doctors');
     },
 
     async getDoctor(id: string): Promise<ApiDoctor> {
-        return await apiClient.get<ApiDoctor>(`/users/doctors/${id}`);
+        return await apiClient.get<ApiDoctor>(`/api/users/doctors/${id}`);
     }
 };

@@ -12,7 +12,8 @@ import {
     Stethoscope,
     User,
     Users,
-    Pill
+    Pill,
+    Clock
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -48,6 +49,16 @@ export class PermissionStrategy {
                 path: "/appointments",
                 permission: 'VIEW_APPOINTMENT'
             });
+            
+            // Add availability management for doctors, admins, and receptionists
+            if (permissionNames.some(p => p.includes('CREATE_APPOINTMENT') || p.includes('MANAGE_SCHEDULE'))) {
+                menuItems.push({
+                    icon: Clock,
+                    label: "availability",
+                    path: "/availability",
+                    permission: 'CREATE_APPOINTMENT'
+                });
+            }
         }
 
         if (permissionNames.some(p => p.includes('_MEDICAL_RECORD'))) {

@@ -1,7 +1,5 @@
-'use client';
-
-import {SecurityLog} from '@/components/shared/utils/SecurityLog';
+import AuditLogViewer from '@/components/features/admin/AuditLogViewer';
 
 export default function SecurityPage() {
-    return <SecurityLog/>;
+    return <AuditLogViewer />;
 }

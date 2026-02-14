@@ -1,12 +1,11 @@
 import {IApiClient} from '../abstractions/service.interface';
-import {getApiBaseUrl} from '../config/api.config';
 
 export class ApiClient implements IApiClient {
     private baseUrl: string;
     private token: string | null = null;
 
     constructor(baseUrl?: string) {
-        this.baseUrl = baseUrl || getApiBaseUrl();
+        this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
     }
 
     setToken(token: string): void {
@@ -51,25 +50,24 @@ export class ApiClient implements IApiClient {
         }
     }
 
-    // Legacy methods for backward compatibility
     async getAppointments() {
-        return this.get('/appointments');
+        return this.get('/api/appointments');
     }
 
     async getPatients() {
-        return this.get('/patients');
+        return this.get('/api/patients');
     }
 
     async createPatient(data: any) {
-        return this.post('/patients', data);
+        return this.post('/api/patients', data);
     }
 
     async updatePatient(id: string, data: any) {
-        return this.put(`/patients/${id}`, data);
+        return this.put(`/api/patients/${id}`, data);
     }
 
     async createAppointment(data: any) {
-        return this.post('/appointments', data);
+        return this.post('/api/appointments', data);
     }
 
     private getHeaders(): Record<string, string> {
@@ -77,10 +75,16 @@ export class ApiClient implements IApiClient {
             'Content-Type': 'application/json',
         };
 
-        // Use token from instance or localStorage
         const token = this.token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const user = typeof window !== 'undefined' ? localStorage.getItem('healthcare_user') : null;
+        const userData = user ? JSON.parse(user) : null;
+        const organizationId = userData?.organizationId;
+        if (organizationId) {
+            headers['X-Organization-ID'] = organizationId;
         }
 
         return headers;
