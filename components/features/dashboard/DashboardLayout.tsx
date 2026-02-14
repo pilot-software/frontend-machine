@@ -249,18 +249,21 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative flex items-center gap-2 sm:gap-3 px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl group transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 hover:shadow-xl hover:shadow-blue-500/20"
+                    className="relative flex items-center gap-2 sm:gap-3 px-2 py-2 sm:px-3 sm:py-2.5 rounded-full group transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 hover:shadow-xl hover:shadow-blue-500/20 border border-transparent hover:border-blue-500/20"
                   >
-                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 ring-2 ring-blue-500/20 group-hover:ring-blue-500/40 transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-blue-500/30">
-                      <AvatarImage
-                        src={user.avatar}
-                        alt={user.name}
-                        className="transition-all duration-300 group-hover:brightness-110"
-                      />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white text-xs font-bold">
-                        {getInitials(user.name)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="relative">
+                      <Avatar className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 ring-2 ring-blue-500/30 group-hover:ring-blue-500/60 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-blue-500/40">
+                        <AvatarImage
+                          src={user.avatar}
+                          alt={user.name}
+                          className="transition-all duration-300 group-hover:brightness-110"
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white text-xs sm:text-sm font-bold">
+                          {getInitials(user.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-background animate-pulse" />
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
