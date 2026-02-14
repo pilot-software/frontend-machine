@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { permissionService, UserEffectivePermissionsResponse, PermissionGroup } from '@/lib/services/permission';
 import { useAuth } from './AuthContext';
+import { Loader } from '@/components/ui/loader';
 
 interface PermissionContextType {
   permissions: Set<string>;
@@ -127,7 +128,11 @@ export function PermissionGuard({
   const { hasPermission, hasAnyPermission, hasAllPermissions, loading } = usePermissions();
 
   if (loading) {
-    return <div className="animate-pulse">Loading...</div>;
+    return (
+      <div className="py-8">
+        <Loader text="Loading permissions..." />
+      </div>
+    );
   }
 
   let hasAccess = false;

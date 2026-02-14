@@ -8,7 +8,8 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Badge} from '@/components/ui/badge';
-import {Calendar, Edit, Mail, MapPin, Phone, Shield, User, Save, X} from 'lucide-react';
+import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle} from '@/components/ui/alert-dialog';
+import {Calendar, Edit, Mail, MapPin, Phone, Shield, User, Save, X, Trash2} from 'lucide-react';
 import {ChangePasswordModal} from '@/components/features/settings/ChangePasswordModal';
 import {useAlert} from '@/components/AlertProvider';
 import {api} from '@/lib/api';
@@ -16,6 +17,7 @@ import {api} from '@/lib/api';
 export default function ProfilePage() {
     const {user} = useAuth();
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -153,6 +155,7 @@ export default function ProfilePage() {
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                     readOnly={!isEditingPersonal}
                                     disabled={isLoading}
+                                    className={!isEditingPersonal ? 'bg-muted cursor-not-allowed' : 'border-2 border-primary'}
                                 />
                             </div>
                         </div>
@@ -160,7 +163,7 @@ export default function ProfilePage() {
                             <Label htmlFor="email">Email Address</Label>
                             <div className="flex items-center space-x-2">
                                 <Mail className="h-4 w-4 text-muted-foreground"/>
-                                <Input id="email" value={user.email} readOnly/>
+                                <Input id="email" value={user.email} readOnly className="bg-muted cursor-not-allowed"/>
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -173,6 +176,7 @@ export default function ProfilePage() {
                                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                                     readOnly={!isEditingPersonal}
                                     disabled={isLoading}
+                                    className={!isEditingPersonal ? 'bg-muted cursor-not-allowed' : 'border-2 border-primary'}
                                 />
                             </div>
                         </div>
@@ -180,13 +184,13 @@ export default function ProfilePage() {
                             <Label htmlFor="department">Department</Label>
                             <div className="flex items-center space-x-2">
                                 <MapPin className="h-4 w-4 text-muted-foreground"/>
-                                <Input id="department" value={user.department || 'Not assigned'} readOnly/>
+                                <Input id="department" value={user.department || 'Not assigned'} readOnly className="bg-muted cursor-not-allowed"/>
                             </div>
                         </div>
                         {user.specialization && (
                             <div className="space-y-2">
                                 <Label htmlFor="specialization">Specialization</Label>
-                                <Input id="specialization" value={user.specialization} readOnly/>
+                                <Input id="specialization" value={user.specialization} readOnly className="bg-muted cursor-not-allowed"/>
                             </div>
                         )}
                         <div className="space-y-2">
@@ -195,7 +199,7 @@ export default function ProfilePage() {
                                 <Calendar className="h-4 w-4 text-muted-foreground"/>
                                 <Input id="joined"
                                        value={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Not available'}
-                                       readOnly/>
+                                       readOnly className="bg-muted cursor-not-allowed"/>
                             </div>
                         </div>
                     </div>
@@ -232,10 +236,40 @@ export default function ProfilePage() {
                         </div>
                         <Button variant="outline">Enable 2FA</Button>
                     </div>
+                    <div className="flex items-center justify-between p-4 border border-red-200 dark:border-red-900 rounded-lg bg-red-50/50 dark:bg-red-950/30">
+                        <div>
+                            <h4 className="font-medium text-red-900 dark:text-red-400">Delete Account</h4>
+                            <p className="text-sm text-red-600 dark:text-red-500">Permanently delete your account and all data</p>
+                        </div>
+                        <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+                            <Trash2 className="h-4 w-4 mr-2"/>
+                            Delete Account
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
 
             <ChangePasswordModal open={passwordModalOpen} onOpenChange={setPasswordModalOpen} />
+            
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction className="bg-red-600 hover:bg-red-700 text-white" onClick={() => {
+                            success("Account deletion requested. API integration pending.");
+                            setDeleteDialogOpen(false);
+                        }}>
+                            Delete Account
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

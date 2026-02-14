@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Loader } from "@/components/ui/loader";
 
 interface Column<T> {
   key: string;
@@ -47,7 +48,7 @@ export function DataTable<T>({
             {loading ? (
               <Card className="col-span-2">
                 <CardContent className="p-6 text-center">
-                  <p className="text-sm text-muted-foreground">Loading...</p>
+                  <Loader text="Loading..." />
                 </CardContent>
               </Card>
             ) : paginatedData.length === 0 ? (
@@ -83,7 +84,7 @@ export function DataTable<T>({
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={columns.length} className="text-center py-8">
-                      Loading...
+                      <Loader text="Loading..." />
                     </TableCell>
                   </TableRow>
                 ) : paginatedData.length === 0 ? (

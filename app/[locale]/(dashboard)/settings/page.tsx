@@ -281,11 +281,6 @@ export default function SettingsPage() {
                                 <Label>Email Address</Label>
                                 <p className="text-sm text-muted-foreground">admin@hospital.com</p>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Delete Account</Label>
-                                <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
-                                <Button variant="destructive">Delete Account</Button>
-                            </div>
                         </CardContent>
                     </Card>
                 )}

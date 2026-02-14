@@ -43,6 +43,7 @@ import { format } from "date-fns";
 import { appointmentService } from '@/lib/services/appointment';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
 import { fetchDoctors, fetchPatients } from '@/lib/store/slices/appSlice';
+import { Loader } from '@/components/ui/loader';
 
 interface AppointmentFormData {
   patientId: string;
@@ -629,7 +630,7 @@ export function AppointmentFormModal({
             <Button onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  <Loader size="sm" className="border-white mr-2" />
                   {mode === "schedule" ? "Scheduling..." : "Updating..."}
                 </>
               ) : (

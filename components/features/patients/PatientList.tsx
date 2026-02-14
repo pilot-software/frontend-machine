@@ -5,6 +5,7 @@ import {Button} from '@/components/ui/button';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {StatusBadge} from '@/components/ui/status-badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Loader } from '@/components/ui/loader';
 import {Edit, Eye, FileText} from 'lucide-react';
 import {PatientDisplay} from '@/lib/utils/data-transformers';
 

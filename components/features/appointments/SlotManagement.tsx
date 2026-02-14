@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
+import { Loader } from '@/components/ui/loader';
 import { Plus, Trash2, Clock, Calendar as CalendarIcon, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -296,9 +297,8 @@ export default function SlotManagement() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="ml-2 text-gray-500">Loading slots...</span>
+                <div className="py-8">
+                  <Loader text="Loading slots..." />
                 </div>
               ) : slots.length === 0 ? (
                 <div className="text-center py-8">

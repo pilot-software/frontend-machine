@@ -9,6 +9,7 @@ import {Textarea} from '@/components/ui/textarea';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {CreditCard, DollarSign, Save} from 'lucide-react';
 import {useAuth} from '@/components/providers/AuthContext';
+import { Loader } from '@/components/ui/loader';
 
 interface BillingFormData {
     patientId: string;
@@ -300,7 +301,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                             className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg">
                         {isSubmitting ? (
                             <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"/>
+                                <Loader size="sm" className="border-white mr-2" />
                                 Processing...
                             </>
                         ) : (

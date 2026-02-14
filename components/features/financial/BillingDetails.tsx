@@ -5,6 +5,7 @@ import { billingService, ApiBilling } from '@/lib/services/billing';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Loader } from '@/components/ui/loader';
 import { DollarSign, Download, FileText } from 'lucide-react';
 
 export default function BillingDetails() {
@@ -42,7 +43,11 @@ export default function BillingDetails() {
   const totalPaid = billings.reduce((sum, b) => sum + b.amountPaid, 0);
   const totalDue = billings.reduce((sum, b) => sum + b.amountDue, 0);
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return (
+    <div className="p-4">
+      <Loader text="Loading billing details..." />
+    </div>
+  );
 
   return (
     <div className="p-6 space-y-6">

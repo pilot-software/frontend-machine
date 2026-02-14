@@ -58,6 +58,7 @@ import {
 import { redirect, useRouter } from "next/navigation";
 import { appointmentService } from '@/lib/services/appointment';
 import { useAuth } from '@/components/providers/AuthContext';
+import { Loader } from '@/components/ui/loader';
 import {
   format,
   addDays,
@@ -729,9 +730,8 @@ export function AppointmentSystemModern() {
                   );
                 })}
                 {isLoading && (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-                    <p>Loading appointments...</p>
+                  <div className="text-center py-12">
+                    <Loader size="lg" text="Loading appointments..." />
                   </div>
                 )}
                 {!isLoading && todayAppointments.length === 0 && (

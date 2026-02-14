@@ -7,6 +7,7 @@ import {storageService} from "@/lib/services/storage.service";
 import {Permission, permissionService} from "@/lib/services/permission";
 import {DashboardSkeleton} from "@/components/skeletons/DashboardSkeleton";
 import {usePathname} from "next/navigation";
+import {Loader} from "@/components/ui/loader";
 
 interface AuthContextType {
     user: User | null;

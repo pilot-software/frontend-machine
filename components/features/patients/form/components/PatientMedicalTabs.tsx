@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Loader } from "@/components/ui/loader";
 import { Heart, PillBottle, Thermometer, Activity } from "lucide-react";
 import { MedicalData } from "@/lib/services/medical";
 
@@ -38,9 +39,8 @@ interface MedicalTabProps {
 export const PatientConditionsTab = React.memo<MedicalTabProps>(({ medicalData, loading }) => {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-2">Loading medical data...</span>
+      <div className="py-8">
+        <Loader text="Loading medical data..." />
       </div>
     );
   }
@@ -85,9 +85,8 @@ export const PatientConditionsTab = React.memo<MedicalTabProps>(({ medicalData, 
 export const PatientPrescriptionsTab = React.memo<MedicalTabProps>(({ medicalData, loading }) => {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-2">Loading prescriptions...</span>
+      <div className="py-8">
+        <Loader text="Loading prescriptions..." />
       </div>
     );
   }
@@ -134,9 +133,8 @@ export const PatientPrescriptionsTab = React.memo<MedicalTabProps>(({ medicalDat
 export const PatientVitalsTab = React.memo<MedicalTabProps>(({ medicalData, loading }) => {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-2">Loading vitals...</span>
+      <div className="py-8">
+        <Loader text="Loading vitals..." />
       </div>
     );
   }
@@ -199,9 +197,8 @@ export const PatientVitalsTab = React.memo<MedicalTabProps>(({ medicalData, load
 export const PatientLabsTab = React.memo<MedicalTabProps>(({ medicalData, loading }) => {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-2">Loading lab results...</span>
+      <div className="py-8">
+        <Loader text="Loading lab results..." />
       </div>
     );
   }

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Loader } from '@/components/ui/loader';
 import { Calendar, Clock, User } from 'lucide-react';
 
 interface DoctorAvailabilityCalendarProps {
@@ -70,7 +71,11 @@ export default function DoctorAvailabilityCalendar({ doctorId, onSlotSelect }: D
     return acc;
   }, {} as Record<string, DoctorAvailabilitySlot[]>);
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return (
+    <div className="p-4">
+      <Loader text="Loading availability..." />
+    </div>
+  );
 
   return (
     <div className="space-y-4 p-4">

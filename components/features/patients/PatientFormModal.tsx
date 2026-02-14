@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Loader } from "@/components/ui/loader";
 import { Activity, Calendar, Heart, PillBottle, Save, Thermometer, User } from "lucide-react";
 import { PatientFormModalProps } from "./form/types/patient-form.types";
 import { usePatientForm } from "./form/hooks/usePatientForm";
@@ -112,9 +113,8 @@ export function PatientFormModal({ isOpen, onClose, patientId, mode }: PatientFo
 
             <div className="mt-4 space-y-4">
               {loading.selectedPatient ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  <span className="ml-2">Loading patient data...</span>
+                <div className="py-8">
+                  <Loader text="Loading patient data..." />
                 </div>
               ) : error.selectedPatient ? (
                 <div className="flex items-center justify-center py-8 text-red-600">
@@ -158,7 +158,7 @@ export function PatientFormModal({ isOpen, onClose, patientId, mode }: PatientFo
             <Button onClick={() => handleSubmit(onClose)} disabled={isSubmitting || loading.updating}>
               {isSubmitting || loading.updating ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  <Loader size="sm" className="border-white mr-2" />
                   {isAdding ? t("creating") : t("saving")}
                 </>
               ) : (

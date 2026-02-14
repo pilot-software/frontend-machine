@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslations } from "next-intl";
+import { Loader } from "./loader";
 
 interface LoadingStateProps {
   message?: string;
@@ -12,12 +13,11 @@ export function LoadingState({
 }: LoadingStateProps) {
   const t = useTranslations("common");
   
-  // Try to translate, fallback to raw message if translation doesn't exist
   const displayMessage = message.includes(' ') ? message : t(message);
   
   return (
-    <div className={`flex items-center justify-center py-8 ${className}`}>
-      <div className="text-sm text-muted-foreground">{displayMessage}</div>
+    <div className={`py-8 ${className}`}>
+      <Loader text={displayMessage} />
     </div>
   );
 }
