@@ -113,8 +113,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             variant="ghost"
             className={`w-full justify-start transition-all duration-300 ${
               isActive
-                ? "bg-accent text-accent-foreground font-medium"
-                : "hover:bg-muted"
+                ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
+                : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             }`}
             onClick={() => {
               router.push(item.path);
@@ -406,14 +406,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         : "justify-start px-3 h-11"
                     } ${
                       isActive
-                        ? "bg-linear-to-r from-blue-500/15 to-purple-500/15 text-blue-600 font-medium shadow-sm"
-                        : "hover:bg-muted/50"
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium shadow-sm"
+                        : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     }`}
                   >
                     <ItemIcon
                       className={`${
                         desktopSidebarCollapsed ? "h-5 w-5" : "h-4 w-4 mr-3"
-                      } ${isActive ? "text-blue-600" : ""}`}
+                      }`}
                     />
                     {!desktopSidebarCollapsed && (
                       <span className="truncate">{t(item.label)}</span>
