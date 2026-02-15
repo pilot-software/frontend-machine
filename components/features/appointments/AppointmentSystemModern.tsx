@@ -265,10 +265,10 @@ export function AppointmentSystemModern() {
     const fetchAppointments = async () => {
       try {
         setIsLoading(true);
-        const data = await appointmentService.getTodayAppointments();
+        const data = await appointmentService.getAppointmentsWithPatientNames();
         const formattedData = data.map((apt: any) => ({
           id: apt.id,
-          patientName: apt.patientId,
+          patientName: apt.patientName,
           patientPhone: '',
           doctorName: apt.doctorId,
           department: '',
@@ -554,12 +554,12 @@ export function AppointmentSystemModern() {
                   return (
                     <div
                       key={apt.id}
-                      className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3 ${
+                      className={`flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3 ${
                         isCancelled ? 'bg-muted/50 opacity-60' : ''
                       }`}
                     >
-                      <div className="flex items-center gap-2 sm:gap-4 flex-1 w-full">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-3 flex-1 w-full">
+                        <div className="flex items-center gap-2 shrink-0">
                           <div className="p-2 bg-muted rounded-full">
                             <TypeIcon className="h-4 w-4" />
                           </div>
@@ -570,8 +570,8 @@ export function AppointmentSystemModern() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
                             <h3 className="font-medium">{apt.patientName}</h3>
                             <Badge className={getStatusColor(apt.status)}>
                               {apt.status}
@@ -584,124 +584,66 @@ export function AppointmentSystemModern() {
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {apt.doctorName} • {apt.department}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {apt.reason}
+                            {apt.doctorName} • {apt.reason}
                           </p>
                           {apt.roomNumber && (
-                            <p className="text-xs text-muted-foreground sm:hidden flex items-center gap-1 mt-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                               <BedDouble className="h-3 w-3" />
                               {t("roomNumber")} {apt.roomNumber}
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {apt.roomNumber && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge
-                                  variant="outline"
-                                  className="hidden sm:inline-flex gap-1 cursor-help"
-                                >
-                                  <BedDouble className="h-3 w-3" />
-                                  {t("roomNumber")} {apt.roomNumber}
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{t("roomBedNumber")}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setModalMode("view");
-                                  setSelectedAppointment(apt);
-                                  setIsModalOpen(true);
-                                }}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("viewDetails")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="hidden sm:inline-flex"
-                                onClick={() => {
-                                  setModalMode("edit");
-                                  setSelectedAppointment(apt);
-                                  setIsModalOpen(true);
-                                }}
-                                disabled={isCancelled}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("editAppointment")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => handleDeleteAppointment(apt.id)}
-                                disabled={isCancelled}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Delete Appointment</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
-                                onClick={() =>
-                                  router.push(
-                                    `/prescriptions/add?patient=${encodeURIComponent(
-                                      apt.patientName
-                                    )}&appointmentId=${apt.id}`
-                                  )
-                                }
-                              >
-                                <FileText className="h-4 w-4 sm:mr-2" />
-                                <span className="hidden sm:inline">
-                                  {t("addPrescription")}
-                                </span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("addPrescription")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setModalMode("view");
+                            setSelectedAppointment(apt);
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setModalMode("edit");
+                            setSelectedAppointment(apt);
+                            setIsModalOpen(true);
+                          }}
+                          disabled={isCancelled}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleDeleteAppointment(apt.id)}
+                          disabled={isCancelled}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                          onClick={() =>
+                            router.push(
+                              `/prescriptions/add?patient=${encodeURIComponent(
+                                apt.patientName
+                              )}&appointmentId=${apt.id}`
+                            )
+                          }
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          <span className="hidden sm:inline">
+                            {t("addPrescription")}
+                          </span>
+                        </Button>
                         <Select
                           value={apt.status}
                           onValueChange={(val) =>
@@ -712,7 +654,7 @@ export function AppointmentSystemModern() {
                           }
                           disabled={isCancelled}
                         >
-                          <SelectTrigger className="w-[110px] sm:w-[130px] h-8 text-xs sm:text-sm">
+                          <SelectTrigger className="w-[130px] h-8 text-sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
