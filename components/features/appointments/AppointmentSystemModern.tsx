@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
+import { EnterpriseStatsCard } from "@/components/shared/EnterpriseStatsCard";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import {
   Select,
   SelectContent,
@@ -392,82 +393,89 @@ export function AppointmentSystemModern() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold">{t("appointmentSystem")}</h2>
-          <p className="text-muted-foreground mt-1">
-            {t("scheduleManageAppointments")}
-          </p>
-        </div>
-        <Button
-          onClick={() => {
-            handleScheduleAppointment();
-          }}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {t("scheduleAppointments")}
-        </Button>
-      </div>
+      <EnterprisePageHeader
+        icon={CalendarIcon}
+        title={t("appointmentSystem")}
+        description={t("scheduleManageAppointments")}
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Appointments" },
+        ]}
+        actions={
+          <Button onClick={handleScheduleAppointment}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t("scheduleAppointments")}
+          </Button>
+        }
+      />
 
-      <StatsCardGrid>
-        <StatsCard
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <EnterpriseStatsCard
           title={t("totalToday")}
           value={stats.total}
           icon={CalendarIcon}
-          color="text-blue-600"
-          bgGradient="from-blue-500 to-blue-600"
+          variant="primary"
         />
-        <StatsCard
+        <EnterpriseStatsCard
           title={t("completed")}
           value={stats.completed}
           icon={CheckCircle2}
-          color="text-green-600"
-          bgGradient="from-green-500 to-green-600"
+          variant="success"
         />
-        <StatsCard
+        <EnterpriseStatsCard
           title={t("inProgress")}
           value={stats.inProgress}
           icon={Activity}
-          color="text-orange-600"
-          bgGradient="from-orange-500 to-orange-600"
+          variant="warning"
         />
-        <StatsCard
+        <EnterpriseStatsCard
           title={t("pending")}
           value={stats.pending}
           icon={Clock}
-          color="text-purple-600"
-          bgGradient="from-purple-500 to-purple-600"
+          variant="default"
         />
-      </StatsCardGrid>
+      </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="hidden md:block">
-          <TabsList>
-            <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
-            <TabsTrigger value="calendar">{t("calendarViewTab")}</TabsTrigger>
-            <TabsTrigger value="upcoming">
-              {t("upcomingAppointmentsTab")}
-            </TabsTrigger>
-          </TabsList>
+      <div className="border-b">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+          <button
+            onClick={() => setActiveTab("today")}
+            className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+              activeTab === "today"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+            }`}
+          >
+            {t("todayTab")}
+          </button>
+          <button
+            onClick={() => setActiveTab("calendar")}
+            className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+              activeTab === "calendar"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+            }`}
+          >
+            {t("calendarViewTab")}
+          </button>
+          <button
+            onClick={() => setActiveTab("upcoming")}
+            className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+              activeTab === "upcoming"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+            }`}
+          >
+            {t("upcomingAppointmentsTab")}
+          </button>
         </div>
-        <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">{t("todaysSchedule")}</SelectItem>
-              <SelectItem value="calendar">{t("calendarViewTab")}</SelectItem>
-              <SelectItem value="upcoming">
-                {t("upcomingAppointmentsTab")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      </div>
 
-        <TabsContent value="today" className="space-y-6">
-          <Card>
-            <CardContent className="p-6">
+      <div className="mt-6">
+        {activeTab === "today" && (
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
               <div className="flex flex-col gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -743,9 +751,10 @@ export function AppointmentSystemModern() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+          </div>
+        )}
 
-        <TabsContent value="calendar" className="space-y-6">
+        {activeTab === "calendar" && (
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -845,9 +854,9 @@ export function AppointmentSystemModern() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        <TabsContent value="upcoming">
+        {activeTab === "upcoming" && (
           <Card>
             <CardHeader>
               <CardTitle>{t("upcomingAppointmentsTab")}</CardTitle>
@@ -900,8 +909,8 @@ export function AppointmentSystemModern() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
       <Dialog open={isDayModalOpen} onOpenChange={setIsDayModalOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
