@@ -862,6 +862,18 @@
     "consultation": "Consultation",
     "followUp": "Follow-up",
     "urgent": "Urgent",
-    "surgery": "Surgery"
+    "surgery": "Surgery",
+    "vsLastMonth": "vs last month",
+    "appointmentsToday": "Appointments Today",
+    "activeDoctors": "Active Doctors",
+    "addPatient": "Add Patient",
+    "labOrders": "Lab Orders",
+    "reports": "Reports",
+    "beds": "Beds",
+    "customize": "Customize",
+    "customizeDashboard": "Customize Dashboard",
+    "stats": "Statistics",
+    "actions": "Actions",
+    "info": "Information"
   }
 }
