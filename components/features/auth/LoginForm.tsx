@@ -378,26 +378,14 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
                   <Button
                     type="submit"
-                    className="w-full h-16 text-base font-semibold bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full h-12 text-base font-semibold"
                     disabled={isLoading}
                   >
                     {isLoading ? (
-                      <svg
-                        className="w-full h-full"
-                        viewBox="0 0 100 40"
-                        xmlns="http://www.w3.org/2000/svg"
-                        preserveAspectRatio="none"
-                      >
-                        <polyline
-                          points="0,20 10,20 15,5 20,35 25,20 35,20 40,10 45,30 50,20 60,20 65,2 70,38 75,20 85,20 100,20"
-                          fill="none"
-                          stroke="white"
-                          strokeWidth="6"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="ecg-line"
-                        />
-                      </svg>
+                      <>
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                        {t("signingIn")}
+                      </>
                     ) : (
                       t("signIn")
                     )}

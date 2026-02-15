@@ -262,58 +262,57 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                           {getInitials(user.name)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-background animate-pulse" />
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-background" />
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-64 animate-in slide-in-from-top-2 duration-300 border-blue-500/20 shadow-2xl shadow-blue-500/10 bg-card/95 backdrop-blur-xl"
+                  className="w-72 animate-in slide-in-from-top-2 duration-300 border border-blue-500/20 shadow-2xl shadow-blue-500/20 bg-card/98 backdrop-blur-2xl rounded-2xl overflow-hidden"
                 >
                   <DropdownMenuLabel className="p-0">
-                    <div className="relative overflow-hidden rounded-t-lg">
-                      {/* Gradient background */}
-                      <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10" />
+                    <div className="relative overflow-hidden">
+                      {/* Animated gradient background */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 animate-gradient" />
+                      
+                      {/* Mesh gradient overlay */}
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
 
-                      {/* Floating orb effect */}
-                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-                      <div
-                        className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl animate-pulse"
-                        style={{ animationDelay: "1s" }}
-                      />
-
-                      <div className="relative flex items-center space-x-3 p-4 animate-in fade-in-50 duration-300">
-                        <Avatar className="h-12 w-12 ring-2 ring-blue-500/30 transition-all duration-300 hover:ring-blue-500/60 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30">
-                          <AvatarImage
-                            src={user.avatar}
-                            alt={user.name}
-                            className="transition-all duration-300 hover:brightness-110"
-                          />
-                          <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white font-bold text-base">
-                            {getInitials(user.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 animate-in slide-in-from-left-2 duration-300 delay-100">
-                          <p className="font-bold text-foreground text-base">
+                      <div className="relative flex items-center space-x-4 p-5 animate-in fade-in-50 duration-300">
+                        <div className="relative">
+                          <Avatar className="h-14 w-14 ring-2 ring-white/20 shadow-xl transition-all duration-300 hover:ring-white/40 hover:scale-105">
+                            <AvatarImage
+                              src={user.avatar}
+                              alt={user.name}
+                              className="transition-all duration-300"
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 text-white font-bold text-lg">
+                              {getInitials(user.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-card" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-foreground text-base truncate">
                             {user.name}
                           </p>
                           <Badge
                             variant="secondary"
                             className={`${getRoleColor(
                               user.role
-                            )} text-xs font-medium mt-1`}
+                            )} text-xs font-medium mt-1.5 shadow-sm`}
                           >
                             <RoleIcon className="h-3 w-3 mr-1" />
                             {text.roles[user.role]}
                           </Badge>
                           {user.department && (
-                            <p className="text-xs text-muted-foreground mt-1 animate-in fade-in duration-300 delay-200">
+                            <p className="text-xs text-muted-foreground mt-1.5 truncate">
                               📍 {user.department}
                             </p>
                           )}
                           {user.specialization &&
                             user.role === ROLES.DOCTOR && (
-                              <p className="text-xs text-muted-foreground animate-in fade-in duration-300 delay-300">
+                              <p className="text-xs text-muted-foreground truncate">
                                 🩺 {user.specialization}
                               </p>
                             )}
@@ -321,7 +320,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       </div>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-border/50" />
                   {/* Branch Selector in mobile dropdown */}
                   {isMobile && (
                     <>
@@ -333,25 +332,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   )}
                   <DropdownMenuItem
                     onClick={() => router.push(ROUTES.PROFILE)}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group mx-2 my-1 rounded-lg transition-all duration-200 hover:bg-blue-500/10"
                   >
-                    <User className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
-                    {t("profile")}
+                    <User className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110 text-blue-600" />
+                    <span className="font-medium">{t("profile")}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push(ROUTES.SETTINGS)}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group mx-2 my-1 rounded-lg transition-all duration-200 hover:bg-purple-500/10"
                   >
-                    <Settings className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-90" />
-                    {t("settings")}
+                    <Settings className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:rotate-90 text-purple-600" />
+                    <span className="font-medium">{t("settings")}</span>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-border/50 my-2" />
                   <DropdownMenuItem
                     onClick={logout}
-                    className="text-destructive cursor-pointer group"
+                    className="text-red-600 cursor-pointer group mx-2 my-1 mb-2 rounded-lg transition-all duration-200 hover:bg-red-500/10"
                   >
-                    <LogOut className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-                    {t("logout")}
+                    <LogOut className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:-translate-x-1" />
+                    <span className="font-medium">{t("logout")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
