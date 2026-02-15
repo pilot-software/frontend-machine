@@ -516,7 +516,7 @@ export default function PermissionsPage() {
       </div>
 
       {/* Horizontal Tabs */}
-      <div className="border-b -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
+      <div className="border-b">
         <div className="flex gap-1 overflow-x-auto scrollbar-hide">
           {sections.map((section) => {
             const Icon = section.icon;
@@ -672,8 +672,8 @@ export default function PermissionsPage() {
               <CardDescription>Browse and assign system permissions to your organization</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="relative flex-1 max-w-sm">
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search permissions..."
@@ -683,7 +683,7 @@ export default function PermissionsPage() {
                   />
                 </div>
                 <Select value={catalogFilter} onValueChange={(value: 'all' | 'assigned' | 'unassigned') => setCatalogFilter(value)}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -694,7 +694,7 @@ export default function PermissionsPage() {
                 </Select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {Object.entries(groupedFilteredCatalogPermissions).map(([category, permissions]) => (
                   <div key={category} className="space-y-3">
                     <h4 className="font-medium text-sm">{category.replace('_', ' ')}</h4>
@@ -751,8 +751,8 @@ export default function PermissionsPage() {
               <CardDescription>Create and manage permission groups for role-based access control</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="relative flex-1 max-w-sm">
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search groups..."
@@ -761,13 +761,13 @@ export default function PermissionsPage() {
                     className="pl-10"
                   />
                 </div>
-                <Button onClick={() => setShowCreateGroup(true)}>
+                <Button onClick={() => setShowCreateGroup(true)} className="w-full sm:w-auto">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Group
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredGroups.map((group) => (
                   <div key={group.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-3">
@@ -947,8 +947,8 @@ export default function PermissionsPage() {
               <CardDescription>Track all permission changes and security events for compliance</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="relative flex-1 max-w-sm">
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search audit logs..."
@@ -958,11 +958,11 @@ export default function PermissionsPage() {
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline">
+                  <Button variant="outline" className="flex-1 sm:flex-none">
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" className="flex-1 sm:flex-none">
                     <Download className="h-4 w-4 mr-2" />
                     Export
                   </Button>
@@ -1017,19 +1017,17 @@ export default function PermissionsPage() {
               <CardDescription>Manage permissions assigned to your organization and their status</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search permissions..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search permissions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {Object.entries(groupedPermissions).map(([category, permissions]) => (
                   <div key={category} className="space-y-3">
                     <h4 className="font-medium text-sm">{category.replace('_', ' ')}</h4>

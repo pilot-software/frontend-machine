@@ -121,18 +121,18 @@ export default function AuditLogViewer() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
+        <RefreshCw className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Security & Audit Logs</h1>
-          <p className="text-gray-500 mt-1">Monitor system activity and security events</p>
+          <h2 className="text-3xl font-bold tracking-tight">Security & Audit Logs</h2>
+          <p className="text-muted-foreground mt-1">Monitor system activity and security events</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
@@ -157,7 +157,7 @@ export default function AuditLogViewer() {
             <Card key={action}>
               <CardContent className="pt-6">
                 <div className="text-2xl font-bold">{count as number}</div>
-                <div className="text-sm text-gray-500 mt-1">{action.replace(/_/g, ' ')}</div>
+                <div className="text-sm text-muted-foreground mt-1">{action.replace(/_/g, ' ')}</div>
               </CardContent>
             </Card>
           ))}
@@ -166,9 +166,9 @@ export default function AuditLogViewer() {
 
       {/* Suspicious Activities Alert */}
       {suspicious.length > 0 && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/50 bg-destructive/10">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between text-red-700">
+            <CardTitle className="flex items-center justify-between text-destructive">
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5" />
                 Suspicious Activities Detected ({suspicious.length})
@@ -176,7 +176,7 @@ export default function AuditLogViewer() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-red-700"
+                className="text-destructive"
                 onClick={() => setShowSuspiciousModal(true)}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
@@ -187,21 +187,21 @@ export default function AuditLogViewer() {
           <CardContent>
             <div className="space-y-2">
               {suspicious.slice(0, 3).map((log) => (
-                <div key={log.id} className="bg-white p-3 rounded border border-red-200">
+                <div key={log.id} className="bg-card p-3 rounded border border-destructive/30">
                   <div className="flex items-center gap-3 mb-2">
                     {getOutcomeBadge(log.outcome)}
                     <span className="font-semibold">{log.action}</span>
-                    <span className="text-gray-500">→</span>
+                    <span className="text-muted-foreground">→</span>
                     <Badge variant="outline">{log.entityType}</Badge>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     <span className="font-medium">{log.username}</span> on {log.entityId}
-                    <span className="text-gray-500 ml-2">{new Date(log.timestamp).toLocaleString()}</span>
+                    <span className="text-muted-foreground ml-2">{new Date(log.timestamp).toLocaleString()}</span>
                   </div>
                 </div>
               ))}
               {suspicious.length > 3 && (
-                <p className="text-sm text-gray-500 text-center pt-2">
+                <p className="text-sm text-muted-foreground text-center pt-2">
                   +{suspicious.length - 3} more suspicious activities
                 </p>
               )}
@@ -259,7 +259,7 @@ export default function AuditLogViewer() {
                               <Check className={cn('mr-2 h-4 w-4', filters.userId === user.id ? 'opacity-100' : 'opacity-0')} />
                               <div className="flex flex-col">
                                 <span className="font-medium">{user.name}</span>
-                                <span className="text-xs text-gray-500">{user.id}</span>
+                                <span className="text-xs text-muted-foreground">{user.id}</span>
                               </div>
                             </CommandItem>
                           ))}
@@ -353,7 +353,7 @@ export default function AuditLogViewer() {
                               <Check className={cn('mr-2 h-4 w-4', filters.entityId === entity.id ? 'opacity-100' : 'opacity-0')} />
                               <div className="flex flex-col">
                                 <span className="font-mono text-xs">{entity.id}</span>
-                                <span className="text-xs text-gray-500">{entity.type}</span>
+                                <span className="text-xs text-muted-foreground">{entity.type}</span>
                               </div>
                             </CommandItem>
                           ))}
@@ -410,63 +410,63 @@ export default function AuditLogViewer() {
         <CardContent>
           <div className="space-y-2">
             {logs.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-muted-foreground">
                 <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>No audit logs found</p>
               </div>
             ) : (
               logs.map((log) => (
-                <div key={log.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div key={log.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         {getOutcomeBadge(log.outcome)}
                         <span className="font-semibold text-lg">{log.action}</span>
-                        <span className="text-gray-500">→</span>
+                        <span className="text-muted-foreground">→</span>
                         <Badge variant="outline">{log.entityType}</Badge>
                       </div>
                       
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <span className="text-gray-500">User:</span>
+                          <span className="text-muted-foreground">User:</span>
                           <p className="font-medium">{log.username}</p>
-                          <p className="text-xs text-gray-400">{log.userRole}</p>
+                          <p className="text-xs text-muted-foreground">{log.userRole}</p>
                         </div>
                         <div>
-                          <span className="text-gray-500">Entity ID:</span>
+                          <span className="text-muted-foreground">Entity ID:</span>
                           <p className="font-mono text-xs">{log.entityId}</p>
                         </div>
                         <div>
-                          <span className="text-gray-500">IP Address:</span>
+                          <span className="text-muted-foreground">IP Address:</span>
                           <p className="font-mono text-xs">{log.ipAddress}</p>
                         </div>
                         <div>
-                          <span className="text-gray-500">Timestamp:</span>
+                          <span className="text-muted-foreground">Timestamp:</span>
                           <p className="text-xs">{new Date(log.timestamp).toLocaleString()}</p>
                         </div>
                       </div>
 
                       {log.reason && (
                         <div className="mt-2 text-sm">
-                          <span className="text-gray-500">Reason:</span>
-                          <p className="text-gray-700">{log.reason}</p>
+                          <span className="text-muted-foreground">Reason:</span>
+                          <p className="text-foreground">{log.reason}</p>
                         </div>
                       )}
 
                       {(log.oldValue || log.newValue) && (
                         <details className="mt-2">
-                          <summary className="text-sm text-blue-600 cursor-pointer">View Changes</summary>
+                          <summary className="text-sm text-primary cursor-pointer">View Changes</summary>
                           <div className="mt-2 grid grid-cols-2 gap-4 text-xs">
                             {log.oldValue && (
                               <div>
-                                <p className="font-medium text-gray-500 mb-1">Old Value:</p>
-                                <pre className="bg-gray-100 p-2 rounded overflow-auto">{log.oldValue}</pre>
+                                <p className="font-medium text-muted-foreground mb-1">Old Value:</p>
+                                <pre className="bg-muted p-2 rounded overflow-auto">{log.oldValue}</pre>
                               </div>
                             )}
                             {log.newValue && (
                               <div>
-                                <p className="font-medium text-gray-500 mb-1">New Value:</p>
-                                <pre className="bg-gray-100 p-2 rounded overflow-auto">{log.newValue}</pre>
+                                <p className="font-medium text-muted-foreground mb-1">New Value:</p>
+                                <pre className="bg-muted p-2 rounded overflow-auto">{log.newValue}</pre>
                               </div>
                             )}
                           </div>
