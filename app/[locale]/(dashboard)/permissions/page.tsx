@@ -33,11 +33,16 @@ interface PermissionCatalogItem {
 }
 
 interface OrganizationPermission {
-  id: number;
+  rootPermissionId: number;
+  orgPermissionId: number;
   permissionCode: string;
   permissionName: string;
-  organizationId: string;
-  isEnabled: boolean;
+  description: string;
+  category: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+  updatedBy: string | null;
 }
 
 interface PermissionGroup {
@@ -84,18 +89,30 @@ export default function PermissionsPage() {
   // Data states
   const [permissionGroups, setPermissionGroups] = useState<PermissionGroup[]>([]);
   const [userPermissions, setUserPermissions] = useState<UserPermission[]>([]);
+  const [selectedUserPermissions, setSelectedUserPermissions] = useState<any>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [availableUsers, setAvailableUsers] = useState<Array<{ id: string; name: string; email: string }>>([]);
+  const [allCatalogPermissions, setAllCatalogPermissions] = useState<any[]>([]);
   
   // Modal states
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showAssignPermissions, setShowAssignPermissions] = useState(false);
+  const [showCreatePermission, setShowCreatePermission] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string>('');
   const [selectedGroup, setSelectedGroup] = useState<PermissionGroup | null>(null);
+  const [catalogFilter, setCatalogFilter] = useState<'all' | 'assigned' | 'unassigned'>('all');
   
   // Form states
   const [newGroup, setNewGroup] = useState({ name: '', description: '', permissions: [] as string[] });
+  const [newPermission, setNewPermission] = useState({ permissionCode: '', permissionName: '', description: '', category: 'CUSTOM' });
   const [assignmentData, setAssignmentData] = useState({ groupIds: [] as number[], customPermissions: [] as string[] });
+
+  // Reset selectedUser when modal opens
+  const handleShowAssignPermissions = () => {
+    setSelectedUser('');
+    setAssignmentData({ groupIds: [], customPermissions: [] });
+    setShowAssignPermissions(true);
+  };
 
   useEffect(() => {
     loadInitialData();
@@ -109,7 +126,8 @@ export default function PermissionsPage() {
       await Promise.all([
         loadPermissionGroups(),
         loadAuditLogs(),
-        loadAvailableUsers()
+        loadAvailableUsers(),
+        loadAllCatalogPermissions()
       ]);
     } catch (error) {
       console.error('Failed to load initial data:', error);
@@ -134,9 +152,23 @@ export default function PermissionsPage() {
 
 
 
+  const loadAllCatalogPermissions = async () => {
+    try {
+      const response = await fetch('/api/permissions/catalog', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAllCatalogPermissions(data);
+      }
+    } catch (error) {
+      console.error('Failed to load catalog permissions:', error);
+    }
+  };
+
   const loadPermissionGroups = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/permissions/groups', {
+      const response = await fetch('/api/permissions/groups', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
       });
       if (response.ok) {
@@ -148,57 +180,124 @@ export default function PermissionsPage() {
     }
   };
 
+  const loadUserPermissions = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/permissions/users/${userId}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedUserPermissions(data);
+      }
+    } catch (error) {
+      console.error('Failed to load user permissions:', error);
+      setSelectedUserPermissions(null);
+    }
+  };
+
+  const handleUserSelection = (userId: string) => {
+    setSelectedUser(userId);
+    if (userId) {
+      loadUserPermissions(userId);
+    } else {
+      setSelectedUserPermissions(null);
+    }
+  };
   const loadAvailableUsers = async () => {
-    const mockUsers = [
-      { id: 'user_admin_1', name: 'Admin User', email: 'admin@hospital.com' },
-      { id: 'user_doctor_1', name: 'Dr. John Smith', email: 'john.smith@hospital.com' },
-      { id: 'user_nurse_1', name: 'Nurse Jane Doe', email: 'jane.doe@hospital.com' },
-      { id: 'user_receptionist_1', name: 'Mary Johnson', email: 'mary.johnson@hospital.com' },
-    ];
-    setAvailableUsers(mockUsers);
+    try {
+      const response = await fetch('http://localhost:8080/api/users', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+      });
+      if (response.ok) {
+        const users = await response.json();
+        console.log('Users from API:', users[0]); // Debug log
+        setAvailableUsers(users.map((user: any) => ({
+          id: user.userId || user.id,
+          name: user.name || user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User',
+          email: user.email
+        })));
+      }
+    } catch (error) {
+      console.error('Failed to load users:', error);
+    }
   };
 
   const loadAuditLogs = async () => {
-    const mockLogs: AuditLogEntry[] = [
-      {
-        id: '1',
-        action: 'Permission granted',
-        target: 'Dr. John Smith',
-        permission: 'VIEW_PATIENTS',
-        userId: 'user1',
-        userName: 'Admin User',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        status: 'success'
-      },
-      {
-        id: '2',
-        action: 'Group created',
-        target: 'Emergency Staff',
-        permission: 'Multiple permissions',
-        userId: 'user1',
-        userName: 'Admin User',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        status: 'success'
+    try {
+      const response = await fetch('http://localhost:8080/api/audit/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify({
+          organizationId: 'hospital_org1',
+          entityType: 'PERMISSION_GROUP',
+          page: 0,
+          size: 20
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAuditLogs(data.content || data);
       }
-    ];
-    setAuditLogs(mockLogs);
+    } catch (error) {
+      console.error('Failed to load audit logs:', error);
+    }
+  };
+
+  const createSystemPermission = async () => {
+    try {
+      const response = await fetch('/api/permissions/catalog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify(newPermission)
+      });
+      
+      if (response.ok) {
+        await dispatch(fetchPermissionCatalog());
+        setShowCreatePermission(false);
+        setNewPermission({ permissionCode: '', permissionName: '', description: '', category: 'CUSTOM' });
+      }
+    } catch (error) {
+      console.error('Failed to create system permission:', error);
+    }
   };
 
   const createPermissionGroup = async () => {
     try {
       console.log('Selected permissions:', newGroup.permissions);
       console.log('Organization permissions:', organizationPermissions);
+      console.log('First org permission structure:', organizationPermissions[0]);
+      
+      if (newGroup.permissions.length === 0) {
+        console.warn('No permissions selected');
+        return;
+      }
+      
+      if (organizationPermissions.length === 0) {
+        console.error('Organization permissions not loaded');
+        return;
+      }
       
       // Map permission codes to organization permission IDs
       const orgPermissionIds = newGroup.permissions.map(permCode => {
         const orgPerm = organizationPermissions.find(p => p.permissionCode === permCode);
-        console.log(`Mapping ${permCode} to ID:`, orgPerm?.id);
-        return orgPerm?.id;
+        console.log(`Mapping ${permCode} to ID:`, orgPerm?.orgPermissionId);
+        return orgPerm?.orgPermissionId;
       }).filter(id => id !== undefined);
 
       console.log('Final org permission IDs:', orgPermissionIds);
+      
+      if (orgPermissionIds.length === 0) {
+        console.error('No valid organization permission IDs found');
+        return;
+      }
 
-      const response = await fetch('http://localhost:8080/api/permissions/groups', {
+      const response = await fetch('/api/permissions/groups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +306,7 @@ export default function PermissionsPage() {
         body: JSON.stringify({
           groupName: newGroup.name,
           description: newGroup.description,
-          organizationPermissionIds: orgPermissionIds
+          permissionIds: orgPermissionIds
         })
       });
       
@@ -221,12 +320,50 @@ export default function PermissionsPage() {
     }
   };
 
+  const deletePermissionGroup = async (groupId: number) => {
+    try {
+      const response = await fetch(`/api/permissions/groups/${groupId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+      
+      if (response.ok) {
+        await loadPermissionGroups();
+      }
+    } catch (error) {
+      console.error('Failed to delete permission group:', error);
+    }
+  };
+
+  const updatePermissionGroup = async (groupId: number, updates: any) => {
+    try {
+      const response = await fetch(`/api/permissions/groups/${groupId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify(updates)
+      });
+      
+      if (response.ok) {
+        await loadPermissionGroups();
+      }
+    } catch (error) {
+      console.error('Failed to update permission group:', error);
+    }
+  };
+
   const assignPermissionsToUser = async () => {
     if (!selectedUser) return;
     
+    console.log('Assigning permissions to user:', selectedUser);
+    
     try {
       if (assignmentData.groupIds.length > 0) {
-        await fetch(`http://localhost:8080/api/permissions/users/${selectedUser}/groups`, {
+        await fetch(`/api/permissions/users/${selectedUser}/groups`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -237,7 +374,7 @@ export default function PermissionsPage() {
       }
       
       if (assignmentData.customPermissions.length > 0) {
-        await fetch(`http://localhost:8080/api/permissions/users/${selectedUser}/custom`, {
+        await fetch(`/api/permissions/users/${selectedUser}/custom`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -251,14 +388,23 @@ export default function PermissionsPage() {
       
       setShowAssignPermissions(false);
       setAssignmentData({ groupIds: [], customPermissions: [] });
+      setSelectedUser('');
     } catch (error) {
-      console.error('Failed to assign permissions:', error);
+      // Ignore duplicate key errors - groups already assigned
+      if (error instanceof Error && error.message.includes('duplicate key')) {
+        console.log('Some groups were already assigned to user');
+      } else {
+        console.error('Failed to assign permissions:', error);
+      }
+      setShowAssignPermissions(false);
+      setAssignmentData({ groupIds: [], customPermissions: [] });
+      setSelectedUser('');
     }
   };
 
   const toggleOrganizationPermission = async (permissionId: number, isEnabled: boolean) => {
     try {
-      await fetch(`http://localhost:8080/api/permissions/organization/permissions/${permissionId}/toggle`, {
+      await fetch(`/api/permissions/organization/permissions/${permissionId}/toggle`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -271,6 +417,64 @@ export default function PermissionsPage() {
       console.error('Failed to toggle permission:', error);
     }
   };
+
+  const assignPermissionToOrg = async (rootPermissionId: number) => {
+    try {
+      const response = await fetch(`/api/permissions/catalog/${rootPermissionId}/distribute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify({
+          organizationIds: ['hospital_org1']
+        })
+      });
+      
+      if (response.ok) {
+        alert('Permission assigned successfully!');
+        await dispatch(fetchOrganizationPermissions());
+        await loadAllCatalogPermissions();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'Failed to assign permission'}`);
+      }
+    } catch (error) {
+      alert('Error: Failed to assign permission to organization');
+    }
+  };
+
+  // Get filtered permissions for catalog
+  const getFilteredCatalogPermissions = () => {
+    if (catalogFilter === 'assigned') {
+      return allCatalogPermissions.filter(catalogPerm => 
+        organizationPermissions.find(orgPerm => orgPerm.rootPermissionId === catalogPerm.rootPermissionId)
+      );
+    } else if (catalogFilter === 'unassigned') {
+      return unassignedPermissions;
+    }
+    return allCatalogPermissions;
+  };
+
+  const filteredCatalogPermissions = getFilteredCatalogPermissions();
+  const groupedFilteredCatalogPermissions = filteredCatalogPermissions.reduce((acc, perm) => {
+    const category = perm.permissionCode.split('_')[0] || 'GENERAL';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(perm);
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  // Get unassigned permissions for catalog
+  const unassignedPermissions = allCatalogPermissions.filter(catalogPerm => 
+    !organizationPermissions.find(orgPerm => orgPerm.rootPermissionId === catalogPerm.rootPermissionId)
+  );
+
+  const groupedUnassignedPermissions = unassignedPermissions.reduce((acc, perm) => {
+    const category = perm.permissionCode.split('_')[0] || 'GENERAL';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(perm);
+    return acc;
+  }, {} as Record<string, any[]>);
 
   const filteredPermissions = organizationPermissions.filter(p => 
     p.permissionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -297,18 +501,18 @@ export default function PermissionsPage() {
 
   const sections = [
     { id: "overview" as PermissionSection, label: "Overview", icon: Eye },
-    { id: "catalog" as PermissionSection, label: "Catalog", icon: Shield },
-    { id: "groups" as PermissionSection, label: "Groups", icon: Users },
-    { id: "users" as PermissionSection, label: "Users", icon: UserCog },
+    { id: "catalog" as PermissionSection, label: "Permission Catalog", icon: Shield },
+    { id: "settings" as PermissionSection, label: "Organization Permissions", icon: Settings },
+    { id: "groups" as PermissionSection, label: "Permission Groups", icon: Users },
+    { id: "users" as PermissionSection, label: "User Permissions", icon: UserCog },
     { id: "audit" as PermissionSection, label: "Audit", icon: FileText },
-    { id: "settings" as PermissionSection, label: "Settings", icon: Settings },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Permissions Management</h2>
-        <p className="text-muted-foreground mt-1">Manage roles, permissions, and access control</p>
+        <h2 className="text-3xl font-bold tracking-tight">Permissions Management</h2>
+        <p className="text-muted-foreground">Manage system permissions, roles, and user access control</p>
       </div>
 
       {/* Horizontal Tabs */}
@@ -341,30 +545,30 @@ export default function PermissionsPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
               <StatsCard
-                title="Total Permissions"
-                value={organizationPermissions.length}
+                title="System Permissions"
+                value={allCatalogPermissions.length}
                 icon={Shield}
                 color="text-blue-600"
                 bgGradient="from-blue-500 to-blue-600"
               />
               <StatsCard
-                title="Permission Groups"
-                value={permissionGroups.length}
-                icon={Users}
+                title="Assigned Permissions"
+                value={organizationPermissions.length}
+                icon={Settings}
                 color="text-green-600"
                 bgGradient="from-green-500 to-green-600"
               />
               <StatsCard
-                title="Active Users"
-                value={userPermissions.length}
-                icon={UserCog}
+                title="Permission Groups"
+                value={permissionGroups.length}
+                icon={Users}
                 color="text-purple-600"
                 bgGradient="from-purple-500 to-purple-600"
               />
               <StatsCard
-                title="Audit Entries"
-                value={auditLogs.length}
-                icon={FileText}
+                title="Active Users"
+                value={availableUsers.length}
+                icon={UserCog}
                 color="text-orange-600"
                 bgGradient="from-orange-500 to-orange-600"
               />
@@ -373,11 +577,15 @@ export default function PermissionsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Recent Activity
+                  </CardTitle>
+                  <CardDescription>Latest permission changes and system events</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {auditLogs.slice(0, 5).map((log) => (
+                    {auditLogs.length > 0 ? auditLogs.slice(0, 5).map((log) => (
                       <div key={log.id} className="flex items-center gap-3 p-3 border rounded-lg">
                         <div className={`w-2 h-2 rounded-full ${
                           log.status === 'success' ? 'bg-green-500' : 'bg-red-500'
@@ -392,40 +600,59 @@ export default function PermissionsPage() {
                           {new Date(log.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No recent activity</p>
+                        <p className="text-xs">Permission changes will appear here</p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Plus className="h-5 w-5" />
+                    Quick Actions
+                  </CardTitle>
+                  <CardDescription>Common permission management tasks</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
+                      className="w-full justify-start h-12"
                       onClick={() => setShowCreateGroup(true)}
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Create Permission Group
+                      <div className="text-left">
+                        <div className="font-medium">Create Permission Group</div>
+                        <div className="text-xs text-muted-foreground">Bundle permissions for roles</div>
+                      </div>
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
-                      onClick={() => setShowAssignPermissions(true)}
+                      className="w-full justify-start h-12"
+                      onClick={handleShowAssignPermissions}
                     >
                       <UserCog className="h-4 w-4 mr-2" />
-                      Assign User Permissions
+                      <div className="text-left">
+                        <div className="font-medium">Assign User Permissions</div>
+                        <div className="text-xs text-muted-foreground">Grant access to users</div>
+                      </div>
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start"
+                      className="w-full justify-start h-12"
                       onClick={() => setActiveSection('catalog')}
                     >
                       <Shield className="h-4 w-4 mr-2" />
-                      Manage Permission Catalog
+                      <div className="text-left">
+                        <div className="font-medium">Browse Permission Catalog</div>
+                        <div className="text-xs text-muted-foreground">Explore available permissions</div>
+                      </div>
                     </Button>
                   </div>
                 </CardContent>
@@ -434,12 +661,15 @@ export default function PermissionsPage() {
           </div>
         )}
 
-        {/* Catalog */}
+        {/* Permission Catalog */}
         {activeSection === "catalog" && (
           <Card>
             <CardHeader>
-              <CardTitle>Permission Catalog</CardTitle>
-              <CardDescription>Manage organization permissions and their availability</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Permission Catalog ({filteredCatalogPermissions.length})
+              </CardTitle>
+              <CardDescription>Browse and assign system permissions to your organization</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
@@ -452,34 +682,56 @@ export default function PermissionsPage() {
                     className="pl-10"
                   />
                 </div>
-                <Button onClick={() => setActiveSection('groups')}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Group
-                </Button>
+                <Select value={catalogFilter} onValueChange={(value: 'all' | 'assigned' | 'unassigned') => setCatalogFilter(value)}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All ({allCatalogPermissions.length})</SelectItem>
+                    <SelectItem value="assigned">Assigned ({organizationPermissions.length})</SelectItem>
+                    <SelectItem value="unassigned">Unassigned ({unassignedPermissions.length})</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(groupedPermissions).map(([category, permissions]) => (
+                {Object.entries(groupedFilteredCatalogPermissions).map(([category, permissions]) => (
                   <div key={category} className="space-y-3">
                     <h4 className="font-medium text-sm">{category.replace('_', ' ')}</h4>
                     <div className="space-y-2">
                       {permissions.filter(p => 
                         p.permissionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         p.permissionCode.toLowerCase().includes(searchTerm.toLowerCase())
-                      ).map((permission, index) => (
-                        <div key={`${category}-${permission.id || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{permission.permissionName}</p>
-                            <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
+                      ).map((permission, index) => {
+                        const isAssigned = organizationPermissions.find(op => op.rootPermissionId === permission.rootPermissionId);
+                        return (
+                          <div key={`${category}-${permission.rootPermissionId || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{permission.permissionName}</p>
+                              <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Badge variant={isAssigned ? "default" : "outline"}>
+                                {isAssigned ? "Assigned" : "Available"}
+                              </Badge>
+                              {!isAssigned && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm"
+                                  onClick={() => {
+                                    console.log('Full permission object:', JSON.stringify(permission, null, 2));
+                                    console.log('rootPermissionId:', permission.rootPermissionId);
+                                    console.log('typeof rootPermissionId:', typeof permission.rootPermissionId);
+                                    assignPermissionToOrg(permission.rootPermissionId);
+                                  }}
+                                >
+                                  Assign
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                          <Checkbox
-                            checked={permission.isEnabled}
-                            onCheckedChange={(checked) => 
-                              toggleOrganizationPermission(permission.id, checked as boolean)
-                            }
-                          />
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -488,12 +740,15 @@ export default function PermissionsPage() {
           </Card>
         )}
 
-        {/* Groups */}
+        {/* Permission Groups */}
         {activeSection === "groups" && (
           <Card>
             <CardHeader>
-              <CardTitle>Permission Groups</CardTitle>
-              <CardDescription>Create and manage permission groups for role-based access</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Permission Groups ({filteredGroups.length})
+              </CardTitle>
+              <CardDescription>Create and manage permission groups for role-based access control</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
@@ -521,16 +776,54 @@ export default function PermissionsPage() {
                         <Button variant="ghost" size="sm" onClick={() => setSelectedGroup(group)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => {
+                            if (confirm(`Are you sure you want to delete "${group.groupName}"?`)) {
+                              deletePermissionGroup(group.id);
+                            }
+                          }}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">{group.description}</p>
+                    
+                    {/* Show permissions in group */}
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Permissions:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {group.permissions && group.permissions.length > 0 ? (
+                          group.permissions.slice(0, 3).map((permission, index) => {
+                            // Handle both string and object formats
+                            const permCode = typeof permission === 'string' ? permission : permission.permissionCode;
+                            const permName = typeof permission === 'string' 
+                              ? organizationPermissions.find(p => p.permissionCode === permission)?.permissionName || permission
+                              : permission.permissionName || permission.permissionCode;
+                            
+                            return (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {permName}
+                              </Badge>
+                            );
+                          })
+                        ) : (
+                          <span className="text-xs text-muted-foreground">No permissions</span>
+                        )}
+                        {group.permissions && group.permissions.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{group.permissions.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline">{group.permissions.length} permissions</Badge>
+                      <Badge variant="outline">{group.permissions?.length || 0} permissions</Badge>
                       <span className="text-xs text-muted-foreground">
-                        {group.userCount || 0} users
+                        0 users
                       </span>
                     </div>
                   </div>
@@ -540,143 +833,118 @@ export default function PermissionsPage() {
           </Card>
         )}
 
-        {/* Users */}
+        {/* User Permissions */}
         {activeSection === "users" && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Assign Permission Groups</CardTitle>
-                <CardDescription>Assign permission groups to users</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label className="text-sm font-medium">Select User</Label>
-                    <Select value={selectedUser} onValueChange={setSelectedUser}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a user" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableUsers.map((user) => (
-                          <SelectItem key={user.id} value={user.id}>
-                            {user.name} ({user.email})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium">Available Groups</Label>
-                    <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-3">
-                      {permissionGroups.map((group) => (
-                        <div key={group.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`assign-group-${group.id}`}
-                            checked={assignmentData.groupIds.includes(group.id)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setAssignmentData({
-                                  ...assignmentData,
-                                  groupIds: [...assignmentData.groupIds, group.id]
-                                });
-                              } else {
-                                setAssignmentData({
-                                  ...assignmentData,
-                                  groupIds: assignmentData.groupIds.filter(id => id !== group.id)
-                                });
-                              }
-                            }}
-                          />
-                          <label htmlFor={`assign-group-${group.id}`} className="text-sm">
-                            {group.groupName} ({group.permissions.length} permissions)
-                          </label>
-                        </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserCog className="h-5 w-5" />
+                User Permissions
+              </CardTitle>
+              <CardDescription>Assign permission groups and manage individual user access</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label className="text-sm font-medium">Select User</Label>
+                  <Select value={selectedUser} onValueChange={handleUserSelection}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableUsers.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} ({user.email})
+                        </SelectItem>
                       ))}
-                    </div>
-                  </div>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Button onClick={assignPermissionsToUser} disabled={!selectedUser || assignmentData.groupIds.length === 0}>
-                  <UserCog className="h-4 w-4 mr-2" />
-                  Assign Groups to User
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>User Permissions</CardTitle>
-                <CardDescription>View and manage individual user permissions</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search users..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Groups</TableHead>
-                      <TableHead>Effective Permissions</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {userPermissions.map((userPerm) => (
-                      <TableRow key={userPerm.userId}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{userPerm.userName}</p>
-                            <p className="text-sm text-muted-foreground">{userPerm.email}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {userPerm.groups.map((group) => (
-                              <Badge key={group.id} variant="outline" className="text-xs">
-                                {group.groupName}
-                              </Badge>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">
-                            {userPerm.effectivePermissions.length} permissions
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
+                <div>
+                  <Label className="text-sm font-medium">Available Groups</Label>
+                  <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-3">
+                    {permissionGroups.map((group) => (
+                      <div key={group.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`assign-group-${group.id}`}
+                          checked={assignmentData.groupIds.includes(group.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setAssignmentData({
+                                ...assignmentData,
+                                groupIds: [...assignmentData.groupIds, group.id]
+                              });
+                            } else {
+                              setAssignmentData({
+                                ...assignmentData,
+                                groupIds: assignmentData.groupIds.filter(id => id !== group.id)
+                              });
+                            }
+                          }}
+                        />
+                        <label htmlFor={`assign-group-${group.id}`} className="text-sm">
+                          {group.groupName} ({group.permissions.length} permissions)
+                        </label>
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
+                  </div>
+                </div>
+              </div>
+              {selectedUserPermissions && (
+                <div className="mt-6">
+                  <Label className="text-sm font-medium mb-3 block">Current Effective Permissions</Label>
+                  <div className="border rounded-lg overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Permission</TableHead>
+                          <TableHead>Source</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {selectedUserPermissions.effectivePermissions?.map((permission: any, index: number) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{permission.permissionName || permission}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {permission.source || 'Group'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="default">Active</Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        {(!selectedUserPermissions.effectivePermissions || selectedUserPermissions.effectivePermissions.length === 0) && (
+                          <TableRow>
+                            <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
+                              No permissions assigned
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+              <Button onClick={assignPermissionsToUser} disabled={!selectedUser || assignmentData.groupIds.length === 0}>
+                <UserCog className="h-4 w-4 mr-2" />
+                Assign Groups to User
+              </Button>
+            </CardContent>
+          </Card>
         )}
 
         {/* Audit */}
         {activeSection === "audit" && (
           <Card>
             <CardHeader>
-              <CardTitle>Audit Log</CardTitle>
-              <CardDescription>Track all permission changes and security events</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Audit Log
+              </CardTitle>
+              <CardDescription>Track all permission changes and security events for compliance</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
@@ -738,47 +1006,60 @@ export default function PermissionsPage() {
           </Card>
         )}
 
-        {/* Settings */}
+        {/* Organization Permissions */}
         {activeSection === "settings" && (
           <Card>
             <CardHeader>
-              <CardTitle>Permission Settings</CardTitle>
-              <CardDescription>Configure permission system settings and preferences</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Organization Permissions ({organizationPermissions.length})
+              </CardTitle>
+              <CardDescription>Manage permissions assigned to your organization and their status</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <Label>Auto-assign Default Permissions</Label>
-                  <p className="text-sm text-muted-foreground">Automatically assign basic permissions to new users</p>
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search permissions..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
-                <Checkbox defaultChecked />
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Permission Inheritance</Label>
-                  <p className="text-sm text-muted-foreground">Allow permissions to be inherited from parent groups</p>
-                </div>
-                <Checkbox defaultChecked />
-              </div>
-              <div className="space-y-2">
-                <Label>Session Timeout</Label>
-                <Select defaultValue="30">
-                  <SelectTrigger className="w-64">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="15">15 minutes</SelectItem>
-                    <SelectItem value="30">30 minutes</SelectItem>
-                    <SelectItem value="60">1 hour</SelectItem>
-                    <SelectItem value="240">4 hours</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="pt-4">
-                <Button variant="outline">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export Permission Report
-                </Button>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(groupedPermissions).map(([category, permissions]) => (
+                  <div key={category} className="space-y-3">
+                    <h4 className="font-medium text-sm">{category.replace('_', ' ')}</h4>
+                    <div className="space-y-2">
+                      {permissions.filter(p => 
+                        p.permissionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        p.permissionCode.toLowerCase().includes(searchTerm.toLowerCase())
+                      ).map((permission, index) => (
+                        <div key={`${category}-${permission.orgPermissionId || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{permission.permissionName}</p>
+                            <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Badge variant={permission.isActive ? "default" : "secondary"}>
+                              {permission.isActive ? "Active" : "Inactive"}
+                            </Badge>
+                            <Button 
+                              variant={permission.isActive ? "outline" : "default"}
+                              size="sm"
+                              onClick={() => toggleOrganizationPermission(permission.orgPermissionId, !permission.isActive)}
+                            >
+                              {permission.isActive ? "Deactivate" : "Activate"}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -885,7 +1166,7 @@ export default function PermissionsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Assign Permissions Modal */}
+
       <Dialog open={showAssignPermissions} onOpenChange={setShowAssignPermissions}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -899,9 +1180,9 @@ export default function PermissionsPage() {
                   <SelectValue placeholder="Select a user" />
                 </SelectTrigger>
                 <SelectContent>
-                  {userPermissions.map((user) => (
-                    <SelectItem key={user.userId} value={user.userId}>
-                      {user.userName} ({user.email})
+                  {availableUsers.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name} ({user.email})
                     </SelectItem>
                   ))}
                 </SelectContent>
