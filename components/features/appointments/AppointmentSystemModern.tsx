@@ -261,6 +261,8 @@ export function AppointmentSystemModern() {
     Appointment[]
   >([]);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchAppointments = async () => {
@@ -363,18 +365,25 @@ export function AppointmentSystemModern() {
   };
 
   const handleDeleteAppointment = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this appointment?')) return;
-    setDeletingId(id);
+    setAppointmentToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!appointmentToDelete) return;
+    setDeleteConfirmOpen(false);
+    setDeletingId(appointmentToDelete);
     try {
       await new Promise(resolve => setTimeout(resolve, 600));
-      await appointmentService.delete(id);
+      await appointmentService.delete(appointmentToDelete);
     } catch (error) {
       console.error('Failed to delete appointment:', error);
     } finally {
       setAppointments((prev) =>
-        prev.map((apt) => (apt.id === id ? { ...apt, status: 'cancelled' as const } : apt))
+        prev.map((apt) => (apt.id === appointmentToDelete ? { ...apt, status: 'cancelled' as const } : apt))
       );
       setDeletingId(null);
+      setAppointmentToDelete(null);
     }
   };
 
@@ -905,6 +914,24 @@ export function AppointmentSystemModern() {
                 </Badge>
               </div>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Appointment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this appointment? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end mt-4">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

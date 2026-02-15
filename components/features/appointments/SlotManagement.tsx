@@ -13,6 +13,7 @@ import { Loader } from '@/components/ui/loader';
 import { Plus, Trash2, Clock, Calendar as CalendarIcon, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 export default function SlotManagement() {
   const { user, token } = useAuth();
@@ -23,6 +24,8 @@ export default function SlotManagement() {
   const [slots, setSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [slotToDelete, setSlotToDelete] = useState<string | null>(null);
 
   // Form state
   const [startTime, setStartTime] = useState('09:00');
@@ -137,11 +140,17 @@ export default function SlotManagement() {
   };
 
   const deleteSlot = async (slotId: string) => {
-    if (!confirm('Delete this slot?')) return;
-    setDeletingId(slotId);
+    setSlotToDelete(slotId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!slotToDelete) return;
+    setDeleteConfirmOpen(false);
+    setDeletingId(slotToDelete);
     try {
       await new Promise(resolve => setTimeout(resolve, 600));
-      const response = await fetch(`http://localhost:8080/api/doctor-availability/slot/${slotId}`, {
+      const response = await fetch(`http://localhost:8080/api/doctor-availability/slot/${slotToDelete}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -156,6 +165,7 @@ export default function SlotManagement() {
       console.error('Failed to delete slot:', error);
     } finally {
       setDeletingId(null);
+      setSlotToDelete(null);
     }
   };
 
@@ -379,6 +389,24 @@ export default function SlotManagement() {
           </Card>
         </div>
       </div>
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Slot</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this slot? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end mt-4">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
