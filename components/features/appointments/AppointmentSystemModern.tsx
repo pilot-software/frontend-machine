@@ -245,6 +245,7 @@ export function AppointmentSystemModern() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -336,23 +337,23 @@ export function AppointmentSystemModern() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      scheduled: "bg-blue-100 text-blue-700",
-      confirmed: "bg-green-100 text-green-700",
-      "in-progress": "bg-orange-100 text-orange-700",
-      completed: "bg-emerald-100 text-emerald-700",
-      cancelled: "bg-red-100 text-red-700",
+      scheduled: "bg-blue-500/10 text-blue-700",
+      confirmed: "bg-green-500/10 text-green-700",
+      "in-progress": "bg-orange-500/10 text-orange-700",
+      completed: "bg-emerald-500/10 text-emerald-700",
+      cancelled: "bg-destructive/10 text-destructive",
     };
-    return colors[status] || "bg-gray-100 text-gray-700";
+    return colors[status] || "bg-muted text-muted-foreground";
   };
 
   const getPriorityColor = (priority: string) => {
     const colors: Record<string, string> = {
-      urgent: "bg-red-50 text-red-600 border-red-200",
-      high: "bg-orange-50 text-orange-600 border-orange-200",
-      medium: "bg-yellow-50 text-yellow-600 border-yellow-200",
-      low: "bg-green-50 text-green-600 border-green-200",
+      urgent: "bg-destructive/10 text-destructive border-destructive/20",
+      high: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+      medium: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+      low: "bg-green-500/10 text-green-600 border-green-500/20",
     };
-    return colors[priority] || "bg-gray-50 text-gray-600";
+    return colors[priority] || "bg-muted text-muted-foreground";
   };
 
   const handleStatusChange = (id: string, newStatus: Appointment["status"]) => {
@@ -363,7 +364,9 @@ export function AppointmentSystemModern() {
 
   const handleDeleteAppointment = async (id: string) => {
     if (!confirm('Are you sure you want to delete this appointment?')) return;
+    setDeletingId(id);
     try {
+      await new Promise(resolve => setTimeout(resolve, 600));
       await appointmentService.delete(id);
     } catch (error) {
       console.error('Failed to delete appointment:', error);
@@ -371,6 +374,7 @@ export function AppointmentSystemModern() {
       setAppointments((prev) =>
         prev.map((apt) => (apt.id === id ? { ...apt, status: 'cancelled' as const } : apt))
       );
+      setDeletingId(null);
     }
   };
 
@@ -551,6 +555,7 @@ export function AppointmentSystemModern() {
                 {todayAppointments.map((apt) => {
                   const TypeIcon = getTypeIcon(apt.type);
                   const isCancelled = apt.status === 'cancelled';
+                  const isDeleting = deletingId === apt.id;
                   return (
                     <div
                       key={apt.id}
@@ -621,16 +626,17 @@ export function AppointmentSystemModern() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => handleDeleteAppointment(apt.id)}
-                          disabled={isCancelled}
+                          disabled={isCancelled || isDeleting}
+                          className={`delete-btn-hover ${isDeleting ? 'delete-btn-active border' : ''}`}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className={`h-4 w-4 ${
+                            isDeleting ? 'animate-[trashDrop_0.6s_ease-in-out]' : ''
+                          }`} />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
                           onClick={() =>
                             router.push(
                               `/prescriptions/add?patient=${encodeURIComponent(
