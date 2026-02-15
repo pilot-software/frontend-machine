@@ -181,12 +181,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Sheet>
             )}
 
-            <div className="flex items-center gap-0.5 cursor-pointer" onClick={() => router.push(ROUTES.DASHBOARD)}>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(ROUTES.DASHBOARD)}>
               <Stethoscope className="h-5 w-5 text-foreground" />
-              <div>
-                <span className="text-base font-bold text-foreground">{branding.systemName}</span>
-                <p className="text-xs text-muted-foreground hidden sm:block">{branding.tagline}</p>
-              </div>
+              <span className="text-base font-bold text-foreground">{branding.systemName}</span>
             </div>
           </div>
 

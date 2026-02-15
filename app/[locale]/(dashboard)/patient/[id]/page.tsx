@@ -12,6 +12,7 @@ import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
+import {EnterprisePageHeader} from '@/components/shared/EnterprisePageHeader';
 import {
     Activity,
     AlertCircle,
@@ -192,53 +193,60 @@ export default function PatientDetailPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between print:hidden">
-                <h1 className="text-3xl font-bold">{isPatientRole ? 'My Medical Record' : 'Patient Medical Record'}</h1>
-                <div className="flex space-x-2">
-                    <Button onClick={handlePrint} variant="outline">
-                        <Printer className="h-4 w-4 mr-2"/>
-                        Print
-                    </Button>
-                    <Button onClick={handleDownloadPDF} disabled={isGeneratingPDF}>
-                        <Download className="h-4 w-4 mr-2"/>
-                        {isGeneratingPDF ? 'Generating...' : 'PDF'}
-                    </Button>
-                    {!isPatientRole && (
-                        <Button onClick={handleDownloadHTML} variant="secondary" disabled={isGeneratingPDF}>
-                            <FileText className="h-4 w-4 mr-2"/>
-                            Report
+            <EnterprisePageHeader
+                icon={User}
+                title={isPatientRole ? 'My Medical Record' : `${patient.firstName} ${patient.lastName}`}
+                description={`Patient ID: ${patient.id} • ${patient.gender} • DOB: ${patient.dateOfBirth}`}
+                breadcrumbs={[
+                    { label: 'Dashboard', href: '/en/dashboard' },
+                    { label: 'Patients', href: '/en/patients' },
+                    { label: `${patient.firstName} ${patient.lastName}` },
+                ]}
+                actions={
+                    <div className="flex gap-2">
+                        <Button onClick={handlePrint} variant="outline" size="sm">
+                            <Printer className="h-4 w-4 mr-2"/>
+                            Print
                         </Button>
-                    )}
-                </div>
-            </div>
+                        <Button onClick={handleDownloadPDF} disabled={isGeneratingPDF} size="sm">
+                            <Download className="h-4 w-4 mr-2"/>
+                            {isGeneratingPDF ? 'Generating...' : 'PDF'}
+                        </Button>
+                        {!isPatientRole && (
+                            <Button onClick={handleDownloadHTML} variant="secondary" disabled={isGeneratingPDF} size="sm">
+                                <FileText className="h-4 w-4 mr-2"/>
+                                Report
+                            </Button>
+                        )}
+                    </div>
+                }
+            />
 
-            <Card className="border-2">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+            <Card>
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
+                        <div className="flex items-center gap-4">
+                            <Avatar className="h-16 w-16 border-2 border-background shadow-lg">
                                 <AvatarImage
                                     src={`https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face`}
                                     alt={patient.firstName}
                                 />
-                                <AvatarFallback className="text-2xl">
+                                <AvatarFallback className="text-xl">
                                     {patient.firstName[0]}{patient.lastName[0]}
                                 </AvatarFallback>
                             </Avatar>
                             <div>
-                                <h2 className="text-3xl font-bold">{patient.firstName} {patient.lastName}</h2>
-                                <p className="text-muted-foreground">Patient ID: {patient.id}</p>
+                                <h2 className="text-2xl font-bold">{patient.firstName} {patient.lastName}</h2>
+                                <p className="text-sm text-muted-foreground">Patient ID: {patient.id}</p>
                                 <div className="flex gap-2 mt-2">
-                                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                                        Active Patient
-                                    </Badge>
+                                    <Badge variant="default">Active Patient</Badge>
                                     <Badge variant="outline">{patient.gender}</Badge>
                                 </div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Last Visit</p>
-                            <p className="text-lg font-semibold">{patient.lastVisit || 'N/A'}</p>
+                            <p className="text-xs text-muted-foreground">Last Visit</p>
+                            <p className="text-base font-semibold">{patient.lastVisit || 'N/A'}</p>
                         </div>
                     </div>
                 </CardHeader>

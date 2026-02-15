@@ -1,6 +1,5 @@
 import React from "react";
-import { useTranslations } from "next-intl";
-import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
+import { EnterpriseStatsCard } from "@/components/shared/EnterpriseStatsCard";
 import { AlertTriangle, CheckCircle2, Plus, UserPlus } from "lucide-react";
 
 interface PatientStatsProps {
@@ -13,45 +12,35 @@ interface PatientStatsProps {
 }
 
 export function PatientStats({ stats }: PatientStatsProps) {
-  const t = useTranslations('common');
   return (
-    <StatsCardGrid>
-      <StatsCard
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <EnterpriseStatsCard
         title="Total Patients"
         value={stats?.totalPatients || 0}
         icon={UserPlus}
-        color="text-blue-600"
-        bgGradient="from-blue-500 to-blue-600"
-        change="+12%"
-        trend="up"
+        variant="primary"
+        trend={{ value: 12, label: 'vs last month' }}
       />
-      <StatsCard
+      <EnterpriseStatsCard
         title="New This Month"
         value={stats?.newPatientsThisMonth || 0}
         icon={Plus}
-        color="text-green-600"
-        bgGradient="from-green-500 to-green-600"
-        change="+23%"
-        trend="up"
+        variant="success"
+        trend={{ value: 23, label: 'vs last month' }}
       />
-      <StatsCard
+      <EnterpriseStatsCard
         title="Critical Cases"
         value={stats?.criticalCases || 0}
         icon={AlertTriangle}
-        color="text-red-600"
-        bgGradient="from-red-500 to-red-600"
-        change="-8%"
-        trend="down"
+        variant="danger"
+        trend={{ value: -8, label: 'vs last month', direction: 'down' }}
       />
-      <StatsCard
+      <EnterpriseStatsCard
         title="Discharged Today"
         value={stats?.dischargedToday || 0}
         icon={CheckCircle2}
-        color="text-emerald-600"
-        bgGradient="from-emerald-500 to-emerald-600"
-        change="+2%"
-        trend="up"
+        variant="success"
       />
-    </StatsCardGrid>
+    </div>
   );
 }
