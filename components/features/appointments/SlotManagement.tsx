@@ -339,7 +339,7 @@ export default function SlotManagement() {
                           size="sm" 
                           variant="outline" 
                           onClick={() => deleteSlot(slot.id)} 
-                          className={`w-full delete-btn-hover ${deletingId === slot.id ? 'delete-btn-active border' : ''}`}
+                          className={`w-full border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 ${deletingId === slot.id ? 'bg-red-50 border-red-400' : ''}`}
                           disabled={deletingId === slot.id}
                         >
                           <Trash2 className={`w-3 h-3 mr-1 ${deletingId === slot.id ? 'animate-[trashDrop_0.6s_ease-in-out]' : ''}`} />
