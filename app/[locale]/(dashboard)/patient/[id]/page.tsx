@@ -398,10 +398,7 @@ export default function PatientDetailPage() {
                                 <div className="flex items-start justify-between">
                                     <span className="text-muted-foreground">Address:</span>
                                     <span className="font-medium text-right">
-                                        {typeof patient.address === 'object' && patient.address !== null
-                                            ? [patient.address.line, patient.address.city, patient.address.state, patient.address.zip, patient.address.country].filter(Boolean).join(', ')
-                                            : patient.address || 'N/A'
-                                        }
+                                        {[patient.address, patient.city, patient.state, patient.zipCode, patient.country].filter(Boolean).join(', ') || 'N/A'}
                                     </span>
                                 </div>
                             </CardContent>

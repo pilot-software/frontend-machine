@@ -4,11 +4,11 @@ const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://loc
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await context.params;
     const authHeader = request.headers.get('authorization');
-    const { userId } = params;
     
     const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/users/${userId}`, {
       method: 'GET',

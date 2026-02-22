@@ -377,7 +377,7 @@ export default function AnalyticsPage() {
                                     <CartesianGrid strokeDasharray="3 3"/>
                                     <XAxis dataKey="month"/>
                                     <YAxis/>
-                                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, '']}/>
+                                    <Tooltip formatter={(value) => [`$${(value as number).toLocaleString()}`, '']}/>
                                     <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3}
                                           name="Revenue"/>
                                     <Line type="monotone" dataKey="expenses" stroke="#ef4444" strokeWidth={3}

@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://localhost:8080';
 
-export async function DELETE(request: NextRequest, { params }: { params: { userId: string; permissionId: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ userId: string; permissionId: string }> }) {
   try {
+    const { userId, permissionId } = await context.params;
     const authHeader = request.headers.get('authorization');
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/users/${params.userId}/custom/${params.permissionId}`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/users/${userId}/custom/${permissionId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': authHeader || '',

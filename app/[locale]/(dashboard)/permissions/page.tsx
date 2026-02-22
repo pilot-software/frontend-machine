@@ -143,7 +143,7 @@ export default function PermissionsPage() {
       });
       if (response.ok) {
         const data = await response.json();
-        setPermissionCatalog(data);
+        // Data is already in Redux store via fetchOrganizationPermissions
       }
     } catch (error) {
       console.error('Failed to load permission catalog:', error);
@@ -286,8 +286,9 @@ export default function PermissionsPage() {
       // Map permission codes to organization permission IDs
       const orgPermissionIds = newGroup.permissions.map(permCode => {
         const orgPerm = organizationPermissions.find(p => p.permissionCode === permCode);
-        console.log(`Mapping ${permCode} to ID:`, orgPerm?.orgPermissionId);
-        return orgPerm?.orgPermissionId;
+        const id = (orgPerm as any)?.id || (orgPerm as any)?.orgPermissionId;
+        console.log(`Mapping ${permCode} to ID:`, id);
+        return id;
       }).filter(id => id !== undefined);
 
       console.log('Final org permission IDs:', orgPermissionIds);
@@ -448,7 +449,7 @@ export default function PermissionsPage() {
   const getFilteredCatalogPermissions = () => {
     if (catalogFilter === 'assigned') {
       return allCatalogPermissions.filter(catalogPerm => 
-        organizationPermissions.find(orgPerm => orgPerm.rootPermissionId === catalogPerm.rootPermissionId)
+        organizationPermissions.find(orgPerm => (orgPerm as any).rootPermissionId === catalogPerm.rootPermissionId)
       );
     } else if (catalogFilter === 'unassigned') {
       return unassignedPermissions;
@@ -457,7 +458,7 @@ export default function PermissionsPage() {
   };
 
   const filteredCatalogPermissions = getFilteredCatalogPermissions();
-  const groupedFilteredCatalogPermissions = filteredCatalogPermissions.reduce((acc, perm) => {
+  const groupedFilteredCatalogPermissions = filteredCatalogPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
@@ -466,10 +467,10 @@ export default function PermissionsPage() {
 
   // Get unassigned permissions for catalog
   const unassignedPermissions = allCatalogPermissions.filter(catalogPerm => 
-    !organizationPermissions.find(orgPerm => orgPerm.rootPermissionId === catalogPerm.rootPermissionId)
+    !organizationPermissions.find(orgPerm => (orgPerm as any).rootPermissionId === catalogPerm.rootPermissionId)
   );
 
-  const groupedUnassignedPermissions = unassignedPermissions.reduce((acc, perm) => {
+  const groupedUnassignedPermissions = unassignedPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
@@ -485,19 +486,19 @@ export default function PermissionsPage() {
     g.groupName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const groupedPermissions = organizationPermissions.reduce((acc, perm) => {
+  const groupedPermissions = organizationPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
     return acc;
-  }, {} as Record<string, OrganizationPermission[]>);
+  }, {} as Record<string, any[]>);
 
-  const groupedCatalogPermissions = organizationPermissions.reduce((acc, perm) => {
+  const groupedCatalogPermissions = organizationPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
     return acc;
-  }, {} as Record<string, OrganizationPermission[]>);
+  }, {} as Record<string, any[]>);
 
   const sections = [
     { id: "overview" as PermissionSection, label: "Overview", icon: Eye },
@@ -735,39 +736,31 @@ export default function PermissionsPage() {
                   <div key={category} className="space-y-3">
                     <h4 className="font-medium text-sm">{category.replace('_', ' ')}</h4>
                     <div className="space-y-2">
-                      {permissions.filter(p => 
+                      {(permissions as any[]).filter(p => 
                         p.permissionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         p.permissionCode.toLowerCase().includes(searchTerm.toLowerCase())
-                      ).map((permission, index) => {
-                        const isAssigned = organizationPermissions.find(op => op.rootPermissionId === permission.rootPermissionId);
-                        return (
-                          <div key={`${category}-${permission.rootPermissionId || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{permission.permissionName}</p>
-                              <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <Badge variant={isAssigned ? "default" : "outline"}>
-                                {isAssigned ? "Assigned" : "Available"}
-                              </Badge>
-                              {!isAssigned && (
-                                <Button 
-                                  variant="default" 
-                                  size="sm"
-                                  onClick={() => {
-                                    console.log('Full permission object:', JSON.stringify(permission, null, 2));
-                                    console.log('rootPermissionId:', permission.rootPermissionId);
-                                    console.log('typeof rootPermissionId:', typeof permission.rootPermissionId);
-                                    assignPermissionToOrg(permission.rootPermissionId);
-                                  }}
-                                >
-                                  Assign
-                                </Button>
-                              )}
-                            </div>
+                      ).map((permission, index) => (
+                        <div key={`${category}-${(permission as any).rootPermissionId || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{permission.permissionName}</p>
+                            <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
                           </div>
-                        );
-                      })}
+                          <div className="flex gap-2">
+                            <Badge variant={organizationPermissions.find(op => (op as any).rootPermissionId === (permission as any).rootPermissionId) ? "default" : "outline"}>
+                              {organizationPermissions.find(op => (op as any).rootPermissionId === (permission as any).rootPermissionId) ? "Assigned" : "Available"}
+                            </Badge>
+                            {!organizationPermissions.find(op => (op as any).rootPermissionId === (permission as any).rootPermissionId) && (
+                              <Button 
+                                variant="default" 
+                                size="sm"
+                                onClick={() => assignPermissionToOrg((permission as any).rootPermissionId)}
+                              >
+                                Assign
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -832,7 +825,7 @@ export default function PermissionsPage() {
                       <p className="text-xs font-medium text-muted-foreground mb-2">Permissions:</p>
                       <div className="flex flex-wrap gap-1">
                         {group.permissions && group.permissions.length > 0 ? (
-                          group.permissions.slice(0, 3).map((permission, index) => {
+                          group.permissions.slice(0, 3).map((permission: any, index) => {
                             // Handle both string and object formats
                             const permCode = typeof permission === 'string' ? permission : permission.permissionCode;
                             const permName = typeof permission === 'string' 
@@ -1137,7 +1130,6 @@ export default function PermissionsPage() {
                         <Checkbox
                           id={`category-${category}`}
                           checked={permissions.length > 0 && permissions.every(p => newGroup.permissions.includes(p.permissionCode))}
-                          indeterminate={permissions.some(p => newGroup.permissions.includes(p.permissionCode)) && !permissions.every(p => newGroup.permissions.includes(p.permissionCode))}
                           onCheckedChange={(checked) => {
                             const categoryPermissionCodes = permissions.map(p => p.permissionCode);
                             if (checked) {

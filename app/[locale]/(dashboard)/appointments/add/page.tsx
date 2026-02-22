@@ -183,6 +183,7 @@ export default function AddAppointmentPage() {
         branchId: getBranchId(),
         slotId: appointmentData.slotId,
         createdBy: user?.id || "system",
+        status: "SCHEDULED" as const,
       };
       await appointmentService.createAppointment(apiData);
       const locale = pathname?.split("/")[1] || "en";

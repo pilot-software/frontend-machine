@@ -2,18 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://localhost:8080';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    console.log('Frontend API - Received ID:', params.id);
-    console.log('Frontend API - ID type:', typeof params.id);
-    console.log('Frontend API - Full params:', JSON.stringify(params));
+    const { id } = await context.params;
+
+    console.log('Frontend API - Received ID:', id);
+    console.log('Frontend API - ID type:', typeof id);
+    console.log('Frontend API - Full params:', JSON.stringify({ id }));
     
     const authHeader = request.headers.get('authorization');
     const body = await request.json();
     
-    console.log('Calling backend:', `${PERMISSION_SERVICE_URL}/api/permissions/catalog/${params.id}/distribute`);
+    console.log('Calling backend:', `${PERMISSION_SERVICE_URL}/api/permissions/catalog/${id}/distribute`);
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/catalog/${params.id}/distribute`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/catalog/${id}/distribute`, {
       method: 'POST',
       headers: {
         'Authorization': authHeader || '',
