@@ -16,6 +16,7 @@ import {Separator} from '@/components/ui/separator';
 import {ArrowLeft, Clock, Edit, FileText, Shield, Save, X, User, Mail, Phone, Briefcase, Building2, MapPin, Calendar, Activity, CheckCircle2, AlertCircle, UserCircle2, Lock, History} from 'lucide-react';
 import {api} from '@/lib/api';
 import {format} from 'date-fns';
+import {departmentService, ApiDepartment} from '@/lib/services/department';
 
 interface User {
     id: string;
@@ -58,10 +59,23 @@ export default function UserProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [editedUser, setEditedUser] = useState<User | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [departments, setDepartments] = useState<ApiDepartment[]>([]);
 
     useEffect(() => {
         fetchUser();
     }, [params.id]);
+
+    useEffect(() => {
+        const loadDepartments = async () => {
+            try {
+                const data = await departmentService.getDepartments();
+                setDepartments(data);
+            } catch (error) {
+                console.error('Failed to load departments:', error);
+            }
+        };
+        loadDepartments();
+    }, []);
 
     const fetchUser = async () => {
         try {
@@ -87,7 +101,11 @@ export default function UserProfilePage() {
         if (!editedUser) return;
         setIsSaving(true);
         try {
-            await api.put(`/api/users/${params.id}`, editedUser);
+            const payload = {
+                ...editedUser,
+                department: editedUser.department ? { id: editedUser.department } : undefined
+            };
+            await api.put(`/api/users/${params.id}`, payload);
             await fetchUser();
             setIsEditing(false);
         } catch (error) {
@@ -339,7 +357,16 @@ export default function UserProfilePage() {
                                                 <Building2 className="h-4 w-4 text-muted-foreground"/>Department
                                             </Label>
                                             {isEditing ? (
-                                                <Input value={displayUser.department} onChange={(e) => updateField('department', e.target.value)}/>
+                                                <Select value={displayUser.department || ''} onValueChange={(value) => updateField('department', value)}>
+                                                    <SelectTrigger><SelectValue placeholder="Select department"/></SelectTrigger>
+                                                    <SelectContent>
+                                                        {departments.map((dept) => (
+                                                            <SelectItem key={dept.id} value={dept.id}>
+                                                                {dept.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                             ) : (
                                                 <p className="text-sm font-medium">{displayUser.department}</p>
                                             )}
