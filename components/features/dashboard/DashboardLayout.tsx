@@ -152,7 +152,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border">
+      <header
+        className="fixed top-0 z-50 bg-card border-b border-border"
+        style={{ left: isMobile ? 0 : sidebarWidth, right: 0 }}
+      >
         <div className="flex items-center justify-between px-4 h-14">
           {/* Left: Menu + Logo */}
           <div className="flex items-center gap-4">
@@ -181,10 +184,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Sheet>
             )}
 
+          {isMobile && (
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(ROUTES.DASHBOARD)}>
               <Stethoscope className="h-5 w-5 text-foreground" />
               <span className="text-base font-bold text-foreground">{branding.systemName}</span>
             </div>
+          )}
           </div>
 
           {/* Right: Actions */}
@@ -250,47 +255,65 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </header>
 
-      <div className="flex pt-14">
+      <div className="flex">
         <aside 
-          className="hidden md:block fixed left-0 top-14 bottom-0 bg-card border-r border-border"
+          className="hidden md:block fixed left-0 top-0 bottom-0 bg-white border-r border-slate-200 dark:bg-slate-950 dark:border-slate-800"
           style={{ width: `${sidebarWidth}px` }}
         >
           <div 
-            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/50 active:bg-primary transition-colors group"
+            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-slate-300 active:bg-slate-400 dark:hover:bg-slate-700 dark:active:bg-slate-600 transition-colors group"
             onMouseDown={handleMouseDown}
           >
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-border group-hover:bg-primary rounded-full transition-colors" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-slate-200 group-hover:bg-slate-400 dark:bg-slate-800 dark:group-hover:bg-slate-600 rounded-full transition-colors" />
           </div>
-          
-          <nav className="p-3 space-y-1">
-            {menuItems.map((item) => {
-              const ItemIcon = item.icon;
-              const isActive = pathname.includes(item.path) || (item.path === "/patients" && pathname.includes("/patient/"));
-              const showText = sidebarWidth >= 150;
-              
-              return (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  onClick={() => router.push(item.path)}
-                  className={`w-full h-10 ${
-                    showText ? 'justify-start' : 'justify-center px-0'
-                  } ${
-                    isActive
-                      ? "bg-primary text-primary-foreground font-medium"
-                      : "hover:bg-accent"
-                  }`}
-                >
-                  <ItemIcon className={`h-4 w-4 ${showText ? 'mr-3' : ''}`} />
-                  {showText && <span className="truncate">{t(item.label)}</span>}
-                </Button>
-              );
-            })}
-          </nav>
+          <div className="flex h-full flex-col">
+            <div className="border-b border-slate-200 dark:border-slate-800 px-3 py-4">
+              <button
+                type="button"
+                onClick={() => router.push(ROUTES.DASHBOARD)}
+                className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-900"
+              >
+                <div className="h-10 w-10 rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-200 flex items-center justify-center">
+                  <Stethoscope className="h-5 w-5" />
+                </div>
+                {sidebarWidth >= 150 && (
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">{branding.systemName}</p>
+                    <p className="truncate text-xs text-muted-foreground">{branding.tagline}</p>
+                  </div>
+                )}
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+              {menuItems.map((item) => {
+                const ItemIcon = item.icon;
+                const isActive = pathname.includes(item.path) || (item.path === "/patients" && pathname.includes("/patient/"));
+                const showText = sidebarWidth >= 150;
+                
+                return (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    onClick={() => router.push(item.path)}
+                    className={`w-full h-11 rounded-lg border-l-4 transition-all duration-200 ${
+                      showText ? 'justify-start gap-3' : 'justify-center px-0'
+                    } ${
+                      isActive
+                        ? "bg-[#eff6ff] text-black font-semibold border-[#1e40af] dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] dark:border-[#1e40af]"
+                        : "border-transparent text-black hover:border-[#1e40af]/45 hover:bg-[#eff6ff] hover:text-black dark:text-slate-300 dark:hover:border-[#1e40af]/70 dark:hover:bg-[#1e3a8a]/20 dark:hover:text-[#93c5fd]"
+                    }`}
+                  >
+                    <ItemIcon className={`h-4 w-4 ${showText ? '' : ''}`} />
+                    {showText && <span className="truncate text-sm">{t(item.label)}</span>}
+                  </Button>
+                );
+              })}
+            </nav>
+          </div>
         </aside>
 
         <main 
-          className="flex-1 p-6"
+          className="flex-1 p-6 pt-16"
           style={{ marginLeft: isMobile ? '0' : `${sidebarWidth}px` }}
         >
           {children}
