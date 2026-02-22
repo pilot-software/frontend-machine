@@ -17,6 +17,7 @@ interface AuthContextType {
     logout: () => void;
     isLoading: boolean;
     resetPassword: (email: string) => Promise<boolean>;
+    confirmResetPassword: (token: string, newPassword: string) => Promise<boolean>;
     verifyTwoFactor: (code: string) => Promise<boolean>;
     hasPermission: (permission: string) => boolean;
     hasAnyPermission: (permissions: string[]) => boolean;
@@ -226,9 +227,26 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         storageService.removeItem('user_permissions');
     };
 
-    const resetPassword = async (_email: string): Promise<boolean> => {
-        // TODO: Implement password reset API call
-        return false;
+    const resetPassword = async (email: string): Promise<boolean> => {
+        try {
+            const {authService} = await import('@/lib/services/auth');
+            await authService.forgotPassword(email, 'hospital_org1');
+            return true;
+        } catch (error) {
+            console.error('Reset password error:', error);
+            return false;
+        }
+    };
+
+    const confirmResetPassword = async (resetToken: string, newPassword: string): Promise<boolean> => {
+        try {
+            const {authService} = await import('@/lib/services/auth');
+            const response = await authService.confirmResetPassword(resetToken, newPassword);
+            return response?.success || false;
+        } catch (error) {
+            console.error('Confirm reset password error:', error);
+            return false;
+        }
     };
 
     const verifyTwoFactor = async (_code: string): Promise<boolean> => {
@@ -254,6 +272,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
                 logout,
                 isLoading,
                 resetPassword,
+                confirmResetPassword,
                 verifyTwoFactor,
                 hasPermission,
                 hasAnyPermission,

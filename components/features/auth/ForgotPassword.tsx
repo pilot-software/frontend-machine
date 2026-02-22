@@ -39,14 +39,11 @@ export function ForgotPassword({onBackToLogin}: ForgotPasswordProps) {
         }
 
         try {
-            const result = await resetPassword(email);
-            if (result) {
-                setSuccess(true);
-            } else {
-                setError('No account found with this email address');
-            }
-        } catch {
-            setError('An error occurred. Please try again.');
+            const {authService} = await import('@/lib/services/auth');
+            await authService.forgotPassword(email, 'hospital_org1');
+            setSuccess(true);
+        } catch (err) {
+            setError('Failed to send reset link. Please try again.');
         } finally {
             setIsLoading(false);
         }
