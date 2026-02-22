@@ -316,15 +316,11 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
               </div>
 
               <Button
-                type="button"
-                variant="link"
-                className="p-0 h-auto text-sm"
-                onClick={onForgotPassword}
+                type="submit"
+                variant="default"
+                className="w-full h-11 rounded-lg border-transparent bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-lg shadow-primary/40 transition duration-200 hover:from-primary/90 hover:to-primary focus-visible:ring-primary/60"
+                disabled={isLoading}
               >
-                {t("forgotPassword")}
-              </Button>
-
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -333,6 +329,15 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
                 ) : (
                   t("signIn")
                 )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 mt-2 rounded-lg border-primary text-primary hover:bg-primary/10 focus-visible:ring-primary/60"
+                onClick={onForgotPassword}
+              >
+                {t("forgotPassword")}
               </Button>
             </form>
           </CardContent>
