@@ -18,10 +18,16 @@ const floatingStyles = `
     0% { stroke-dashoffset: 1000; }
     100% { stroke-dashoffset: 0; }
   }
+  @keyframes wave {
+    0% { transform: translateX(-100%) translateY(0); }
+    50% { transform: translateX(0) translateY(-10px); }
+    100% { transform: translateX(100%) translateY(0); }
+  }
   .animate-float { animation: float 4s ease-in-out infinite; }
   .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
   .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
   .ecg-line { animation: ecg-draw 2s linear infinite; stroke-dasharray: 1000; }
+  .animate-wave { animation: wave 6s ease-in-out infinite; }
 `;
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
@@ -231,16 +237,21 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
         ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 dark:from-slate-900 dark:via-blue-900 dark:to-slate-900 p-4 relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-300/15 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+      <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-300/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      
+      <div className="w-full max-w-md relative z-10">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-lg">
-              <Stethoscope className="h-6 w-6 text-primary-foreground" />
+            <div className="w-12 h-12 rounded-xl bg-blue-700 dark:bg-blue-500 flex items-center justify-center shadow-lg">
+              <Stethoscope className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{branding.systemName}</h1>
-              <p className="text-sm text-muted-foreground">{branding.loginSubtitle}</p>
+              <h1 className="text-2xl font-bold text-blue-900 dark:text-white">{branding.systemName}</h1>
+              <p className="text-sm text-blue-700 dark:text-blue-100">{branding.loginSubtitle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -251,7 +262,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
           </div>
         </div>
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-2xl border-0 bg-white/98 dark:bg-slate-800/98 backdrop-blur-sm">
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
@@ -317,8 +328,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
               <Button
                 type="submit"
-                variant="default"
-                className="w-full h-11 rounded-lg border-transparent bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold shadow-lg shadow-primary/40 transition duration-200 hover:from-primary/90 hover:to-primary focus-visible:ring-primary/60"
+                className="w-full h-11 rounded-lg bg-blue-900 text-white font-semibold hover:bg-blue-800 transition-all duration-200 border border-blue-900 focus-visible:ring-2 focus-visible:ring-blue-700"
                 disabled={isLoading}
               >
                 {isLoading ? (

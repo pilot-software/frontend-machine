@@ -7,7 +7,6 @@ import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -81,7 +80,17 @@ export function PrescriptionSystem() {
   const [activeTab, setActiveTab] = useState("active");
   const itemsPerPage = 6;
 
-  const filteredPrescriptions = prescriptions.filter(rx => {
+  const getTabFilteredPrescriptions = () => {
+    let filtered = prescriptions;
+    if (activeTab === 'active') filtered = filtered.filter(rx => rx.status === 'active');
+    else if (activeTab === 'pending') filtered = filtered.filter(rx => rx.status === 'pending');
+    else if (activeTab === 'history') filtered = filtered.filter(rx => rx.status === 'completed');
+    return filtered;
+  };
+
+  const tabFilteredPrescriptions = getTabFilteredPrescriptions();
+
+  const filteredPrescriptions = tabFilteredPrescriptions.filter(rx => {
     const matchesSearch = searchTerm === "" || 
       rx.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       rx.medication.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -251,28 +260,18 @@ export function PrescriptionSystem() {
         ))}
       </StatsCardGrid>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="hidden md:block">
-          <TabsList>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="refills">Refills</TabsTrigger>
-          </TabsList>
-        </div>
-        <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Active Prescriptions</SelectItem>
-              <SelectItem value="pending">Pending Approval</SelectItem>
-              <SelectItem value="history">History</SelectItem>
-              <SelectItem value="refills">Refill Requests</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="w-full">
+        <div className="border-b -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            <button onClick={() => setActiveTab('active')} className={`px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'active' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>Active</button>
+            <button onClick={() => setActiveTab('pending')} className={`px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'pending' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>Pending</button>
+            <button onClick={() => setActiveTab('history')} className={`px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'history' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>History</button>
+            <button onClick={() => setActiveTab('refills')} className={`px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'refills' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>Refills</button>
+          </div>
         </div>
 
-        <TabsContent value="active" className="space-y-6">
+        <div className={activeTab === 'active' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col gap-4">
@@ -372,9 +371,10 @@ export function PrescriptionSystem() {
               </Button>
             </div>
           )}
-        </TabsContent>
+        </div>
 
-        <TabsContent value="pending">
+        <div className={activeTab === 'pending' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {prescriptions.filter(rx => rx.status === "pending").map((rx) => {
               const CategoryIcon = getCategoryIcon(rx.category);
@@ -409,9 +409,10 @@ export function PrescriptionSystem() {
               );
             })}
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="history">
+        <div className={activeTab === 'history' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <CardTitle>Prescription History</CardTitle>
@@ -440,9 +441,10 @@ export function PrescriptionSystem() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="refills">
+        <div className={activeTab === 'refills' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <CardTitle>Refill Requests</CardTitle>
@@ -478,8 +480,8 @@ export function PrescriptionSystem() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
 
       <PrescriptionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} prescription={selectedPrescription} onPrint={handlePrint} />
       <UploadPrescriptionModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />

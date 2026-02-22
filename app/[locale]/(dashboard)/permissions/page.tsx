@@ -529,30 +529,30 @@ export default function PermissionsPage() {
       />
 
       {/* Horizontal Tabs */}
-      <div className="border-b border-border bg-card rounded-lg">
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide p-1">
-          {sections.map((section) => {
-            const Icon = section.icon;
-            return (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-md transition-all whitespace-nowrap text-sm font-medium ${
-                  activeSection === section.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{section.label}</span>
-              </button>
-            );
-          })}
+      <div className="w-full">
+        <div className="border-b -mx-6 px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                    activeSection === section.id
+                      ? "border-primary text-primary font-medium"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{section.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div>
+        <div className="pt-6">
         {/* Overview */}
         {activeSection === "overview" && (
           <div className="space-y-6">
@@ -716,13 +716,13 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+                <div className="relative w-full sm:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search permissions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9"
                   />
                 </div>
                 <Select value={catalogFilter} onValueChange={(value: 'all' | 'assigned' | 'unassigned') => setCatalogFilter(value)}>
@@ -787,13 +787,13 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+                <div className="relative w-full sm:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search groups..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9"
                   />
                 </div>
                 <Button onClick={() => setShowCreateGroup(true)} className="w-full sm:w-auto">
@@ -983,13 +983,13 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+                <div className="relative w-full sm:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search audit logs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -1052,13 +1052,13 @@ export default function PermissionsPage() {
               <CardDescription>Manage permissions assigned to your organization and their status</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="relative">
+              <div className="relative w-full sm:w-96">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search permissions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-9"
                 />
               </div>
 
@@ -1097,9 +1097,8 @@ export default function PermissionsPage() {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
-
-      {/* Create Group Modal */}
       <Dialog open={showCreateGroup} onOpenChange={setShowCreateGroup}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>

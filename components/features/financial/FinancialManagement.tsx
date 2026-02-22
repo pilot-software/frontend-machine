@@ -18,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -135,6 +134,7 @@ export function FinancialManagement() {
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isClaimDialogOpen, setIsClaimDialogOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
+  const [activeTab, setActiveTab] = useState("billing");
 
   const {
     execute: fetchBilling,
@@ -529,34 +529,35 @@ export function FinancialManagement() {
       )}
 
       {/* Financial Management Tabs */}
-      <Tabs defaultValue="billing" className="w-full">
-        <div className="w-full overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="inline-flex w-auto bg-muted p-1 rounded-lg">
-            <TabsTrigger value="billing" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
-              <FileText className="h-4 w-4 mr-1.5 sm:mr-2" />
+      <div className="w-full">
+        <div className="border-b -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'billing' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Billing & Invoices</span>
               <span className="sm:hidden">Billing</span>
-            </TabsTrigger>
-            <TabsTrigger value="payments" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
-              <CreditCard className="h-4 w-4 mr-1.5 sm:mr-2" />
+            </button>
+            <button onClick={() => setActiveTab('payments')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'payments' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <CreditCard className="h-4 w-4" />
               <span className="hidden sm:inline">Payments</span>
               <span className="sm:hidden">Pay</span>
-            </TabsTrigger>
-            <TabsTrigger value="insurance" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
-              <Shield className="h-4 w-4 mr-1.5 sm:mr-2" />
+            </button>
+            <button onClick={() => setActiveTab('claims')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'claims' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <Shield className="h-4 w-4" />
               <span className="hidden sm:inline">Insurance Claims</span>
               <span className="sm:hidden">Claims</span>
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
-              <BarChart3 className="h-4 w-4 mr-1.5 sm:mr-2" />
+            </button>
+            <button onClick={() => setActiveTab('reports')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'reports' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Financial Reports</span>
               <span className="sm:hidden">Reports</span>
-            </TabsTrigger>
-          </TabsList>
+            </button>
+          </div>
         </div>
 
-        <TabsContent value="billing" className="space-y-6">
+        <div className={activeTab === 'billing' ? 'space-y-6' : 'hidden'}>
           {/* Search and Filters */}
+          <div className="pt-6" />
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col space-y-4">
@@ -685,9 +686,10 @@ export function FinancialManagement() {
               </CardContent>
             </Card>
           )}
-        </TabsContent>
+        </div>
 
-        <TabsContent value="payments" className="space-y-6">
+        <div className={activeTab === 'payments' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <CardTitle>Payment History</CardTitle>
@@ -744,9 +746,10 @@ export function FinancialManagement() {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="insurance" className="space-y-6">
+        <div className={activeTab === 'claims' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           {/* Insurance Overview Cards with Mini Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="relative overflow-hidden">
@@ -1075,9 +1078,10 @@ export function FinancialManagement() {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="reports" className="space-y-6">
+        <div className={activeTab === 'reports' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           {/* Revenue Analytics */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -1355,8 +1359,8 @@ export function FinancialManagement() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

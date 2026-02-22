@@ -874,6 +874,23 @@
     "customizeDashboard": "Customize Dashboard",
     "stats": "Statistics",
     "actions": "Actions",
-    "info": "Information"
+    "info": "Information",
+    "patientAdmissions": "Patient Admissions",
+    "todayAdmissions": "Today's Admissions",
+    "weeklyAdmissions": "Weekly Admissions",
+    "avgLengthOfStay": "Avg Length of Stay",
+    "readmissionRate": "Readmission Rate",
+    "days": "days",
+    "labDiagnostics": "Lab & Diagnostics",
+    "pendingTests": "Pending Tests",
+    "completedToday": "Completed Today",
+    "avgTurnaroundTime": "Avg Turnaround Time",
+    "abnormalResults": "Abnormal Results",
+    "hours": "hours",
+    "medicationInventory": "Medication Inventory",
+    "lowStockItems": "Low Stock Items",
+    "outOfStock": "Out of Stock",
+    "totalMedicines": "Total Medicines",
+    "inventoryValue": "Inventory Value"
   }
 }

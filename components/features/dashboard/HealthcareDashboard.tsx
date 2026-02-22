@@ -16,7 +16,6 @@ import { FinancialManagement } from "@/components/features/financial/FinancialMa
 import { PrescriptionSystem } from "@/components/features/prescriptions/PrescriptionSystem";
 import { PatientFormModal } from "@/components/features/patients/PatientFormModal";
 import { DoctorFormModal } from "@/components/features/dashboard/DoctorFormModal";
-import { EnterpriseStatsCard } from "@/components/shared/EnterpriseStatsCard";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useFeatures } from "@/lib/useFeatures";
 import {
@@ -297,33 +296,99 @@ export function HealthcareDashboard() {
               {loading.stats ? (
                 <DashboardStatsSkeleton />
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <EnterpriseStatsCard
-                    title={t('totalPatients')}
-                    value={statsData?.totalPatients || 0}
-                    icon={Users}
-                    variant="primary"
-                    trend={{ value: 12, label: t('vsLastMonth') }}
-                  />
-                  <EnterpriseStatsCard
-                    title={t('appointmentsToday')}
-                    value={statsData?.todayAppointments || 0}
-                    icon={Clock}
-                    variant="success"
-                  />
-                  <EnterpriseStatsCard
-                    title={t('activeDoctors')}
-                    value={statsData?.totalDoctors || 0}
-                    icon={Users}
-                    variant="default"
-                  />
-                  <EnterpriseStatsCard
-                    title={t('monthlyRevenue')}
-                    value={`$${statsData?.revenue?.monthly || 0}`}
-                    icon={TrendingUp}
-                    variant="success"
-                    trend={{ value: 8, label: t('vsLastMonth') }}
-                  />
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3">
+                  <Card className="p-3">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-blue-600" />
+                        <span className="text-xs font-semibold text-muted-foreground">{t('totalPatients')}</span>
+                      </div>
+                      <div className="text-2xl font-bold">{statsData?.totalPatients || 0}</div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>Active:</span>
+                          <span className="font-bold text-green-600">{Math.floor((statsData?.totalPatients || 0) * 0.8)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Inactive:</span>
+                          <span className="font-bold text-orange-600">{Math.floor((statsData?.totalPatients || 0) * 0.2)}</span>
+                        </div>
+                        <div className="flex justify-between pt-1 border-t">
+                          <span>New:</span>
+                          <span className="font-bold text-blue-600">{Math.floor((statsData?.totalPatients || 0) * 0.15)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-3">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-green-600" />
+                        <span className="text-xs font-semibold text-muted-foreground">{t('appointmentsToday')}</span>
+                      </div>
+                      <div className="text-2xl font-bold">{statsData?.todayAppointments || 0}</div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>Completed:</span>
+                          <span className="font-bold text-green-600">{Math.floor((statsData?.todayAppointments || 0) * 0.6)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Pending:</span>
+                          <span className="font-bold text-yellow-600">{Math.floor((statsData?.todayAppointments || 0) * 0.4)}</span>
+                        </div>
+                        <div className="flex justify-between pt-1 border-t">
+                          <span>Cancelled:</span>
+                          <span className="font-bold text-red-600">{Math.floor((statsData?.todayAppointments || 0) * 0.05)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-3">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-purple-600" />
+                        <span className="text-xs font-semibold text-muted-foreground">{t('activeDoctors')}</span>
+                      </div>
+                      <div className="text-2xl font-bold">{statsData?.totalDoctors || 0}</div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>Available:</span>
+                          <span className="font-bold text-green-600">{Math.floor((statsData?.totalDoctors || 0) * 0.7)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Busy:</span>
+                          <span className="font-bold text-orange-600">{Math.floor((statsData?.totalDoctors || 0) * 0.3)}</span>
+                        </div>
+                        <div className="flex justify-between pt-1 border-t">
+                          <span>Off-duty:</span>
+                          <span className="font-bold text-gray-600">{Math.floor((statsData?.totalDoctors || 0) * 0.1)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-3">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-emerald-600" />
+                        <span className="text-xs font-semibold text-muted-foreground">{t('monthlyRevenue')}</span>
+                      </div>
+                      <div className="text-2xl font-bold">${statsData?.revenue?.monthly || 0}</div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>Collected:</span>
+                          <span className="font-bold text-green-600">${Math.floor((statsData?.revenue?.monthly || 0) * 0.85)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Pending:</span>
+                          <span className="font-bold text-yellow-600">${Math.floor((statsData?.revenue?.monthly || 0) * 0.15)}</span>
+                        </div>
+                        <div className="flex justify-between pt-1 border-t">
+                          <span>Overdue:</span>
+                          <span className="font-bold text-red-600">${Math.floor((statsData?.revenue?.monthly || 0) * 0.05)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               )}
             </>

@@ -28,7 +28,7 @@ export function DashboardWidgets() {
     if (saved) {
       setEnabledWidgets(JSON.parse(saved));
     } else {
-      setEnabledWidgets(['quickActions', 'bedOccupancy', 'emergencyRoom', 'staffAvailability', 'financial']);
+      setEnabledWidgets(['quickActions', 'bedOccupancy', 'emergencyRoom', 'staffAvailability', 'financial', 'admissions', 'diagnostics', 'inventory']);
     }
   }, [user?.role]);
 
@@ -62,15 +62,15 @@ export function DashboardWidgets() {
     { id: 'emergencyRoom', label: 'emergencyRoomStatus', enabled: enabledWidgets.includes('emergencyRoom'), category: 'info' as const },
     { id: 'staffAvailability', label: 'staffAvailability', enabled: enabledWidgets.includes('staffAvailability'), category: 'info' as const },
     { id: 'financial', label: 'financialOverview', enabled: enabledWidgets.includes('financial'), category: 'info' as const },
+    { id: 'admissions', label: 'patientAdmissions', enabled: enabledWidgets.includes('admissions'), category: 'info' as const },
+    { id: 'diagnostics', label: 'labDiagnostics', enabled: enabledWidgets.includes('diagnostics'), category: 'info' as const },
+    { id: 'inventory', label: 'medicationInventory', enabled: enabledWidgets.includes('inventory'), category: 'info' as const },
   ];
 
   // Render role-specific dashboard widgets
   if (user.role === ROLES.ADMIN) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-end">
-          <DashboardCustomizer widgets={widgets} onUpdate={handleWidgetUpdate} />
-        </div>
         <AdminDashboardWidgets
           onNavigate={handleNavigate}
           onAddPatient={handleAddPatient}
@@ -106,6 +106,7 @@ export function DashboardWidgets() {
         onAddPatient={handleAddPatient}
         onAddAppointment={handleAddAppointment}
         onAddPrescription={handleAddPrescription}
+        enabledWidgets={enabledWidgets}
       />
     </div>
   );

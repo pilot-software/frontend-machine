@@ -1,21 +1,25 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Bell, Database, Palette, Shield, User, Lock } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useAuth } from "@/components/providers/AuthContext";
+
 import { toast } from "sonner";
 
 type SettingsSection = "appearance" | "notifications" | "system" | "security" | "privacy";
 
 export default function SettingsPage() {
     const { theme, toggleTheme } = useTheme();
+    const { user } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [isPending, startTransition] = useTransition();
@@ -24,6 +28,54 @@ export default function SettingsPage() {
     const [language, setLanguage] = useState(locale);
     const [fontSize, setFontSize] = useState("medium");
     const [timezone, setTimezone] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('timezone') || 'utc' : 'utc');
+    const [widgets, setWidgets] = useState({
+        quickActions: true,
+        bedOccupancy: true,
+        emergencyRoom: true,
+        staffAvailability: true,
+        financial: true,
+        admissions: true,
+        diagnostics: true,
+        inventory: true,
+    });
+
+    useEffect(() => {
+        const saved = localStorage.getItem(`dashboard-widgets-${user?.role}`);
+        if (saved) {
+            const enabledIds = JSON.parse(saved);
+            setWidgets({
+                quickActions: enabledIds.includes('quickActions'),
+                bedOccupancy: enabledIds.includes('bedOccupancy'),
+                emergencyRoom: enabledIds.includes('emergencyRoom'),
+                staffAvailability: enabledIds.includes('staffAvailability'),
+                financial: enabledIds.includes('financial'),
+                admissions: enabledIds.includes('admissions'),
+                diagnostics: enabledIds.includes('diagnostics'),
+                inventory: enabledIds.includes('inventory'),
+            });
+        }
+    }, [user?.role]);
+
+    const toggleWidget = (key: keyof typeof widgets) => {
+        const updated = { ...widgets, [key]: !widgets[key] };
+        setWidgets(updated);
+        const enabledIds = Object.entries(updated)
+            .filter(([_, enabled]) => enabled)
+            .map(([key]) => {
+                const map: Record<string, string> = {
+                    quickActions: 'quickActions',
+                    bedOccupancy: 'bedOccupancy',
+                    emergencyRoom: 'emergencyRoom',
+                    staffAvailability: 'staffAvailability',
+                    financial: 'financial',
+                    admissions: 'admissions',
+                    diagnostics: 'diagnostics',
+                    inventory: 'inventory',
+                };
+                return map[key];
+            });
+        localStorage.setItem(`dashboard-widgets-${user?.role}`, JSON.stringify(enabledIds));
+    };
 
     const handleLanguageChange = (newLang: string) => {
         setLanguage(newLang);
@@ -91,14 +143,14 @@ export default function SettingsPage() {
                             <CardDescription>Customize the look and feel of your dashboard</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Dark Mode</Label>
                                     <p className="text-sm text-muted-foreground">Switch between light and dark themes</p>
                                 </div>
                                 <Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 pb-6 border-b border-muted">
                                 <Label>Language</Label>
                                 <Select value={language} onValueChange={handleLanguageChange}>
                                     <SelectTrigger className="w-full sm:w-64">
@@ -119,22 +171,42 @@ export default function SettingsPage() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label>Font Size</Label>
-                                <Select value={fontSize} onValueChange={(value) => {
-                                    setFontSize(value);
-                                    const fontSizeMap = { small: '13px', medium: '15px', large: '17px' };
-                                    document.documentElement.style.fontSize = fontSizeMap[value as keyof typeof fontSizeMap];
-                                    localStorage.setItem('fontSize', value);
-                                }}>
-                                    <SelectTrigger className="w-full sm:w-64">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="small">Small</SelectItem>
-                                        <SelectItem value="medium">Medium</SelectItem>
-                                        <SelectItem value="large">Large</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <Label>Dashboard Widgets</Label>
+                                <p className="text-sm text-muted-foreground">Choose which widgets to display on your dashboard</p>
+                                <div className="space-y-2 mt-4 bg-muted/20 p-3 rounded-lg">
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.quickActions} onCheckedChange={() => toggleWidget('quickActions')} />
+                                        <span className="text-sm font-medium">Quick Actions</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.bedOccupancy} onCheckedChange={() => toggleWidget('bedOccupancy')} />
+                                        <span className="text-sm font-medium">Bed Occupancy Rate</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.emergencyRoom} onCheckedChange={() => toggleWidget('emergencyRoom')} />
+                                        <span className="text-sm font-medium">Emergency Room Status</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.staffAvailability} onCheckedChange={() => toggleWidget('staffAvailability')} />
+                                        <span className="text-sm font-medium">Staff Availability</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.financial} onCheckedChange={() => toggleWidget('financial')} />
+                                        <span className="text-sm font-medium">Financial Overview</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.admissions} onCheckedChange={() => toggleWidget('admissions')} />
+                                        <span className="text-sm font-medium">Patient Admissions</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.diagnostics} onCheckedChange={() => toggleWidget('diagnostics')} />
+                                        <span className="text-sm font-medium">Lab & Diagnostics</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 px-2 py-1">
+                                        <Checkbox checked={widgets.inventory} onCheckedChange={() => toggleWidget('inventory')} />
+                                        <span className="text-sm font-medium">Medication Inventory</span>
+                                    </div>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -148,21 +220,21 @@ export default function SettingsPage() {
                             <CardDescription>Manage your notification preferences</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Email Notifications</Label>
                                     <p className="text-sm text-muted-foreground">Receive updates via email</p>
                                 </div>
                                 <Switch defaultChecked />
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Push Notifications</Label>
                                     <p className="text-sm text-muted-foreground">Browser push notifications</p>
                                 </div>
                                 <Switch defaultChecked />
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Critical Alerts</Label>
                                     <p className="text-sm text-muted-foreground">Emergency and critical system alerts</p>
@@ -188,7 +260,7 @@ export default function SettingsPage() {
                             <CardDescription>System-wide configuration options</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="space-y-2">
+                            <div className="space-y-2 pb-6 border-b border-muted">
                                 <Label>Time Zone</Label>
                                 <Select value={timezone} onValueChange={handleTimezoneChange}>
                                     <SelectTrigger className="w-64">
@@ -201,7 +273,7 @@ export default function SettingsPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-2 pb-6 border-b border-muted">
                                 <Label>Date Format</Label>
                                 <Select defaultValue="mm-dd-yyyy">
                                     <SelectTrigger className="w-64">
@@ -233,7 +305,7 @@ export default function SettingsPage() {
                             <CardDescription>Security and authentication settings</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="space-y-2">
+                            <div className="space-y-2 pb-6 border-b border-muted">
                                 <Label>Session Timeout</Label>
                                 <Select defaultValue="30">
                                     <SelectTrigger className="w-64">
@@ -247,14 +319,14 @@ export default function SettingsPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Two-Factor Authentication</Label>
                                     <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
                                 </div>
                                 <Switch />
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Activity Logging</Label>
                                     <p className="text-sm text-muted-foreground">Log user activities for security</p>
@@ -276,14 +348,14 @@ export default function SettingsPage() {
                             <CardDescription>Control your privacy settings</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Profile Visibility</Label>
                                     <p className="text-sm text-muted-foreground">Control who can see your profile</p>
                                 </div>
                                 <Switch defaultChecked />
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pb-6 border-b border-muted">
                                 <div>
                                     <Label>Data Collection</Label>
                                     <p className="text-sm text-muted-foreground">Allow anonymous usage data collection</p>

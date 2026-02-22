@@ -168,28 +168,34 @@ export function ClinicalInterface() {
         ))}
       </StatsCardGrid>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="hidden md:block">
-          <TabsList>
-            <TabsTrigger value="vitals">Vital Signs</TabsTrigger>
-            <TabsTrigger value="labs">Lab Results</TabsTrigger>
-            <TabsTrigger value="procedures">Procedures</TabsTrigger>
-            <TabsTrigger value="assessment">Assessment</TabsTrigger>
-          </TabsList>
-        </div>
-        <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="vitals">Vital Signs</SelectItem>
-              <SelectItem value="labs">Lab Results</SelectItem>
-              <SelectItem value="procedures">Procedures</SelectItem>
-              <SelectItem value="assessment">Assessment</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="w-full">
+        <div className="border-b -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            <button onClick={() => setActiveTab('vitals')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'vitals' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <Activity className="h-4 w-4" />
+              <span className="hidden sm:inline">Vital Signs</span>
+              <span className="sm:hidden">Vitals</span>
+            </button>
+            <button onClick={() => setActiveTab('labs')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'labs' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <TestTube className="h-4 w-4" />
+              <span className="hidden sm:inline">Lab Results</span>
+              <span className="sm:hidden">Labs</span>
+            </button>
+            <button onClick={() => setActiveTab('procedures')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'procedures' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <Stethoscope className="h-4 w-4" />
+              <span className="hidden sm:inline">Procedures</span>
+              <span className="sm:hidden">Proc</span>
+            </button>
+            <button onClick={() => setActiveTab('assessment')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'assessment' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Assessment</span>
+              <span className="sm:hidden">Assess</span>
+            </button>
+          </div>
         </div>
 
-        <TabsContent value="vitals" className="space-y-6">
+        <div className={activeTab === 'vitals' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -296,9 +302,10 @@ export function ClinicalInterface() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="labs" className="space-y-6">
+        <div className={activeTab === 'labs' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -366,9 +373,10 @@ export function ClinicalInterface() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="procedures" className="space-y-6">
+        <div className={activeTab === 'procedures' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -434,9 +442,10 @@ export function ClinicalInterface() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="assessment">
+        <div className={activeTab === 'assessment' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <CardTitle>Clinical Assessment</CardTitle>
@@ -450,8 +459,8 @@ export function ClinicalInterface() {
               <Button><FileText className="h-4 w-4 mr-2" />Save Assessment</Button>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
 
       <DetailModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} item={selectedItem} type={modalType} />
       <OrderLabModal isOpen={isOrderLabOpen} onClose={() => setIsOrderLabOpen(false)} />

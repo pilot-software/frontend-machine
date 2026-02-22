@@ -204,7 +204,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {features.notifications && <NotificationDropdown />}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative flex items-center gap-2 px-2">
+                <Button variant="ghost" className="relative p-0 h-10 w-10 rounded-full hover:bg-sidebar-accent transition-colors duration-200">
                   <div className="relative">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
@@ -214,39 +214,36 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     </Avatar>
                     <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
                   </div>
-                  <span className="hidden md:block text-sm font-medium">{user.name}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex items-center gap-3 py-2">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {getInitials(user.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">{user.name}</p>
-                      <Badge variant="secondary" className="text-xs mt-1">
-                        <RoleIcon className="h-3 w-3 mr-1" />
-                        {text.roles[user.role]}
-                      </Badge>
-                    </div>
+                <DropdownMenuLabel className="flex items-center gap-3 py-2">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {getInitials(user.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">{user.name}</p>
+                    <Badge className={`text-xs mt-1 ${getRoleColor(user.role)}`}>
+                      <RoleIcon className="h-3 w-3 mr-1" />
+                      {text.roles[user.role]}
+                    </Badge>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push(ROUTES.PROFILE)}>
-                  <User className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={() => router.push(ROUTES.PROFILE)} className="hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 cursor-pointer group">
+                  <User className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
                   {t("profile")}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push(ROUTES.SETTINGS)}>
-                  <Settings className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={() => router.push(ROUTES.SETTINGS)} className="hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 cursor-pointer group">
+                  <Settings className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400 group-hover:rotate-90 transition-transform" />
                   {t("settings")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="text-destructive">
-                  <LogOut className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={logout} className="hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-200 cursor-pointer group">
+                  <LogOut className="h-4 w-4 mr-2 text-red-600 dark:text-red-400 group-hover:translate-x-1 transition-transform" />
                   {t("logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -257,7 +254,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         <aside 
-          className="hidden md:block fixed left-0 top-0 bottom-0 bg-white border-r border-slate-200 dark:bg-slate-950 dark:border-slate-800"
+          className="hidden md:block fixed left-0 top-0 bottom-0 bg-white border-r border-slate-200 dark:bg-[#171717] dark:border-[#262626]"
           style={{ width: `${sidebarWidth}px` }}
         >
           <div 
@@ -267,13 +264,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-slate-200 group-hover:bg-slate-400 dark:bg-slate-800 dark:group-hover:bg-slate-600 rounded-full transition-colors" />
           </div>
           <div className="flex h-full flex-col">
-            <div className="border-b border-slate-200 dark:border-slate-800 px-3 py-4">
+            <div className="border-b border-slate-200 dark:border-[#262626] px-3 py-4">
               <button
                 type="button"
                 onClick={() => router.push(ROUTES.DASHBOARD)}
-                className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-900"
+                className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-[#262626]"
               >
-                <div className="h-10 w-10 rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-200 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-lg bg-slate-100 text-slate-700 dark:bg-[#262626] dark:text-slate-200 flex items-center justify-center">
                   <Stethoscope className="h-5 w-5" />
                 </div>
                 {sidebarWidth >= 150 && (
@@ -299,8 +296,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       showText ? 'justify-start gap-3' : 'justify-center px-0'
                     } ${
                       isActive
-                        ? "bg-[#eff6ff] text-black font-semibold border-[#1e40af] dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] dark:border-[#1e40af]"
-                        : "border-transparent text-black hover:border-[#1e40af]/45 hover:bg-[#eff6ff] hover:text-black dark:text-slate-300 dark:hover:border-[#1e40af]/70 dark:hover:bg-[#1e3a8a]/20 dark:hover:text-[#93c5fd]"
+                        ? "bg-blue-50 text-black font-semibold border-blue-600 dark:bg-slate-800 dark:text-blue-400 dark:border-blue-600"
+                        : "border-transparent text-black hover:border-blue-600/45 hover:bg-blue-50 hover:text-black dark:text-slate-300 dark:hover:border-blue-600/70 dark:hover:bg-slate-800 dark:hover:text-blue-400"
                     }`}
                   >
                     <ItemIcon className={`h-4 w-4 ${showText ? '' : ''}`} />
