@@ -32,6 +32,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import { toast } from "sonner";
 import {
   AlertCircle,
@@ -395,29 +396,28 @@ export function FinancialManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-foreground">
-            Financial Management
-          </h2>
-          <p className="text-muted-foreground mt-1">
-            Billing, payments, and revenue management
-          </p>
-        </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={handleExportReport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-          <Dialog open={isInvoiceDialogOpen} onOpenChange={setIsInvoiceDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Invoice
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+      <EnterprisePageHeader
+        icon={CreditCard}
+        title="Financial Management"
+        description="Billing, payments, and revenue management"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Financial" },
+        ]}
+        actions={
+          <div className="flex space-x-2">
+            <Button variant="outline" onClick={handleExportReport}>
+              <Download className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
+            <Dialog open={isInvoiceDialogOpen} onOpenChange={setIsInvoiceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Invoice
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create New Invoice</DialogTitle>
                 <DialogDescription>
@@ -481,7 +481,8 @@ export function FinancialManagement() {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+        }
+      />
 
       {/* Financial Stats */}
       {loading ? (

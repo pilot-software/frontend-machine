@@ -3,6 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {AuthGuard} from '@/components/shared/guards/AuthGuard';
 import {PageHeader} from '@/components/shared/PageHeader';
+import {EnterprisePageHeader} from '@/components/shared/EnterprisePageHeader';
 import {ViewToggle} from '@/components/shared/ViewToggle';
 import {SearchFilter} from '@/components/shared/SearchFilter';
 import {useRouter, useSearchParams} from 'next/navigation';
@@ -166,10 +167,15 @@ function UserManagementPageContent() {
 
     return (
         <div className="space-y-6">
-            <PageHeader
+            <EnterprisePageHeader
+                icon={Users}
                 title="User Management"
                 description="Manage hospital staff and user accounts"
-                action={
+                breadcrumbs={[
+                    { label: "Dashboard", href: "/en/dashboard" },
+                    { label: "Users" },
+                ]}
+                actions={
                     <Button onClick={() => router.push('/users/create')} className="flex items-center gap-2">
                         <Plus className="h-4 w-4"/>
                         Create User

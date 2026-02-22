@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import { Activity, AlertTriangle, Droplets, Eye, Heart, Plus, Stethoscope, TestTube, Thermometer, TrendingUp, TrendingDown, FileText, Calendar, User, Clock, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -145,16 +146,21 @@ export function ClinicalInterface() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold">Clinical Interface</h2>
-          <p className="text-muted-foreground mt-1">Patient clinical data, vitals, and medical records</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsOrderLabOpen(true)}><TestTube className="h-4 w-4 mr-2" />Order Labs</Button>
-          <Button size="sm" onClick={() => setIsNewAssessmentOpen(true)}><Plus className="h-4 w-4 mr-2" />New Assessment</Button>
-        </div>
-      </div>
+      <EnterprisePageHeader
+        icon={Stethoscope}
+        title="Clinical Interface"
+        description="Patient clinical data, vitals, and medical records"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Clinical" },
+        ]}
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setIsOrderLabOpen(true)}><TestTube className="h-4 w-4 mr-2" />Order Labs</Button>
+            <Button size="sm" onClick={() => setIsNewAssessmentOpen(true)}><Plus className="h-4 w-4 mr-2" />New Assessment</Button>
+          </div>
+        }
+      />
 
       <StatsCardGrid>
         {stats.map((stat, idx) => (

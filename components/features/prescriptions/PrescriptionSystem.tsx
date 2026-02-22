@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import { AlertTriangle, Calendar, CheckCircle2, Clock, Edit, Eye, PillBottle, Plus, Printer, Search, Send, AlertCircle, Pill, Syringe, ChevronLeft, ChevronRight, Download, FileText, User, Upload, X, File, CheckCircle } from "lucide-react";
 import { format, addDays } from "date-fns";
 
@@ -224,20 +225,25 @@ export function PrescriptionSystem() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold">Prescription Management</h2>
-          <p className="text-muted-foreground mt-1">Manage medications, dosages, and refills</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsUploadModalOpen(true)}>
-            <Upload className="h-4 w-4 mr-2" />Upload Prescription
-          </Button>
-          <Button onClick={() => router.push('/prescriptions/add')}>
-            <Plus className="h-4 w-4 mr-2" />New Prescription
-          </Button>
-        </div>
-      </div>
+      <EnterprisePageHeader
+        icon={PillBottle}
+        title="Prescription Management"
+        description="Manage medications, dosages, and refills"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Prescriptions" },
+        ]}
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsUploadModalOpen(true)}>
+              <Upload className="h-4 w-4 mr-2" />Upload Prescription
+            </Button>
+            <Button onClick={() => router.push('/prescriptions/add')}>
+              <Plus className="h-4 w-4 mr-2" />New Prescription
+            </Button>
+          </div>
+        }
+      />
 
       <StatsCardGrid>
         {stats.map((stat, idx) => (

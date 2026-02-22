@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Loader } from '@/components/ui/loader';
+import { EnterprisePageHeader } from '@/components/shared/EnterprisePageHeader';
 import { Plus, Trash2, Clock, Calendar as CalendarIcon, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -198,24 +199,29 @@ export default function SlotManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Slot Management</h2>
-          <p className="text-muted-foreground mt-1">Create and manage doctor availability slots</p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={() => router.push('/appointments')}>
-            <CalendarDays className="w-4 h-4 mr-2" />
-            View Appointments
-          </Button>
-          {(user?.role === 'doctor' || user?.role === 'admin' || user?.role === 'receptionist') && (
-            <Button variant="outline" onClick={() => router.push('/appointments/add')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Book Appointment
+      <EnterprisePageHeader
+        icon={Clock}
+        title="Slot Management"
+        description="Create and manage doctor availability slots"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Availability" },
+        ]}
+        actions={
+          <div className="flex gap-2">
+            <Button onClick={() => router.push('/appointments')}>
+              <CalendarDays className="w-4 h-4 mr-2" />
+              View Appointments
             </Button>
-          )}
-        </div>
-      </div>
+            {(user?.role === 'doctor' || user?.role === 'admin' || user?.role === 'receptionist') && (
+              <Button variant="outline" onClick={() => router.push('/appointments/add')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Book Appointment
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         <div className="xl:col-span-3 space-y-6">

@@ -18,6 +18,7 @@ import {
   AlertTriangle, Clock, Filter, Download, Upload, Palette, Bell, Database, Lock, User
 } from 'lucide-react';
 import { StatsCard } from '@/components/ui/stats-card';
+import { EnterprisePageHeader } from '@/components/shared/EnterprisePageHeader';
 import { permissionService } from '@/lib/services/permission';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
@@ -511,16 +512,21 @@ export default function PermissionsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Permissions Management</h2>
-          <p className="text-muted-foreground mt-2">Manage system permissions, roles, and user access control</p>
-        </div>
-        <Button onClick={() => setShowCreateGroup(true)} size="lg">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Group
-        </Button>
-      </div>
+      <EnterprisePageHeader
+        icon={Shield}
+        title="Permissions Management"
+        description="Manage system permissions, roles, and user access control"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Permissions" },
+        ]}
+        actions={
+          <Button onClick={() => setShowCreateGroup(true)} size="lg">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Group
+          </Button>
+        }
+      />
 
       {/* Horizontal Tabs */}
       <div className="border-b border-border bg-card rounded-lg">
