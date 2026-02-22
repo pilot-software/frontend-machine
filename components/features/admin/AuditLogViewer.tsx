@@ -131,7 +131,7 @@ export default function AuditLogViewer() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Security & Audit Logs</h2>
+          <h2 className="text-3xl font-bold tracking-tight">System Logs</h2>
           <p className="text-muted-foreground mt-1">Monitor system activity and security events</p>
         </div>
         <div className="flex gap-2">

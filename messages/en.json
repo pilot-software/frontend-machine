@@ -117,7 +117,7 @@
     "userManagement": "User Management",
     "bedManagement": "Bed Management",
     "clinicalRecords": "Clinical Records",
-    "security": "Security",
+    "systemLogs": "System Logs",
     "permissions": "Permissions",
     "nursingQueue": "Nursing Queue",
     "medicalQueue": "Medical Queue",
