@@ -68,7 +68,7 @@ export default function CreateUserPage() {
         <div className="space-y-6 pb-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Create New User</h1>
+                    <h2 className="text-3xl font-bold tracking-tight">Create New User</h2>
                     <p className="text-muted-foreground mt-1">Add a new user to the hospital system</p>
                 </div>
             </div>
@@ -78,8 +78,8 @@ export default function CreateUserPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <User className="h-5 w-5 text-blue-600"/>
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <User className="h-5 w-5 text-primary"/>
                             </div>
                             <div>
                                 <CardTitle>Basic Information</CardTitle>
@@ -131,8 +131,8 @@ export default function CreateUserPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-purple-100 rounded-lg">
-                                <Briefcase className="h-5 w-5 text-purple-600"/>
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <Briefcase className="h-5 w-5 text-primary"/>
                             </div>
                             <div>
                                 <CardTitle>Role & Department</CardTitle>
@@ -200,8 +200,8 @@ export default function CreateUserPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-green-100 rounded-lg">
-                                <MapPin className="h-5 w-5 text-green-600"/>
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <MapPin className="h-5 w-5 text-primary"/>
                             </div>
                             <div>
                                 <CardTitle>Address Information</CardTitle>
@@ -235,8 +235,8 @@ export default function CreateUserPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-red-100 rounded-lg">
-                                <Phone className="h-5 w-5 text-red-600"/>
+                            <div className="p-2 bg-destructive/10 rounded-lg">
+                                <Phone className="h-5 w-5 text-destructive"/>
                             </div>
                             <div>
                                 <CardTitle>Emergency Contact</CardTitle>
@@ -262,8 +262,8 @@ export default function CreateUserPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <div className="p-2 bg-orange-100 rounded-lg">
-                                <Lock className="h-5 w-5 text-orange-600"/>
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <Lock className="h-5 w-5 text-primary"/>
                             </div>
                             <div>
                                 <CardTitle>Security & Access</CardTitle>
@@ -302,10 +302,10 @@ export default function CreateUserPage() {
                     <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
+                    <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? (
                             <>
-                                <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                                <div className="h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin"/>
                                 Creating...
                             </>
                         ) : (

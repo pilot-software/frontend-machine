@@ -231,266 +231,135 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
         ];
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: floatingStyles }} />
-      <div className="min-h-screen flex relative">
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 via-green-50 to-purple-50 dark:from-blue-950 dark:via-green-950 dark:to-purple-950" />
-        <div className="hidden lg:block absolute inset-0 z-0 lg:right-0 lg:left-1/2">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-green-100/30 to-purple-100/30 dark:from-blue-900/30 dark:via-green-900/30 dark:to-purple-900/30 animate-pulse" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="w-full max-w-md">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-lg">
+              <Stethoscope className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">{branding.systemName}</h1>
+              <p className="text-sm text-muted-foreground">{branding.loginSubtitle}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="ghost" size="icon" onClick={toggleDarkMode}>
+              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <LanguageSwitcher />
+          </div>
         </div>
 
-        {/* Animated Color Orbs */}
-        <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse" />
-          <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-green-500/15 rounded-full blur-lg animate-pulse delay-1000" />
-          <div className="absolute bottom-1/3 right-1/5 w-20 h-20 bg-red-500/10 rounded-full blur-md animate-pulse delay-2000" />
-        </div>
+        <Card className="shadow-xl border-0">
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-        {/* Left Side - Login Form */}
-        <div className="flex-1 flex items-center justify-center relative z-20 p-6 lg:p-12">
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Stethoscope className="h-8 w-8 text-primary mr-3" />
-                  <h1 className="text-3xl font-bold text-foreground">
-                    {branding.systemName}
-                  </h1>
+              {!isSubdomain && (
+                <div className="space-y-2">
+                  <Label htmlFor="config">{t("healthcareConfiguration")}</Label>
+                  <Select value={selectedConfig} onValueChange={handleConfigChange}>
+                    <SelectTrigger className="h-11">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(hospitalFlags.availableConfigurations)
+                        .filter(([_, config]) => config.enabled)
+                        .map(([key, config]) => (
+                          <SelectItem key={key} value={key}>{config.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex items-center gap-2">
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("email")}</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("enterEmail")}
+                  className="h-11"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("password")}</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={t("enterPassword")}
+                    className="h-11 pr-10"
+                    required
+                  />
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
-                    onClick={toggleDarkMode}
-                    className="h-10 w-10"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setShowPassword(!showPassword)}
                   >
-                    {isDark ? (
-                      <Sun className="h-5 w-5" />
-                    ) : (
-                      <Moon className="h-5 w-5" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
-                  <LanguageSwitcher />
                 </div>
               </div>
-              <p className="text-muted-foreground text-lg ml-11">
-                {branding.loginSubtitle}
-              </p>
-            </div>
 
-            <Card className="!border-0 shadow-none bg-card/80 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {error && (
-                    <Alert variant="destructive">
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  {!isSubdomain && (
-                    <div className="space-y-2">
-                      <Label htmlFor="config" className="text-base font-medium">
-                        {t("healthcareConfiguration")}
-                      </Label>
-                      <Select
-                        value={selectedConfig}
-                        onValueChange={handleConfigChange}
-                      >
-                        <SelectTrigger className="h-12">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.entries(hospitalFlags.availableConfigurations)
-                            .filter(([_, config]) => config.enabled)
-                            .map(([key, config]) => (
-                              <SelectItem key={key} value={key}>
-                                {config.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-sm text-muted-foreground">
-                        {
-                          hospitalFlags.availableConfigurations[selectedConfig]
-                            ?.description
-                        }
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-base font-medium">
-                      {t("email")}
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t("enterEmail")}
-                      className="h-12 text-base"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-base font-medium">
-                      {t("password")}
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder={t("enterPassword")}
-                        className="h-12 text-base pr-12"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-5 w-5" />
-                        ) : (
-                          <Eye className="h-5 w-5" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="p-0 h-auto text-base"
-                      onClick={onForgotPassword}
-                    >
-                      {t("forgotPassword")}
-                    </Button>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full h-12 text-base font-semibold"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        {t("signingIn")}
-                      </>
-                    ) : (
-                      t("signIn")
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Demo credentials helper */}
-            <Card className="mt-8 bg-accent/50 !border-border">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base text-foreground">
-                  {t("demoCredentials")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {demoCredentials.slice(0, 3).map((cred, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between text-sm cursor-pointer hover:bg-muted p-3 rounded transition-colors duration-200"
-                    onClick={() => {
-                      setEmail(cred.email);
-                      setPassword(cred.password);
-                    }}
-                  >
-                    <span className="font-medium text-foreground">
-                      {cred.role}:
-                    </span>
-                    <span className="text-muted-foreground truncate ml-2">
-                      {cred.email}
-                    </span>
-                  </div>
-                ))}
-                <p className="text-sm text-muted-foreground mt-3">
-                  {t("tapToAutoFill")}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Right Side - Floating Medical Icons */}
-        <div className="hidden lg:flex flex-1 relative z-20">
-          <div className="flex items-center justify-center h-full w-full">
-            <div className="text-center max-w-md relative">
-              {/* Floating Medical Icons */}
-              <div className="absolute -top-20 -left-20 animate-float">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center shadow-lg">
-                  <Stethoscope className="h-8 w-8 text-blue-600" />
-                </div>
-              </div>
-              <div
-                className="absolute -top-10 right-10 animate-bounce-slow"
-                style={{ animationDelay: "0.5s" }}
+              <Button
+                type="button"
+                variant="link"
+                className="p-0 h-auto text-sm"
+                onClick={onForgotPassword}
               >
-                <div className="w-14 h-14 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center shadow-lg">
-                  <Heart className="h-7 w-7 text-green-600 animate-pulse" />
-                </div>
-              </div>
-              <div
-                className="absolute top-20 -right-20 animate-float"
-                style={{ animationDelay: "1s" }}
-              >
-                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center shadow-lg">
-                  <Monitor className="h-8 w-8 text-purple-600" />
-                </div>
-              </div>
-              <div
-                className="absolute bottom-10 -left-16 animate-bounce-slow"
-                style={{ animationDelay: "1.5s" }}
-              >
-                <div className="w-14 h-14 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center shadow-lg">
-                  <Cpu className="h-7 w-7 text-red-600" />
-                </div>
-              </div>
-              <div
-                className="absolute -bottom-10 right-20 animate-float"
-                style={{ animationDelay: "2s" }}
-              >
-                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center shadow-lg">
-                  <Eye className="h-6 w-6 text-yellow-600" />
-                </div>
-              </div>
+                {t("forgotPassword")}
+              </Button>
 
-              <h2 className="text-4xl font-bold mb-6 text-foreground">
-                {branding.welcomeMessage}
-              </h2>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                {branding.welcomeDescription}
-              </p>
-              <div className="mt-8 flex justify-center space-x-3">
-                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
-                <div
-                  className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
-                  style={{ animationDelay: "0.2s" }}
-                />
-                <div
-                  className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"
-                  style={{ animationDelay: "0.4s" }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+              <Button type="submit" className="w-full h-11" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {t("signingIn")}
+                  </>
+                ) : (
+                  t("signIn")
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-4 bg-muted/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">{t("demoCredentials")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {demoCredentials.slice(0, 3).map((cred, index) => (
+              <button
+                key={index}
+                type="button"
+                className="w-full flex items-center justify-between text-sm p-2 rounded hover:bg-muted transition-colors"
+                onClick={() => {
+                  setEmail(cred.email);
+                  setPassword(cred.password);
+                }}
+              >
+                <span className="font-medium">{cred.role}</span>
+                <span className="text-muted-foreground text-xs truncate ml-2">{cred.email}</span>
+              </button>
+            ))}
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

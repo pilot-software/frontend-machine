@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
+import { Users, Clock, TrendingUp } from "lucide-react";
 import { PatientManagement } from "@/components/features/patients/PatientManagement";
 import { AppointmentSystem } from "@/components/features/appointments/AppointmentSystem";
 import { ClinicalInterface } from "@/components/features/clinical/ClinicalInterface";
@@ -15,7 +16,7 @@ import { FinancialManagement } from "@/components/features/financial/FinancialMa
 import { PrescriptionSystem } from "@/components/features/prescriptions/PrescriptionSystem";
 import { PatientFormModal } from "@/components/features/patients/PatientFormModal";
 import { DoctorFormModal } from "@/components/features/dashboard/DoctorFormModal";
-import { DashboardStats } from "@/components/features/dashboard/DashboardStats";
+import { EnterpriseStatsCard } from "@/components/shared/EnterpriseStatsCard";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useFeatures } from "@/lib/useFeatures";
 import {
@@ -288,60 +289,85 @@ export function HealthcareDashboard() {
   );
 
   return (
-    <div className="spacing-responsive">
+    <div className="p-6">
       <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab}>
-        <TabsContent value="dashboard" className="mt-4 sm:mt-6">
-          <div className="spacing-responsive">
-            {user?.role !== ROLES.PATIENT && (
-              <>
-                {loading.stats ? (
-                  <DashboardStatsSkeleton />
-                ) : (
-                  <DashboardStats stats={statsData} loading={loading.stats} />
-                )}
-              </>
-            )}
-            <DashboardWidgets />
-            {user?.role !== ROLES.PATIENT && (
-              <>
-                {loading.patients || loading.doctors ? (
-                  <DashboardTableSkeleton />
-                ) : (
-                  renderDashboardContent()
-                )}
-              </>
-            )}
-          </div>
+        <TabsContent value="dashboard" className="space-y-6 mt-6">
+          {user?.role !== ROLES.PATIENT && (
+            <>
+              {loading.stats ? (
+                <DashboardStatsSkeleton />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <EnterpriseStatsCard
+                    title={t('totalPatients')}
+                    value={statsData?.totalPatients || 0}
+                    icon={Users}
+                    variant="primary"
+                    trend={{ value: 12, label: t('vsLastMonth') }}
+                  />
+                  <EnterpriseStatsCard
+                    title={t('appointmentsToday')}
+                    value={statsData?.todayAppointments || 0}
+                    icon={Clock}
+                    variant="success"
+                  />
+                  <EnterpriseStatsCard
+                    title={t('activeDoctors')}
+                    value={statsData?.totalDoctors || 0}
+                    icon={Users}
+                    variant="default"
+                  />
+                  <EnterpriseStatsCard
+                    title={t('monthlyRevenue')}
+                    value={`$${statsData?.revenue?.monthly || 0}`}
+                    icon={TrendingUp}
+                    variant="success"
+                    trend={{ value: 8, label: t('vsLastMonth') }}
+                  />
+                </div>
+              )}
+            </>
+          )}
+          <DashboardWidgets />
+          {user?.role !== ROLES.PATIENT && (
+            <>
+              {loading.patients || loading.doctors ? (
+                <DashboardTableSkeleton />
+              ) : (
+                renderDashboardContent()
+              )}
+            </>
+          )}
         </TabsContent>
 
         {features.patientManagement &&
           (user?.role === ROLES.ADMIN || features.roles.nurse) && (
-            <TabsContent value="patients" className="mt-4 sm:mt-6">
+            <TabsContent value="patients" className="mt-6">
               <PatientManagement />
             </TabsContent>
           )}
 
         {features.appointmentSystem && (
-          <TabsContent value="appointments" className="mt-4 sm:mt-6">
+          <TabsContent value="appointments" className="mt-6">
             <AppointmentSystem />
           </TabsContent>
         )}
 
         {features.clinicalInterface && (
-          <TabsContent value="clinical" className="mt-4 sm:mt-6">
+          <TabsContent value="clinical" className="mt-6">
             <ClinicalInterface />
           </TabsContent>
         )}
 
         {features.financialManagement &&
           (user?.role === ROLES.ADMIN || features.roles.finance) && (
-            <TabsContent value="financial" className="mt-4 sm:mt-6">
+            <TabsContent value="financial" className="mt-6">
               <FinancialManagement />
             </TabsContent>
           )}
 
         {features.prescriptionSystem && (
-          <TabsContent value="prescriptions" className="mt-4 sm:mt-6">
+          <TabsContent value="prescriptions" className="mt-6">
             <PrescriptionSystem />
           </TabsContent>
         )}

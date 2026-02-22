@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { StatsCard, StatsCardGrid } from "@/components/ui/stats-card";
+import { EnterpriseStatsCard } from "@/components/shared/EnterpriseStatsCard";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import {
   Select,
   SelectContent,
@@ -244,6 +245,7 @@ export function AppointmentSystemModern() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -259,15 +261,17 @@ export function AppointmentSystemModern() {
     Appointment[]
   >([]);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchAppointments = async () => {
       try {
         setIsLoading(true);
-        const data = await appointmentService.getTodayAppointments();
+        const data = await appointmentService.getAppointmentsWithPatientNames();
         const formattedData = data.map((apt: any) => ({
           id: apt.id,
-          patientName: apt.patientId,
+          patientName: apt.patientName,
           patientPhone: '',
           doctorName: apt.doctorId,
           department: '',
@@ -335,23 +339,23 @@ export function AppointmentSystemModern() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      scheduled: "bg-blue-100 text-blue-700",
-      confirmed: "bg-green-100 text-green-700",
-      "in-progress": "bg-orange-100 text-orange-700",
-      completed: "bg-emerald-100 text-emerald-700",
-      cancelled: "bg-red-100 text-red-700",
+      scheduled: "bg-blue-500/10 text-blue-700",
+      confirmed: "bg-green-500/10 text-green-700",
+      "in-progress": "bg-orange-500/10 text-orange-700",
+      completed: "bg-emerald-500/10 text-emerald-700",
+      cancelled: "bg-destructive/10 text-destructive",
     };
-    return colors[status] || "bg-gray-100 text-gray-700";
+    return colors[status] || "bg-muted text-muted-foreground";
   };
 
   const getPriorityColor = (priority: string) => {
     const colors: Record<string, string> = {
-      urgent: "bg-red-50 text-red-600 border-red-200",
-      high: "bg-orange-50 text-orange-600 border-orange-200",
-      medium: "bg-yellow-50 text-yellow-600 border-yellow-200",
-      low: "bg-green-50 text-green-600 border-green-200",
+      urgent: "bg-destructive/10 text-destructive border-destructive/20",
+      high: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+      medium: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+      low: "bg-green-500/10 text-green-600 border-green-500/20",
     };
-    return colors[priority] || "bg-gray-50 text-gray-600";
+    return colors[priority] || "bg-muted text-muted-foreground";
   };
 
   const handleStatusChange = (id: string, newStatus: Appointment["status"]) => {
@@ -361,15 +365,25 @@ export function AppointmentSystemModern() {
   };
 
   const handleDeleteAppointment = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this appointment?')) return;
+    setAppointmentToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!appointmentToDelete) return;
+    setDeleteConfirmOpen(false);
+    setDeletingId(appointmentToDelete);
     try {
-      await appointmentService.delete(id);
+      await new Promise(resolve => setTimeout(resolve, 600));
+      await appointmentService.delete(appointmentToDelete);
     } catch (error) {
       console.error('Failed to delete appointment:', error);
     } finally {
       setAppointments((prev) =>
-        prev.map((apt) => (apt.id === id ? { ...apt, status: 'cancelled' as const } : apt))
+        prev.map((apt) => (apt.id === appointmentToDelete ? { ...apt, status: 'cancelled' as const } : apt))
       );
+      setDeletingId(null);
+      setAppointmentToDelete(null);
     }
   };
 
@@ -392,82 +406,89 @@ export function AppointmentSystemModern() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold">{t("appointmentSystem")}</h2>
-          <p className="text-muted-foreground mt-1">
-            {t("scheduleManageAppointments")}
-          </p>
-        </div>
-        <Button
-          onClick={() => {
-            handleScheduleAppointment();
-          }}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {t("scheduleAppointments")}
-        </Button>
-      </div>
+      <EnterprisePageHeader
+        icon={CalendarIcon}
+        title={t("appointmentSystem")}
+        description={t("scheduleManageAppointments")}
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Appointments" },
+        ]}
+        actions={
+          <Button onClick={handleScheduleAppointment}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t("scheduleAppointments")}
+          </Button>
+        }
+      />
 
-      <StatsCardGrid>
-        <StatsCard
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <EnterpriseStatsCard
           title={t("totalToday")}
           value={stats.total}
           icon={CalendarIcon}
-          color="text-blue-600"
-          bgGradient="from-blue-500 to-blue-600"
+          variant="primary"
         />
-        <StatsCard
+        <EnterpriseStatsCard
           title={t("completed")}
           value={stats.completed}
           icon={CheckCircle2}
-          color="text-green-600"
-          bgGradient="from-green-500 to-green-600"
+          variant="success"
         />
-        <StatsCard
+        <EnterpriseStatsCard
           title={t("inProgress")}
           value={stats.inProgress}
           icon={Activity}
-          color="text-orange-600"
-          bgGradient="from-orange-500 to-orange-600"
+          variant="warning"
         />
-        <StatsCard
+        <EnterpriseStatsCard
           title={t("pending")}
           value={stats.pending}
           icon={Clock}
-          color="text-purple-600"
-          bgGradient="from-purple-500 to-purple-600"
+          variant="default"
         />
-      </StatsCardGrid>
+      </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="hidden md:block">
-          <TabsList>
-            <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
-            <TabsTrigger value="calendar">{t("calendarViewTab")}</TabsTrigger>
-            <TabsTrigger value="upcoming">
-              {t("upcomingAppointmentsTab")}
-            </TabsTrigger>
-          </TabsList>
+      <div className="border-b">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+          <button
+            onClick={() => setActiveTab("today")}
+            className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+              activeTab === "today"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+            }`}
+          >
+            {t("todayTab")}
+          </button>
+          <button
+            onClick={() => setActiveTab("calendar")}
+            className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+              activeTab === "calendar"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+            }`}
+          >
+            {t("calendarViewTab")}
+          </button>
+          <button
+            onClick={() => setActiveTab("upcoming")}
+            className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+              activeTab === "upcoming"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+            }`}
+          >
+            {t("upcomingAppointmentsTab")}
+          </button>
         </div>
-        <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">{t("todaysSchedule")}</SelectItem>
-              <SelectItem value="calendar">{t("calendarViewTab")}</SelectItem>
-              <SelectItem value="upcoming">
-                {t("upcomingAppointmentsTab")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      </div>
 
-        <TabsContent value="today" className="space-y-6">
-          <Card>
-            <CardContent className="p-6">
+      <div className="mt-6">
+        {activeTab === "today" && (
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
               <div className="flex flex-col gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -543,15 +564,16 @@ export function AppointmentSystemModern() {
                 {todayAppointments.map((apt) => {
                   const TypeIcon = getTypeIcon(apt.type);
                   const isCancelled = apt.status === 'cancelled';
+                  const isDeleting = deletingId === apt.id;
                   return (
                     <div
                       key={apt.id}
-                      className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3 ${
+                      className={`flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-3 ${
                         isCancelled ? 'bg-muted/50 opacity-60' : ''
                       }`}
                     >
-                      <div className="flex items-center gap-2 sm:gap-4 flex-1 w-full">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-3 flex-1 w-full">
+                        <div className="flex items-center gap-2 shrink-0">
                           <div className="p-2 bg-muted rounded-full">
                             <TypeIcon className="h-4 w-4" />
                           </div>
@@ -562,8 +584,8 @@ export function AppointmentSystemModern() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
                             <h3 className="font-medium">{apt.patientName}</h3>
                             <Badge className={getStatusColor(apt.status)}>
                               {apt.status}
@@ -576,124 +598,67 @@ export function AppointmentSystemModern() {
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {apt.doctorName} • {apt.department}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {apt.reason}
+                            {apt.doctorName} • {apt.reason}
                           </p>
                           {apt.roomNumber && (
-                            <p className="text-xs text-muted-foreground sm:hidden flex items-center gap-1 mt-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                               <BedDouble className="h-3 w-3" />
                               {t("roomNumber")} {apt.roomNumber}
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {apt.roomNumber && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge
-                                  variant="outline"
-                                  className="hidden sm:inline-flex gap-1 cursor-help"
-                                >
-                                  <BedDouble className="h-3 w-3" />
-                                  {t("roomNumber")} {apt.roomNumber}
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{t("roomBedNumber")}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setModalMode("view");
-                                  setSelectedAppointment(apt);
-                                  setIsModalOpen(true);
-                                }}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("viewDetails")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="hidden sm:inline-flex"
-                                onClick={() => {
-                                  setModalMode("edit");
-                                  setSelectedAppointment(apt);
-                                  setIsModalOpen(true);
-                                }}
-                                disabled={isCancelled}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("editAppointment")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => handleDeleteAppointment(apt.id)}
-                                disabled={isCancelled}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Delete Appointment</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
-                                onClick={() =>
-                                  router.push(
-                                    `/prescriptions/add?patient=${encodeURIComponent(
-                                      apt.patientName
-                                    )}&appointmentId=${apt.id}`
-                                  )
-                                }
-                              >
-                                <FileText className="h-4 w-4 sm:mr-2" />
-                                <span className="hidden sm:inline">
-                                  {t("addPrescription")}
-                                </span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("addPrescription")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setModalMode("view");
+                            setSelectedAppointment(apt);
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setModalMode("edit");
+                            setSelectedAppointment(apt);
+                            setIsModalOpen(true);
+                          }}
+                          disabled={isCancelled}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteAppointment(apt.id)}
+                          disabled={isCancelled || isDeleting}
+                          className={`delete-btn-hover ${isDeleting ? 'delete-btn-active border' : ''}`}
+                        >
+                          <Trash2 className={`h-4 w-4 ${
+                            isDeleting ? 'animate-[trashDrop_0.6s_ease-in-out]' : ''
+                          }`} />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(
+                              `/prescriptions/add?patient=${encodeURIComponent(
+                                apt.patientName
+                              )}&appointmentId=${apt.id}`
+                            )
+                          }
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          <span className="hidden sm:inline">
+                            {t("addPrescription")}
+                          </span>
+                        </Button>
                         <Select
                           value={apt.status}
                           onValueChange={(val) =>
@@ -704,7 +669,7 @@ export function AppointmentSystemModern() {
                           }
                           disabled={isCancelled}
                         >
-                          <SelectTrigger className="w-[110px] sm:w-[130px] h-8 text-xs sm:text-sm">
+                          <SelectTrigger className="w-[130px] h-8 text-sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -743,9 +708,10 @@ export function AppointmentSystemModern() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+          </div>
+        )}
 
-        <TabsContent value="calendar" className="space-y-6">
+        {activeTab === "calendar" && (
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -845,9 +811,9 @@ export function AppointmentSystemModern() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        <TabsContent value="upcoming">
+        {activeTab === "upcoming" && (
           <Card>
             <CardHeader>
               <CardTitle>{t("upcomingAppointmentsTab")}</CardTitle>
@@ -900,8 +866,8 @@ export function AppointmentSystemModern() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
       <Dialog open={isDayModalOpen} onOpenChange={setIsDayModalOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -948,6 +914,24 @@ export function AppointmentSystemModern() {
                 </Badge>
               </div>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Appointment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this appointment? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end mt-4">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

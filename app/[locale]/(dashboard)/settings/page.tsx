@@ -12,7 +12,7 @@ import { Bell, Database, Palette, Shield, User, Lock } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { toast } from "sonner";
 
-type SettingsSection = "appearance" | "notifications" | "system" | "security" | "account" | "privacy";
+type SettingsSection = "appearance" | "notifications" | "system" | "security" | "privacy";
 
 export default function SettingsPage() {
     const { theme, toggleTheme } = useTheme();
@@ -47,7 +47,6 @@ export default function SettingsPage() {
         { id: "notifications" as SettingsSection, label: "Notifications", icon: Bell },
         { id: "system" as SettingsSection, label: "System", icon: Database },
         { id: "security" as SettingsSection, label: "Security", icon: Shield },
-        { id: "account" as SettingsSection, label: "Account", icon: User },
         { id: "privacy" as SettingsSection, label: "Privacy", icon: Lock },
     ];
 
@@ -264,22 +263,6 @@ export default function SettingsPage() {
                             </div>
                             <div className="pt-4">
                                 <Button variant="outline">Export Security Logs</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Account */}
-                {activeSection === "account" && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Account</CardTitle>
-                            <CardDescription>Manage your account settings</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label>Email Address</Label>
-                                <p className="text-sm text-muted-foreground">admin@hospital.com</p>
                             </div>
                         </CardContent>
                     </Card>

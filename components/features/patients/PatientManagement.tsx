@@ -26,8 +26,9 @@ import { useModal } from "@/lib/hooks/useModal";
 import { transformPatientToDisplay } from "@/lib/utils/data-transformers";
 import { PatientStats } from "./PatientStats";
 import { PatientDataTable } from "./PatientDataTable";
-import { AnimatedAddPrompt } from "@/components/ui/animated-add-prompt";
-import { Activity, Plus, Stethoscope, Thermometer } from "lucide-react";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Activity, Plus, Stethoscope, Thermometer, Users } from "lucide-react";
 import { Patient } from "@/lib/types";
 
 interface Visit {
@@ -454,49 +455,60 @@ export function PatientManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-foreground">
-            Patient Management
-          </h2>
-          <p className="text-muted-foreground mt-1">
-            Comprehensive patient care and record management
-          </p>
-        </div>
-        <Button
-          onClick={() => router.push(`/${locale}/patients/add`)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Patient
-        </Button>
-      </div>
+      <EnterprisePageHeader
+        icon={Users}
+        title="Patient Management"
+        description="Comprehensive patient care and record management"
+        breadcrumbs={[
+          { label: "Dashboard", href: `/${locale}/dashboard` },
+          { label: "Patients" },
+        ]}
+        actions={
+          <Button onClick={() => router.push(`/${locale}/patients/add`)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Patient
+          </Button>
+        }
+      />
 
       <PatientStats stats={stats || {}} />
 
-      {/* Patient List */}
-      <PatientDataTable
-            patients={allPatients.map((p) => ({
-              id: p.id,
-              firstName: p.name.split(" ")[0] || "",
-              lastName: p.name.split(" ").slice(1).join(" ") || "",
-              email: p.email,
-              phone: p.phone,
-              dateOfBirth: p.dateOfBirth || "N/A",
-              gender: p.gender || "N/A",
-              status: p.status,
-              caseNumber: p.caseNumber,
-              assignedDoctor: p.assignedDoctor,
-              department: p.department,
-              lastVisit: p.lastVisit,
-              avatar: p.avatar,
-            }))}
-            onViewPatient={(patient, origin) => {
-              const locale = window.location.pathname.split('/')[1] || 'en';
-              window.open(`/${locale}/patient/${patient.id}`, '_blank');
-            }}
-            onEditPatient={(id) => openModal("edit", id)}
-          />
+      {allPatients.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No patients found"
+          description="Get started by adding your first patient to the system"
+          action={
+            <Button onClick={() => router.push(`/${locale}/patients/add`)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add First Patient
+            </Button>
+          }
+        />
+      ) : (
+        <PatientDataTable
+          patients={allPatients.map((p) => ({
+            id: p.id,
+            firstName: p.name.split(" ")[0] || "",
+            lastName: p.name.split(" ").slice(1).join(" ") || "",
+            email: p.email,
+            phone: p.phone,
+            dateOfBirth: p.dateOfBirth || "N/A",
+            gender: p.gender || "N/A",
+            status: p.status,
+            caseNumber: p.caseNumber,
+            assignedDoctor: p.assignedDoctor,
+            department: p.department,
+            lastVisit: p.lastVisit,
+            avatar: p.avatar,
+          }))}
+          onViewPatient={(patient, origin) => {
+            const locale = window.location.pathname.split('/')[1] || 'en';
+            window.open(`/${locale}/patient/${patient.id}`, '_blank');
+          }}
+          onEditPatient={(id) => openModal("edit", id)}
+        />
+      )}
 
       <PatientFormModal
         isOpen={isOpen}

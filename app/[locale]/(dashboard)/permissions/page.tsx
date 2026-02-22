@@ -509,25 +509,31 @@ export default function PermissionsPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Permissions Management</h2>
-        <p className="text-muted-foreground">Manage system permissions, roles, and user access control</p>
+    <div className="space-y-6 p-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Permissions Management</h2>
+          <p className="text-muted-foreground mt-2">Manage system permissions, roles, and user access control</p>
+        </div>
+        <Button onClick={() => setShowCreateGroup(true)} size="lg">
+          <Plus className="h-4 w-4 mr-2" />
+          Create Group
+        </Button>
       </div>
 
       {/* Horizontal Tabs */}
-      <div className="border-b">
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+      <div className="border-b border-border bg-card rounded-lg">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide p-1">
           {sections.map((section) => {
             const Icon = section.icon;
             return (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-md transition-all whitespace-nowrap text-sm font-medium ${
                   activeSection === section.id
-                    ? "border-primary text-primary font-medium"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -543,39 +549,63 @@ export default function PermissionsPage() {
         {/* Overview */}
         {activeSection === "overview" && (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
-              <StatsCard
-                title="System Permissions"
-                value={allCatalogPermissions.length}
-                icon={Shield}
-                color="text-blue-600"
-                bgGradient="from-blue-500 to-blue-600"
-              />
-              <StatsCard
-                title="Assigned Permissions"
-                value={organizationPermissions.length}
-                icon={Settings}
-                color="text-green-600"
-                bgGradient="from-green-500 to-green-600"
-              />
-              <StatsCard
-                title="Permission Groups"
-                value={permissionGroups.length}
-                icon={Users}
-                color="text-purple-600"
-                bgGradient="from-purple-500 to-purple-600"
-              />
-              <StatsCard
-                title="Active Users"
-                value={availableUsers.length}
-                icon={UserCog}
-                color="text-orange-600"
-                bgGradient="from-orange-500 to-orange-600"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">System Permissions</p>
+                      <h3 className="text-3xl font-bold mt-2">{allCatalogPermissions.length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Assigned Permissions</p>
+                      <h3 className="text-3xl font-bold mt-2">{organizationPermissions.length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-green-50 dark:bg-green-950 flex items-center justify-center">
+                      <Settings className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Permission Groups</p>
+                      <h3 className="text-3xl font-bold mt-2">{permissionGroups.length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-950 flex items-center justify-center">
+                      <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Active Users</p>
+                      <h3 className="text-3xl font-bold mt-2">{availableUsers.length}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-orange-50 dark:bg-orange-950 flex items-center justify-center">
+                      <UserCog className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5" />
@@ -611,7 +641,7 @@ export default function PermissionsPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Plus className="h-5 w-5" />
@@ -623,34 +653,40 @@ export default function PermissionsPage() {
                   <div className="space-y-3">
                     <Button
                       variant="outline"
-                      className="w-full justify-start h-12"
+                      className="w-full justify-start h-auto py-3 hover:bg-accent hover:border-primary transition-all"
                       onClick={() => setShowCreateGroup(true)}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mr-3">
+                        <Plus className="h-5 w-5 text-primary" />
+                      </div>
                       <div className="text-left">
-                        <div className="font-medium">Create Permission Group</div>
+                        <div className="font-semibold">Create Permission Group</div>
                         <div className="text-xs text-muted-foreground">Bundle permissions for roles</div>
                       </div>
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start h-12"
+                      className="w-full justify-start h-auto py-3 hover:bg-accent hover:border-primary transition-all"
                       onClick={handleShowAssignPermissions}
                     >
-                      <UserCog className="h-4 w-4 mr-2" />
+                      <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-950 flex items-center justify-center mr-3">
+                        <UserCog className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
                       <div className="text-left">
-                        <div className="font-medium">Assign User Permissions</div>
+                        <div className="font-semibold">Assign User Permissions</div>
                         <div className="text-xs text-muted-foreground">Grant access to users</div>
                       </div>
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full justify-start h-12"
+                      className="w-full justify-start h-auto py-3 hover:bg-accent hover:border-primary transition-all"
                       onClick={() => setActiveSection('catalog')}
                     >
-                      <Shield className="h-4 w-4 mr-2" />
+                      <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950 flex items-center justify-center mr-3">
+                        <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
                       <div className="text-left">
-                        <div className="font-medium">Browse Permission Catalog</div>
+                        <div className="font-semibold">Browse Permission Catalog</div>
                         <div className="text-xs text-muted-foreground">Explore available permissions</div>
                       </div>
                     </Button>
@@ -663,7 +699,7 @@ export default function PermissionsPage() {
 
         {/* Permission Catalog */}
         {activeSection === "catalog" && (
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
@@ -742,7 +778,7 @@ export default function PermissionsPage() {
 
         {/* Permission Groups */}
         {activeSection === "groups" && (
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
@@ -835,7 +871,7 @@ export default function PermissionsPage() {
 
         {/* User Permissions */}
         {activeSection === "users" && (
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserCog className="h-5 w-5" />
@@ -938,7 +974,7 @@ export default function PermissionsPage() {
 
         {/* Audit */}
         {activeSection === "audit" && (
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
@@ -1008,7 +1044,7 @@ export default function PermissionsPage() {
 
         {/* Organization Permissions */}
         {activeSection === "settings" && (
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
