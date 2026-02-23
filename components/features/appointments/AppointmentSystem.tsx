@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useAlert } from "@/components/AlertProvider";
 import {
   Card,
   CardContent,
@@ -254,6 +255,7 @@ const STATIC_APPOINTMENTS: Appointment[] = [
 ];
 
 export function AppointmentSystem() {
+  const { success, error } = useAlert();
   const [appointments, setAppointments] =
     useState<Appointment[]>(STATIC_APPOINTMENTS);
   const [searchTerm, setSearchTerm] = useState("");
@@ -353,16 +355,19 @@ export function AppointmentSystem() {
   const handleCreateAppointment = () => {
     setModalMode("create");
     setSelectedAppointment(null);
+    setIsModalOpen(true);
   };
 
   const handleEditAppointment = (apt: Appointment) => {
     setModalMode("edit");
     setSelectedAppointment(apt);
+    setIsModalOpen(true);
   };
 
   const handleViewAppointment = (apt: Appointment) => {
     setModalMode("view");
     setSelectedAppointment(apt);
+    setIsModalOpen(true);
   };
 
   const handleDeleteAppointment = (id: string) => {
@@ -734,20 +739,26 @@ export function AppointmentSystem() {
         </TabsContent>
       </Tabs>
 
-      {/* <AppointmentModal 
+      <AppointmentModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         mode={modalMode}
         appointment={selectedAppointment}
         onSave={(apt) => {
-          if (modalMode === "create") {
-            setAppointments(prev => [...prev, { ...apt, id: `A${Date.now()}` }]);
-          } else if (modalMode === "edit" && selectedAppointment) {
-            setAppointments(prev => prev.map(a => a.id === selectedAppointment.id ? apt : a));
+          try {
+            if (modalMode === "create") {
+              setAppointments(prev => [...prev, { ...apt, id: `A${Date.now()}`, patientId: `P${Date.now()}`, doctorId: `D${Date.now()}` }]);
+              success("Appointment scheduled successfully!");
+            } else if (modalMode === "edit" && selectedAppointment) {
+              setAppointments(prev => prev.map(a => a.id === selectedAppointment.id ? apt : a));
+              success("Appointment updated successfully!");
+            }
+            setIsModalOpen(false);
+          } catch (err) {
+            error("Failed to save appointment. Please try again.");
           }
-          setIsModalOpen(false);
         }}
-      /> */}
+      />
     </div>
   );
 }

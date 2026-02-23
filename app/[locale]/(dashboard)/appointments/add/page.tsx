@@ -13,6 +13,7 @@ import { ArrowLeft, Clock, Save } from 'lucide-react';
 import { appointmentService, DoctorAvailabilitySlot } from '@/lib/services/appointment';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
+import { useAlert } from '@/components/AlertProvider';
 import { fetchDoctors, fetchPatients } from '@/lib/store/slices/appSlice';
 import { ROLES } from '@/lib/constants';
 import { cn } from '@/components/ui/utils';
@@ -37,9 +38,11 @@ export default function AddAppointmentPage() {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
   const { patients, doctors, loading } = useAppSelector((state) => state.app);
+  const { success, error } = useAlert();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableSlots, setAvailableSlots] = useState<DoctorAvailabilitySlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [appointmentId, setAppointmentId] = useState<string | null>(null);
 
   const [appointmentData, setAppointmentData] = useState<AppointmentFormData>({
     patientId: "",
@@ -52,6 +55,49 @@ export default function AddAppointmentPage() {
     roomNumber: "",
     slotId: "",
   });
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (id) {
+      setAppointmentId(id);
+      loadAppointmentData(id);
+    }
+  }, []);
+
+  const loadAppointmentData = async (id: string) => {
+    try {
+      const apt = await appointmentService.getById(id);
+      
+      // Load available slots first
+      if (apt.doctorId && apt.appointmentDate) {
+        setLoadingSlots(true);
+        try {
+          const slots = await appointmentService.getDoctorAvailability(apt.doctorId, apt.appointmentDate);
+          setAvailableSlots(slots);
+        } catch (error) {
+          console.error('Failed to fetch available slots:', error);
+        } finally {
+          setLoadingSlots(false);
+        }
+      }
+      
+      setAppointmentData({
+        patientId: apt.patientId,
+        doctorId: apt.doctorId,
+        appointmentDate: apt.appointmentDate,
+        appointmentTime: apt.appointmentTime.substring(0, 5),
+        durationMinutes: apt.durationMinutes,
+        chiefComplaint: apt.chiefComplaint || "",
+        notes: apt.notes || "",
+        roomNumber: apt.roomNumber || "",
+        slotId: apt.slotId || "",
+      });
+    } catch (err) {
+      console.error('Failed to load appointment:', err);
+      error('Failed to load appointment data');
+    }
+  };
 
   React.useEffect(() => {
     if (patients.length === 0) dispatch(fetchPatients());
@@ -125,17 +171,24 @@ export default function AddAppointmentPage() {
 
     setAppointmentData((prev) => ({ ...prev, [field]: value }));
 
-    if (field === 'doctorId' && appointmentData.appointmentDate) {
-      setLoadingSlots(true);
-      setAppointmentData((prev) => ({ ...prev, appointmentTime: '', slotId: '', durationMinutes: 30 }));
-      try {
-        const slots = await appointmentService.getDoctorAvailability(value as string, appointmentData.appointmentDate);
-        setAvailableSlots(slots);
-      } catch (error) {
-        console.error('Failed to fetch available slots:', error);
-        setAvailableSlots([]);
-      } finally {
-        setLoadingSlots(false);
+    if (field === 'doctorId') {
+      if (!appointmentId) {
+        const todayDate = new Date().toISOString().split('T')[0];
+        setAppointmentData((prev) => ({ ...prev, appointmentDate: todayDate, appointmentTime: '', slotId: '', durationMinutes: 30 }));
+      } else {
+        setAppointmentData((prev) => ({ ...prev, appointmentTime: '', slotId: '', durationMinutes: 30 }));
+      }
+      if (value && appointmentData.appointmentDate) {
+        setLoadingSlots(true);
+        try {
+          const slots = await appointmentService.getDoctorAvailability(value as string, appointmentData.appointmentDate);
+          setAvailableSlots(slots);
+        } catch (error) {
+          console.error('Failed to fetch available slots:', error);
+          setAvailableSlots([]);
+        } finally {
+          setLoadingSlots(false);
+        }
       }
     }
 
@@ -167,9 +220,7 @@ export default function AddAppointmentPage() {
         !appointmentData.appointmentDate ||
         !appointmentData.appointmentTime
       ) {
-        alert(
-          "Please fill in all required fields (Patient, Doctor, Date, Time)"
-        );
+        error("Please fill in all required fields (Patient, Doctor, Date, Time)");
         return;
       }
 
@@ -185,14 +236,20 @@ export default function AddAppointmentPage() {
         createdBy: user?.id || "system",
         status: "SCHEDULED" as const,
       };
-      await appointmentService.createAppointment(apiData);
+      
+      if (appointmentId) {
+        await appointmentService.update(appointmentId, apiData);
+        success("Appointment updated successfully!");
+      } else {
+        await appointmentService.createAppointment(apiData);
+        success("Appointment scheduled successfully!");
+      }
       const locale = pathname?.split("/")[1] || "en";
-      router.push(`/${locale}/appointments`);
-    } catch (error) {
-      console.error("Failed to save appointment:", error);
-      alert(
-        `Failed to save appointment: ${error instanceof Error ? error.message : "Unknown error"
-        }`
+      setTimeout(() => router.push(`/${locale}/appointments`), 1000);
+    } catch (err) {
+      console.error("Failed to save appointment:", err);
+      error(
+        `Failed to save appointment: ${err instanceof Error ? err.message : "Unknown error"}`
       );
     } finally {
       setIsSubmitting(false);
@@ -204,10 +261,10 @@ export default function AddAppointmentPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-foreground">
-            Schedule New Appointment
+            {appointmentId ? 'Edit Appointment' : 'Schedule New Appointment'}
           </h2>
           <p className="text-muted-foreground mt-1">
-            Create a new appointment for a patient
+            {appointmentId ? 'Update appointment details' : 'Create a new appointment for a patient'}
           </p>
         </div>
         <div className="flex space-x-2 w-full sm:w-auto">
@@ -225,7 +282,7 @@ export default function AddAppointmentPage() {
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Schedule Appointment
+                {appointmentId ? 'Update Appointment' : 'Schedule Appointment'}
               </>
             )}
           </Button>
@@ -243,7 +300,7 @@ export default function AddAppointmentPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="patient">Patient *</Label>
                     <Select
@@ -302,7 +359,7 @@ export default function AddAppointmentPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="date">Date *</Label>
                     <Input
@@ -333,7 +390,9 @@ export default function AddAppointmentPage() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="duration">Duration</Label>
                     <Input
@@ -341,20 +400,6 @@ export default function AddAppointmentPage() {
                       value={`${appointmentData.durationMinutes} minutes`}
                       disabled
                       className="bg-muted"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="chiefComplaint">Chief Complaint *</Label>
-                    <Textarea
-                      id="chiefComplaint"
-                      value={appointmentData.chiefComplaint}
-                      onChange={(e) =>
-                        handleInputChange("chiefComplaint", e.target.value)
-                      }
-                      placeholder="Brief description of the reason for this appointment"
                     />
                   </div>
 
@@ -369,6 +414,18 @@ export default function AddAppointmentPage() {
                       placeholder="Room 101"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="chiefComplaint">Chief Complaint *</Label>
+                  <Textarea
+                    id="chiefComplaint"
+                    value={appointmentData.chiefComplaint}
+                    onChange={(e) =>
+                      handleInputChange("chiefComplaint", e.target.value)
+                    }
+                    placeholder="Brief description of the reason for this appointment"
+                  />
                 </div>
 
                 <div>
