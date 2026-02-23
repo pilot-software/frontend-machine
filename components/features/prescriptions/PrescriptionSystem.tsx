@@ -255,9 +255,19 @@ export function PrescriptionSystem() {
       />
 
       <StatsCardGrid>
-        {stats.map((stat, idx) => (
-          <StatsCard key={idx} {...stat} />
-        ))}
+        {stats.map((stat, idx) => {
+          let metricsData = [
+            { label: "This Month", value: "+12" },
+            { label: "Avg/Patient", value: "2.3" },
+          ];
+          if (idx === 1) metricsData[0] = { label: "Due Soon", value: "5" };
+          if (idx === 2) metricsData[0] = { label: "Critical", value: "2" };
+          if (idx === 3) metricsData[0] = { label: "Approved", value: "6" };
+          
+          return (
+            <StatsCard key={idx} {...stat} metrics={metricsData} />
+          );
+        })}
       </StatsCardGrid>
 
       <div className="w-full">

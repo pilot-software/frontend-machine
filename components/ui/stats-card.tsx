@@ -13,6 +13,7 @@ export interface StatsCardProps {
   change?: string;
   trend?: "up" | "down" | "neutral";
   trendValue?: string;
+  metrics?: Array<{ label: string; value: string | number; color?: string }>;
 }
 
 export function StatsCard({
@@ -24,6 +25,7 @@ export function StatsCard({
   change,
   trend = "neutral",
   trendValue,
+  metrics,
 }: StatsCardProps) {
   const displayChange = change || trendValue;
   const t = useTranslations("common");
@@ -55,6 +57,49 @@ export function StatsCard({
     );
     return colorKey ? colorMap[colorKey] : "rgba(59, 130, 246, 0.08)";
   };
+
+  if (metrics && metrics.length > 0) {
+    return (
+      <div className="group relative rounded-lg sm:rounded-xl bg-linear-to-br from-card to-card/50 p-3 sm:p-4 shadow-none hover:shadow-xl transition-all duration-300 border border-border/50 overflow-hidden hover:-translate-y-1 hover:scale-[1.01]">
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          style={{
+            background: `radial-gradient(circle at 20% 30%, ${getHoverColor()} 0%, transparent 70%)`,
+          }}
+        />
+        <div
+          className={`absolute inset-0 bg-linear-to-br ${bgGradient} opacity-5`}
+        />
+        <div className="relative">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-muted-foreground truncate">
+                {title}
+              </p>
+              <h3 className="text-lg sm:text-xl font-bold mt-1">
+                {displayValue}
+              </h3>
+            </div>
+            <div
+              className={`p-2 rounded-lg bg-linear-to-br ${bgGradient} shrink-0`}
+            >
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" strokeWidth={2} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {metrics.map((metric, idx) => (
+              <div key={idx} className="p-2 bg-muted/50 rounded text-xs">
+                <p className="text-muted-foreground truncate">{metric.label}</p>
+                <p className={`font-semibold ${metric.color || "text-foreground"}`}>
+                  {metric.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="group relative rounded-lg sm:rounded-xl bg-linear-to-br from-card to-card/50 p-3 sm:p-4 md:p-5 shadow-none hover:shadow-xl transition-all duration-300 border border-border/50 overflow-hidden hover:-translate-y-1 hover:scale-[1.01]">

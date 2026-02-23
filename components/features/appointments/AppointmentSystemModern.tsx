@@ -428,24 +428,40 @@ export function AppointmentSystemModern() {
           value={stats.total}
           icon={CalendarIcon}
           variant="primary"
+          metrics={[
+            { label: "Confirmed", value: stats.total - stats.pending },
+            { label: "Pending", value: stats.pending },
+          ]}
         />
         <EnterpriseStatsCard
           title={t("completed")}
           value={stats.completed}
           icon={CheckCircle2}
           variant="success"
+          metrics={[
+            { label: "Success Rate", value: `${Math.round((stats.completed / stats.total) * 100)}%` },
+            { label: "Avg Duration", value: "45 min" },
+          ]}
         />
         <EnterpriseStatsCard
           title={t("inProgress")}
           value={stats.inProgress}
           icon={Activity}
           variant="warning"
+          metrics={[
+            { label: "Avg Wait", value: "12 min" },
+            { label: "Next", value: "2:30 PM" },
+          ]}
         />
         <EnterpriseStatsCard
           title={t("pending")}
           value={stats.pending}
           icon={Clock}
           variant="default"
+          metrics={[
+            { label: "Urgent", value: "3" },
+            { label: "Scheduled", value: stats.pending - 3 },
+          ]}
         />
       </div>
 

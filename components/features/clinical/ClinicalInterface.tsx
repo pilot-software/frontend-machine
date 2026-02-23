@@ -163,9 +163,19 @@ export function ClinicalInterface() {
       />
 
       <StatsCardGrid>
-        {stats.map((stat, idx) => (
-          <StatsCard key={idx} {...stat} />
-        ))}
+        {stats.map((stat, idx) => {
+          let metricsData = [
+            { label: "Admitted", value: "45" },
+            { label: "Discharged", value: "12" },
+          ];
+          if (idx === 1) metricsData = [{ label: "ICU", value: "3" }, { label: "ER", value: "5" }];
+          if (idx === 2) metricsData = [{ label: "Urgent", value: "8" }, { label: "Routine", value: "15" }];
+          if (idx === 3) metricsData = [{ label: "Completed", value: "8" }, { label: "Scheduled", value: "4" }];
+          
+          return (
+            <StatsCard key={idx} {...stat} metrics={metricsData} />
+          );
+        })}
       </StatsCardGrid>
 
       <div className="w-full">

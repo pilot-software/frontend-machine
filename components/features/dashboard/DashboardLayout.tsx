@@ -150,7 +150,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* Header */}
       <header
         className="fixed top-0 z-50 bg-card border-b border-border"
@@ -254,7 +254,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         <aside 
-          className="hidden md:block fixed left-0 top-0 bottom-0 bg-white border-r border-slate-200 dark:bg-[#171717] dark:border-[#262626]"
+          className="hidden md:block fixed left-0 top-0 bottom-0 bg-card border-r border-border"
           style={{ width: `${sidebarWidth}px` }}
         >
           <div 
@@ -264,13 +264,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-slate-200 group-hover:bg-slate-400 dark:bg-slate-800 dark:group-hover:bg-slate-600 rounded-full transition-colors" />
           </div>
           <div className="flex h-full flex-col">
-            <div className="border-b border-slate-200 dark:border-[#262626] px-3 py-4">
+            <div className="border-b border-border px-3 py-4">
               <button
                 type="button"
                 onClick={() => router.push(ROUTES.DASHBOARD)}
-                className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-[#262626]"
+                className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-muted"
               >
-                <div className="h-10 w-10 rounded-lg bg-slate-100 text-slate-700 dark:bg-[#262626] dark:text-slate-200 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-lg bg-muted text-foreground flex items-center justify-center">
                   <Stethoscope className="h-5 w-5" />
                 </div>
                 {sidebarWidth >= 150 && (
@@ -296,8 +296,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       showText ? 'justify-start gap-3' : 'justify-center px-0'
                     } ${
                       isActive
-                        ? "bg-blue-50 text-black font-semibold border-blue-600 dark:bg-slate-800 dark:text-blue-400 dark:border-blue-600"
-                        : "border-transparent text-black hover:border-blue-600/45 hover:bg-blue-50 hover:text-black dark:text-slate-300 dark:hover:border-blue-600/70 dark:hover:bg-slate-800 dark:hover:text-blue-400"
+                        ? "bg-primary text-primary-foreground font-semibold border-primary"
+                        : "border-transparent text-foreground hover:border-primary/45 hover:bg-primary/10 hover:text-primary"
                     }`}
                   >
                     <ItemIcon className={`h-4 w-4 ${showText ? '' : ''}`} />
