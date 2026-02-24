@@ -20,8 +20,8 @@ export function EnterprisePageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn('space-y-4 pb-6 border-b border-border', className)}>
-      <div className="flex items-start justify-between gap-4">
+    <div className={cn('space-y-4 pb-6 border-b border-border shadow-sm', className)}>
+      <div className="flex items-start justify-between gap-4 px-6 py-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
           {Icon && (
             <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">

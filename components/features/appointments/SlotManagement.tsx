@@ -232,27 +232,29 @@ export default function SlotManagement() {
             <CardContent className="space-y-4">
               {user?.role !== 'doctor' && (
                 <div>
-                  <Label>Select Doctor</Label>
+                  <Label className="text-sm font-semibold mb-3 block">Select Doctor</Label>
                   <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select doctor..." />
+                    <SelectTrigger className="h-14 border-2 hover:border-primary/50 transition-colors">
+                      <SelectValue placeholder="Choose a doctor..." />
                     </SelectTrigger>
                     <SelectContent>
                       {doctors.map((doctor) => (
                         <SelectItem key={doctor.id} value={doctor.id}>
-                          <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
                             <span className="font-medium">{doctor.name || doctor.email}</span>
-                            <span className="text-xs text-muted-foreground">{doctor.specialization || doctor.id}</span>
+                            {doctor.specialization && (
+                              <span className="text-xs text-muted-foreground">• {doctor.specialization}</span>
+                            )}
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {selectedDoctor && (
-                    <div className="mt-2 p-3 bg-muted rounded-lg border">
-                      <p className="text-sm font-medium">💡 Suggestion:</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Consider creating slots during peak hours (9 AM - 12 PM, 2 PM - 5 PM) for better patient accessibility.
+                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">💡 Pro Tip:</p>
+                      <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                        Peak hours (9 AM - 12 PM, 2 PM - 5 PM) ensure better patient accessibility.
                       </p>
                     </div>
                   )}
@@ -261,50 +263,61 @@ export default function SlotManagement() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Start Time</Label>
-                  <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                  <Label className="text-sm font-semibold mb-2 block">Start Time</Label>
+                  <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="h-10" />
                 </div>
                 <div>
-                  <Label>End Time</Label>
-                  <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                  <Label className="text-sm font-semibold mb-2 block">End Time</Label>
+                  <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="h-10" />
                 </div>
               </div>
 
               <div>
-                <Label>Slot Duration (minutes)</Label>
+                <Label className="text-sm font-semibold mb-2 block">Slot Duration</Label>
                 <Select value={slotDuration} onValueChange={setSlotDuration}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="15">15 minutes</SelectItem>
-                    <SelectItem value="30">30 minutes</SelectItem>
-                    <SelectItem value="45">45 minutes</SelectItem>
-                    <SelectItem value="60">60 minutes</SelectItem>
+                    <SelectItem value="15">⏱️ 15 minutes</SelectItem>
+                    <SelectItem value="30">⏱️ 30 minutes</SelectItem>
+                    <SelectItem value="45">⏱️ 45 minutes</SelectItem>
+                    <SelectItem value="60">⏱️ 60 minutes</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Break Start</Label>
-                  <Input type="time" value={breakStart} onChange={(e) => setBreakStart(e.target.value)} />
-                </div>
-                <div>
-                  <Label>Break End</Label>
-                  <Input type="time" value={breakEnd} onChange={(e) => setBreakEnd(e.target.value)} />
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                <p className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-3">Break Time</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs font-medium mb-1 block text-amber-800 dark:text-amber-200">Break Start</Label>
+                    <Input type="time" value={breakStart} onChange={(e) => setBreakStart(e.target.value)} className="h-9 text-sm" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-medium mb-1 block text-amber-800 dark:text-amber-200">Break End</Label>
+                    <Input type="time" value={breakEnd} onChange={(e) => setBreakEnd(e.target.value)} className="h-9 text-sm" />
+                  </div>
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <Button onClick={createSlots} disabled={!selectedDoctor || loading} className="flex-1">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Slots for {selectedDate.toLocaleDateString()}
+                <Button onClick={createSlots} disabled={!selectedDoctor || loading} className="flex-1 h-11 font-semibold">
+                  {loading ? (
+                    <>
+                      <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Slots
+                    </>
+                  )}
                 </Button>
                 {slots.length > 0 && (
-                  <Button variant="outline" onClick={deleteAllSlotsForDate} disabled={loading}>
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete All
+                  <Button variant="outline" onClick={deleteAllSlotsForDate} disabled={loading} className="h-11">
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 )}
               </div>
@@ -313,45 +326,59 @@ export default function SlotManagement() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Existing Slots ({slots.length})</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-primary" />
+                  <span>Slots for {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                </div>
+                <Badge variant="secondary" className="text-sm font-semibold">{slots.length} slots</Badge>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="py-8">
+                <div className="py-12 flex flex-col items-center justify-center">
                   <Loader text="Loading slots..." />
                 </div>
               ) : slots.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                  <p className="text-muted-foreground">No slots for this date</p>
-                  <p className="text-sm text-muted-foreground mt-1">Create slots using the form above</p>
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                    <Clock className="w-8 h-8 text-muted-foreground opacity-50" />
+                  </div>
+                  <p className="text-muted-foreground font-medium">No slots created yet</p>
+                  <p className="text-sm text-muted-foreground mt-1">Create slots using the form above to get started</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {slots.map((slot) => (
-                    <div key={slot.id} className="border rounded-lg p-3 hover:shadow-md transition-shadow">
+                    <div key={slot.id} className="group relative border rounded-lg p-3 hover:shadow-md hover:border-primary/50 transition-all duration-200 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
                       <div className="flex items-center justify-between mb-2">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <Badge variant={slot.status === 'AVAILABLE' ? 'default' : 'secondary'}>
+                        <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold ${
+                          slot.status === 'AVAILABLE' 
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        }`}>
+                          <div className={`w-2 h-2 rounded-full ${
+                            slot.status === 'AVAILABLE' ? 'bg-green-500' : 'bg-blue-500'
+                          }`} />
                           {slot.status}
-                        </Badge>
+                        </div>
                       </div>
-                      <p className="font-medium text-sm">{slot.startTime} - {slot.endTime}</p>
+                      <p className="font-bold text-sm text-foreground">{slot.startTime} - {slot.endTime}</p>
                       {slot.patientId && (
-                        <p className="text-xs text-muted-foreground mt-1">Patient: {slot.patientId}</p>
+                        <p className="text-xs text-muted-foreground mt-2 truncate">👤 {slot.patientId}</p>
                       )}
-                      <div className="flex gap-2 mt-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => deleteSlot(slot.id)} 
-                          className={`w-full border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 ${deletingId === slot.id ? 'bg-red-50 border-red-400' : ''}`}
-                          disabled={deletingId === slot.id}
-                        >
-                          <Trash2 className={`w-3 h-3 mr-1 ${deletingId === slot.id ? 'animate-[trashDrop_0.6s_ease-in-out]' : ''}`} />
-                          Delete
-                        </Button>
-                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => deleteSlot(slot.id)} 
+                        className={`w-full mt-2 h-8 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-opacity ${
+                          deletingId === slot.id ? 'bg-red-50 dark:bg-red-900/20' : ''
+                        }`}
+                        disabled={deletingId === slot.id}
+                      >
+                        <Trash2 className={`w-3 h-3 mr-1 ${deletingId === slot.id ? 'animate-[trashDrop_0.6s_ease-in-out]' : ''}`} />
+                        Delete
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -364,26 +391,26 @@ export default function SlotManagement() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="w-5 h-5" />
-                Select Date
+                <CalendarIcon className="w-5 h-5 text-primary" />
+                Date Selection
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date" className="text-sm font-semibold mb-2 block">Choose Date</Label>
                 <Input
                   id="date"
                   type="date"
                   value={selectedDate.toISOString().split('T')[0]}
                   onChange={(e) => setSelectedDate(new Date(e.target.value))}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full"
+                  className="w-full h-10 font-medium"
                 />
               </div>
-              <div className="p-4 bg-muted rounded-lg border">
-                <div className="text-sm text-muted-foreground">
-                  <p className="font-medium mb-1">Selected Date:</p>
-                  <p className="text-foreground">{selectedDate.toLocaleDateString('en-US', { 
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="text-sm">
+                  <p className="font-semibold text-blue-900 dark:text-blue-100 mb-2">📅 Selected Date</p>
+                  <p className="text-blue-800 dark:text-blue-200 font-medium">{selectedDate.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 

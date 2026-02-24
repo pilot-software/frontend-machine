@@ -169,13 +169,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* Header */}
       <header
-        className="fixed top-0 z-50 border-b border-border/50 backdrop-blur-sm w-full transition-all duration-300"
-        style={{
-          background: scrollY > 20 ? 'rgba(var(--card-rgb), 0.7)' : 'linear-gradient(to right, var(--card), var(--card), rgba(var(--card-rgb), 0.95))',
-          boxShadow: scrollY > 20 ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        }}
+        className="fixed top-0 z-50 border-b border-border/50 w-full transition-all duration-300 bg-card shadow-md"
       >
-        <div className="flex items-center justify-between px-6 h-16">
+        <div className="flex items-center justify-between px-6 h-16 bg-card shadow-sm">
           {/* Left: Menu + Logo */}
           <div className="flex items-center gap-4">
             {isMobile && (
@@ -218,7 +214,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Stethoscope className="h-5 w-5 text-primary-foreground" />
               </div>
               <div className="min-w-0 hidden lg:block">
-                <p className="truncate text-sm font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{branding.systemName}</p>
+                <p className="truncate text-sm font-bold text-foreground">{branding.systemName}</p>
                 <p className="truncate text-xs text-muted-foreground">{branding.tagline}</p>
               </div>
             </div>

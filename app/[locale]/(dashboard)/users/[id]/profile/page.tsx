@@ -156,7 +156,7 @@ export default function UserProfilePage() {
                                 <X className="h-4 w-4 mr-2"/>
                                 Cancel
                             </Button>
-                            <Button onClick={handleSave} disabled={isSaving} className="bg-green-600 hover:bg-green-700">
+                            <Button onClick={handleSave} disabled={isSaving}>
                                 {isSaving ? (
                                     <>
                                         <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"/>
