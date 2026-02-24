@@ -17,6 +17,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 import { LanguageSwitcher } from "@/components/shared/navigation/LanguageSwitcher";
 import {
@@ -282,29 +283,46 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </button>
             </div>
             <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-              {menuItems.map((item) => {
-                const ItemIcon = item.icon;
-                const isActive = pathname.includes(item.path) || (item.path === "/patients" && pathname.includes("/patient/"));
-                const showText = sidebarWidth >= 150;
-                
-                return (
-                  <Button
-                    key={item.path}
-                    variant="ghost"
-                    onClick={() => router.push(item.path)}
-                    className={`w-full h-11 rounded-lg border-l-4 transition-all duration-200 ${
-                      showText ? 'justify-start gap-3' : 'justify-center px-0'
-                    } ${
-                      isActive
-                        ? "bg-primary text-primary-foreground font-semibold border-primary"
-                        : "border-transparent text-foreground hover:border-primary/45 hover:bg-primary/10 hover:text-primary"
-                    }`}
-                  >
-                    <ItemIcon className={`h-4 w-4 ${showText ? '' : ''}`} />
-                    {showText && <span className="truncate text-sm">{t(item.label)}</span>}
-                  </Button>
-                );
-              })}
+              <TooltipProvider delayDuration={0}>
+                {menuItems.map((item) => {
+                  const ItemIcon = item.icon;
+                  const isActive = pathname.includes(item.path) || (item.path === "/patients" && pathname.includes("/patient/"));
+                  const showText = sidebarWidth >= 150;
+                  
+                  const button = (
+                    <Button
+                      key={item.path}
+                      variant="ghost"
+                      onClick={() => router.push(item.path)}
+                      className={`w-full h-11 rounded-lg border-l-4 transition-all duration-200 ${
+                        showText ? 'justify-start gap-3' : 'justify-center px-0'
+                      } ${
+                        isActive
+                          ? "bg-primary text-primary-foreground font-semibold border-primary"
+                          : "border-transparent text-foreground hover:border-primary/45 hover:bg-primary/10 hover:text-primary"
+                      }`}
+                    >
+                      <ItemIcon className={`h-4 w-4 ${showText ? '' : ''}`} />
+                      {showText && <span className="truncate text-sm">{t(item.label)}</span>}
+                    </Button>
+                  );
+
+                  if (!showText) {
+                    return (
+                      <Tooltip key={item.path}>
+                        <TooltipTrigger asChild>
+                          {button}
+                        </TooltipTrigger>
+                        <TooltipContent side="right" align="center">
+                          {t(item.label)}
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  }
+
+                  return button;
+                })}
+              </TooltipProvider>
             </nav>
           </div>
         </aside>
