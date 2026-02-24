@@ -7,6 +7,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Badge} from '@/components/ui/badge';
 import {Progress} from '@/components/ui/progress';
 import {StatsCard} from '@/components/ui/stats-card';
+import {EnterprisePageHeader} from '@/components/shared/EnterprisePageHeader';
 import {
     Area,
     AreaChart,
@@ -26,6 +27,7 @@ import {
 import {
     Activity,
     AlertTriangle,
+    BarChart3,
     Building2,
     Calendar,
     CheckCircle2,
@@ -147,11 +149,11 @@ export default function AnalyticsPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div>
-                <h2 className="text-2xl font-semibold text-foreground">Healthcare Analytics</h2>
-                <p className="text-muted-foreground mt-1">Comprehensive system performance and insights</p>
-            </div>
+            <EnterprisePageHeader
+                title="Healthcare Analytics"
+                description="Comprehensive system performance and insights"
+                icon={BarChart3}
+            />
 
             {/* Key Metrics */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
@@ -161,7 +163,7 @@ export default function AnalyticsPage() {
                     icon={Users}
                     color="text-blue-600"
                     bgGradient="from-blue-500 to-blue-600"
-                    change="+12.5%"
+                    change="+ 12.5%"
                     trend="up"
                 />
                 <StatsCard

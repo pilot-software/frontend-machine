@@ -824,7 +824,7 @@ function AppointmentModal({
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Patient Name *</Label>
+              <Label required>Patient Name <span className="text-black">*</span></Label>
               <Input
                 value={formData.patientName}
                 onChange={(e) =>
@@ -846,7 +846,7 @@ function AppointmentModal({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Doctor Name *</Label>
+              <Label required>Doctor Name <span className="text-black">*</span></Label>
               <Input
                 value={formData.doctorName}
                 onChange={(e) =>
@@ -856,7 +856,7 @@ function AppointmentModal({
               />
             </div>
             <div>
-              <Label>Department *</Label>
+              <Label required>Department <span className="text-black">*</span></Label>
               <Input
                 value={formData.department}
                 onChange={(e) =>
@@ -868,7 +868,7 @@ function AppointmentModal({
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label>Time *</Label>
+              <Label required>Time <span className="text-black">*</span></Label>
               <Input
                 type="time"
                 value={formData.time}
@@ -911,7 +911,7 @@ function AppointmentModal({
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label>Type *</Label>
+              <Label required>Type <span className="text-black">*</span></Label>
               <Select
                 value={formData.type}
                 onValueChange={(val) =>
@@ -932,7 +932,7 @@ function AppointmentModal({
               </Select>
             </div>
             <div>
-              <Label>Priority *</Label>
+              <Label required>Priority <span className="text-black">*</span></Label>
               <Select
                 value={formData.priority}
                 onValueChange={(val) =>
@@ -980,7 +980,7 @@ function AppointmentModal({
             </div>
           </div>
           <div>
-            <Label>Reason for Visit *</Label>
+            <Label required>Reason for Visit <span className="text-black">*</span></Label>
             <Textarea
               value={formData.reason}
               onChange={(e) =>

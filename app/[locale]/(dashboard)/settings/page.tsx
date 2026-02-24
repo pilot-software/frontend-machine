@@ -9,10 +9,10 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Bell, Database, Palette, Shield, User, Lock } from "lucide-react";
+import { Bell, Database, Palette, Shield, User, Lock, Settings } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAuth } from "@/components/providers/AuthContext";
-
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import { toast } from "sonner";
 
 type SettingsSection = "appearance" | "notifications" | "system" | "security" | "privacy";
@@ -104,11 +104,11 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div>
-                <h2 className="text-2xl font-semibold">Settings</h2>
-                <p className="text-muted-foreground mt-1">Manage your preferences and configuration</p>
-            </div>
+            <EnterprisePageHeader
+                title="Settings"
+                description="Manage your preferences and configuration"
+                icon={Settings}
+            />
 
             {/* Horizontal Tabs */}
             <div className="border-b -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">

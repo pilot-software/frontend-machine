@@ -40,6 +40,12 @@ import {
   Heart,
   DollarSign,
   UserCog,
+  HelpCircle,
+  Building2,
+  Clock,
+  Lock,
+  Bell,
+  Download,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { NotificationDropdown } from "@/components/shared/notifications/NotificationDropdown";
@@ -63,9 +69,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
+  const [scrollY, setScrollY] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [isResizing, setIsResizing] = useState(false);
+  const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleMouseDown = () => setIsResizing(true);
 
@@ -154,10 +169,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* Header */}
       <header
-        className="fixed top-0 z-50 bg-card border-b border-border"
-        style={{ left: isMobile ? 0 : sidebarWidth, right: 0 }}
+        className="fixed top-0 z-50 border-b border-border/50 backdrop-blur-sm w-full transition-all duration-300"
+        style={{
+          background: scrollY > 20 ? 'rgba(var(--card-rgb), 0.7)' : 'linear-gradient(to right, var(--card), var(--card), rgba(var(--card-rgb), 0.95))',
+          boxShadow: scrollY > 20 ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        }}
       >
-        <div className="flex items-center justify-between px-4 h-14">
+        <div className="flex items-center justify-between px-6 h-16">
           {/* Left: Menu + Logo */}
           <div className="flex items-center gap-4">
             {isMobile && (
@@ -167,9 +185,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-64 p-0">
+                <SheetContent side="left" className="w-64 p-0 [&>button]:hidden">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                  <div className="p-4 border-b">
+                  <div className="p-4 border-b flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                         <Stethoscope className="h-5 w-5 text-primary-foreground" />
@@ -179,74 +197,170 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         <p className="text-xs text-muted-foreground">{branding.tagline}</p>
                       </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSidebarOpen(false)}
+                      className="h-8 w-8 flex-shrink-0"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Button>
                   </div>
                   <NavigationContent />
                 </SheetContent>
               </Sheet>
             )}
 
-          {isMobile && (
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(ROUTES.DASHBOARD)}>
-              <Stethoscope className="h-5 w-5 text-foreground" />
-              <span className="text-base font-bold text-foreground">{branding.systemName}</span>
+            <div className="hidden md:flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(ROUTES.DASHBOARD)}>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
+                <Stethoscope className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div className="min-w-0 hidden lg:block">
+                <p className="truncate text-sm font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{branding.systemName}</p>
+                <p className="truncate text-xs text-muted-foreground">{branding.tagline}</p>
+              </div>
             </div>
-          )}
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <div className="hidden sm:block">
               <BranchSelector />
             </div>
+            <div className="w-px h-6 bg-border/30" />
             <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={toggleTheme}>
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <div className="w-px h-6 bg-border/30" />
             {features.notifications && <NotificationDropdown />}
-            <DropdownMenu>
+            <div className="w-px h-6 bg-border/30" />
+            <DropdownMenu open={isProfileOpen} onOpenChange={setIsProfileOpen}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative p-0 h-10 w-10 rounded-full hover:bg-sidebar-accent transition-colors duration-200">
-                  <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  className="relative p-0 h-10 w-10 rounded-full hover:bg-sidebar-accent transition-colors duration-200"
+                  onMouseEnter={() => setIsProfileHovered(true)}
+                  onMouseLeave={() => setIsProfileHovered(false)}
+                >
+                  <div className={`relative ${isProfileHovered ? 'ring-4 ring-offset-2 ring-primary rounded-full' : ''}`}>
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
                       <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-card rounded-full" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="flex items-center gap-3 py-2">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      {getInitials(user.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold">{user.name}</p>
-                    <Badge className={`text-xs mt-1 ${getRoleColor(user.role)}`}>
-                      <RoleIcon className="h-3 w-3 mr-1" />
-                      {text.roles[user.role]}
-                    </Badge>
+              <DropdownMenuContent align="end" className="w-72 p-0">
+                {/* Header with Avatar, Name, and Settings */}
+                <div className="flex items-center justify-between gap-3 p-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="hover:scale-110 transition-transform duration-200 cursor-pointer">
+                      <Avatar className="h-12 w-12 flex-shrink-0">
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {getInitials(user.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-base truncate">{user.name}</p>
+                      <Badge className={`text-xs mt-1 ${getRoleColor(user.role)}`}>
+                        <RoleIcon className="h-3 w-3 mr-1" />
+                        {text.roles[user.role]}
+                      </Badge>
+                    </div>
                   </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push(ROUTES.PROFILE)} className="hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 cursor-pointer group">
-                  <User className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-                  {t("profile")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push(ROUTES.SETTINGS)} className="hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 cursor-pointer group">
-                  <Settings className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400 group-hover:rotate-90 transition-transform" />
-                  {t("settings")}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-200 cursor-pointer group">
-                  <LogOut className="h-4 w-4 mr-2 text-red-600 dark:text-red-400 group-hover:translate-x-1 transition-transform" />
-                  {t("logout")}
-                </DropdownMenuItem>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      router.push(ROUTES.SETTINGS);
+                      setIsProfileOpen(false);
+                    }}
+                    className="flex-shrink-0 hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                  >
+                    <Settings className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                  </Button>
+                </div>
+
+                {/* Department and Last Login */}
+                <div className="px-4 py-2 space-y-1 border-b">
+                  {user.department && (
+                    <div className="text-xs text-muted-foreground flex items-center gap-2">
+                      <Building2 className="h-3.5 w-3.5" />
+                      <span>{user.department}</span>
+                    </div>
+                  )}
+                  {user.lastLogin && (
+                    <div className="text-xs text-muted-foreground flex items-center gap-2">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>{new Date(user.lastLogin).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Menu Items */}
+                <div className="py-2">
+                  <DropdownMenuItem onClick={() => {
+                    router.push(ROUTES.PROFILE);
+                    setIsProfileOpen(false);
+                  }} className="hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
+                    <User className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                    {t("profile")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    router.push(ROUTES.HELP);
+                    setIsProfileOpen(false);
+                  }} className="hover:bg-green-100 dark:hover:bg-green-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
+                    <HelpCircle className="h-4 w-4 mr-2 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" />
+                    Help & Support
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
+                    <Bell className="h-4 w-4 mr-2 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform" />
+                    Notifications
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
+                    <Lock className="h-4 w-4 mr-2 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
+                    Privacy & Security
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-cyan-100 dark:hover:bg-cyan-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
+                    <Download className="h-4 w-4 mr-2 text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform" />
+                    Download Data
+                  </DropdownMenuItem>
+                </div>
+
+                {/* Footer with Dark Mode and Logout */}
+                <div className="flex items-center justify-between gap-2 p-3 border-t">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleTheme}
+                    className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-900"
+                  >
+                    {theme === "dark" ? (
+                      <>
+                        <Sun className="h-4 w-4" />
+                        <span className="text-xs">Light</span>
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="h-4 w-4" />
+                        <span className="text-xs">Dark</span>
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={logout}
+                    className="flex items-center gap-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="text-xs">{t("logout")}</span>
+                  </Button>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -255,7 +369,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         <aside 
-          className="hidden md:block fixed left-0 top-0 bottom-0 bg-card border-r border-border"
+          className="hidden md:block fixed left-0 top-14 bottom-0 bg-card border-r border-border"
           style={{ width: `${sidebarWidth}px` }}
         >
           <div 
@@ -265,24 +379,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-slate-200 group-hover:bg-slate-400 dark:bg-slate-800 dark:group-hover:bg-slate-600 rounded-full transition-colors" />
           </div>
           <div className="flex h-full flex-col">
-            <div className="border-b border-border px-3 py-4">
-              <button
-                type="button"
-                onClick={() => router.push(ROUTES.DASHBOARD)}
-                className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-muted"
-              >
-                <div className="h-10 w-10 rounded-lg bg-muted text-foreground flex items-center justify-center">
-                  <Stethoscope className="h-5 w-5" />
-                </div>
-                {sidebarWidth >= 150 && (
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{branding.systemName}</p>
-                    <p className="truncate text-xs text-muted-foreground">{branding.tagline}</p>
-                  </div>
-                )}
-              </button>
-            </div>
-            <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+            <nav className="flex-1 overflow-y-auto p-3 space-y-1 mt-4">
               <TooltipProvider delayDuration={0}>
                 {menuItems.map((item) => {
                   const ItemIcon = item.icon;
@@ -328,7 +425,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         <main 
-          className="flex-1 p-6 pt-16"
+          className="flex-1 p-6 pt-20"
           style={{ marginLeft: isMobile ? '0' : `${sidebarWidth}px` }}
         >
           {children}

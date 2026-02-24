@@ -33,7 +33,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="firstName">{t("firstName")} *</Label>
+            <Label htmlFor="firstName">{t("firstName")} <span className="text-black">*</span></Label>
             <Input
               id="firstName"
               value={patientData.firstName}
@@ -43,7 +43,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
             />
           </div>
           <div>
-            <Label htmlFor="lastName">{t("lastName")} *</Label>
+            <Label htmlFor="lastName">{t("lastName")} <span className="text-black">*</span></Label>
             <Input
               id="lastName"
               value={patientData.lastName}
@@ -53,7 +53,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
             />
           </div>
           <div>
-            <Label htmlFor="gender">{t("gender")} *</Label>
+            <Label htmlFor="gender">{t("gender")} <span className="text-black">*</span></Label>
             <Select value={patientData.gender} onValueChange={(value) => onInputChange("gender", value)} disabled={isReadOnly}>
               <SelectTrigger>
                 <SelectValue placeholder={t("selectGender")} />
@@ -70,7 +70,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="email">{t("emailAddress")} *</Label>
+            <Label htmlFor="email">{t("emailAddress")} <span className="text-black">*</span></Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -85,7 +85,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
             </div>
           </div>
           <div>
-            <Label htmlFor="phone">{t("phoneNumber")} *</Label>
+            <Label htmlFor="phone">{t("phoneNumber")} <span className="text-black">*</span></Label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -99,7 +99,7 @@ export const PatientBasicInfoTab = React.memo<PatientBasicInfoTabProps>(({
             </div>
           </div>
           <div>
-            <Label htmlFor="dateOfBirth">{t("dateOfBirth")} *</Label>
+            <Label htmlFor="dateOfBirth">{t("dateOfBirth")} <span className="text-black">*</span></Label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input

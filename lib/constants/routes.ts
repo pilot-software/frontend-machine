@@ -10,6 +10,7 @@ export const ROUTES = {
   FINANCIAL: '/financial',
   SETTINGS: '/settings',
   PROFILE: '/profile',
+  HELP: '/help',
 } as const;
 
 // API routes

@@ -277,7 +277,7 @@ export function AppointmentFormModal({
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="patient">Patient *</Label>
+                      <Label htmlFor="patient">Patient <span className="text-black">*</span></Label>
                       <Select
                         value={appointmentData.patientId}
                         onValueChange={(value) =>
@@ -318,7 +318,7 @@ export function AppointmentFormModal({
                     </div>
 
                     <div>
-                      <Label htmlFor="doctor">Doctor *</Label>
+                      <Label htmlFor="doctor">Doctor <span className="text-black">*</span></Label>
                       <Select
                         value={appointmentData.doctorId}
                         onValueChange={(value) =>
@@ -365,7 +365,7 @@ export function AppointmentFormModal({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="chiefComplaint">Chief Complaint *</Label>
+                      <Label htmlFor="chiefComplaint">Chief Complaint <span className="text-black">*</span></Label>
                       <Textarea
                         id="chiefComplaint"
                         value={appointmentData.chiefComplaint}
@@ -393,7 +393,7 @@ export function AppointmentFormModal({
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <Label>Date *</Label>
+                      <Label required>Date <span className="text-black">*</span></Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -423,7 +423,7 @@ export function AppointmentFormModal({
                     </div>
 
                     <div>
-                      <Label htmlFor="time">Time *</Label>
+                      <Label htmlFor="time">Time <span className="text-black">*</span></Label>
                       <Select
                         value={appointmentData.appointmentTime}
                         onValueChange={(value) =>

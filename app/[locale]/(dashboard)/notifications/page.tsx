@@ -8,6 +8,7 @@ import {Badge} from "@/components/ui/badge";
 import {Input} from "@/components/ui/input";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {AlertCircle, Bell, Calendar, Check, FileText, Search, Settings, Trash2,} from "lucide-react";
+import {EnterprisePageHeader} from "@/components/shared/EnterprisePageHeader";
 
 const mockNotifications = [
     {
@@ -89,11 +90,11 @@ export default function NotificationsPage() {
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case "high":
-                return "bg-red-100 text-red-800";
+                return "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
             case "medium":
-                return "bg-yellow-100 text-yellow-800";
+                return "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300";
             case "low":
-                return "bg-green-100 text-green-800";
+                return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
             default:
                 return "bg-muted text-muted-foreground";
         }
@@ -142,129 +143,163 @@ export default function NotificationsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-2xl font-semibold text-foreground">Notifications</h2>
-                    <p className="text-muted-foreground mt-1">
-                        Manage your healthcare notifications and alerts
-                    </p>
-                </div>
-                <div className="flex space-x-2">
-                    <Button variant="outline" onClick={markAllAsRead}>
-                        <Check className="h-4 w-4 mr-2"/>
-                        Mark All Read
-                    </Button>
-                    <Button variant="outline">
-                        <Settings className="h-4 w-4 mr-2"/>
-                        Settings
-                    </Button>
+            <EnterprisePageHeader
+                title="Notifications"
+                description="Manage your healthcare notifications and alerts"
+                icon={Bell}
+                actions={
+                    <div className="flex space-x-2">
+                        <Button variant="outline" onClick={markAllAsRead}>
+                            <Check className="h-4 w-4 mr-2"/>
+                            Mark All Read
+                        </Button>
+                        <Button variant="outline">
+                            <Settings className="h-4 w-4 mr-2"/>
+                            Settings
+                        </Button>
+                    </div>
+                }
+            />
+
+            <Card>
+                <CardContent className="p-6">
+                    <div className="relative">
+                        <Search
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+                        <Input
+                            placeholder="Search notifications..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="border-b">
+                <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                    <button
+                        onClick={() => setSelectedTab("all")}
+                        className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                            selectedTab === "all"
+                                ? "border-primary text-primary font-medium"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                        }`}
+                    >
+                        All
+                    </button>
+                    <button
+                        onClick={() => setSelectedTab("unread")}
+                        className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                            selectedTab === "unread"
+                                ? "border-primary text-primary font-medium"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                        }`}
+                    >
+                        Unread
+                    </button>
+                    <button
+                        onClick={() => setSelectedTab("alert")}
+                        className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                            selectedTab === "alert"
+                                ? "border-primary text-primary font-medium"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                        }`}
+                    >
+                        Alerts
+                    </button>
+                    <button
+                        onClick={() => setSelectedTab("appointment")}
+                        className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                            selectedTab === "appointment"
+                                ? "border-primary text-primary font-medium"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                        }`}
+                    >
+                        Appointments
+                    </button>
+                    <button
+                        onClick={() => setSelectedTab("report")}
+                        className={`px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                            selectedTab === "report"
+                                ? "border-primary text-primary font-medium"
+                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                        }`}
+                    >
+                        Reports
+                    </button>
                 </div>
             </div>
 
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <span>All Notifications</span>
-                        {unreadCount > 0 && (
-                            <Badge className="bg-red-500 text-white">
-                                {unreadCount} unread
-                            </Badge>
-                        )}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <div className="relative">
-                            <Search
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
-                            <Input
-                                placeholder="Search notifications..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
-
-                        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                            <TabsList>
-                                <TabsTrigger value="all">All</TabsTrigger>
-                                <TabsTrigger value="unread">Unread</TabsTrigger>
-                                <TabsTrigger value="alert">Alerts</TabsTrigger>
-                                <TabsTrigger value="appointment">Appointments</TabsTrigger>
-                                <TabsTrigger value="report">Reports</TabsTrigger>
-                            </TabsList>
-
-                            <TabsContent value={selectedTab} className="mt-4">
-                                <div className="space-y-3">
-                                    {filteredNotifications.length === 0 ? (
-                                        <div className="text-center py-8 text-muted-foreground">
-                                            No notifications found
-                                        </div>
-                                    ) : (
-                                        filteredNotifications.map((notification) => {
-                                            const Icon = getIcon(notification.type);
-                                            return (
-                                                <Card
-                                                    key={notification.id}
-                                                    className={`transition-colors ${
-                                                        notification.unread ? "bg-blue-50 border-blue-200" : ""
-                                                    }`}
-                                                >
-                                                    <CardContent className="p-4">
-                                                        <div className="flex items-start space-x-3">
-                                                            <Icon className="h-5 w-5 mt-1 text-blue-600"/>
-                                                            <div className="flex-1 space-y-2">
-                                                                <div className="flex items-center justify-between">
-                                                                    <h3 className="font-medium text-foreground">
-                                                                        {notification.title}
-                                                                    </h3>
-                                                                    <div className="flex items-center space-x-2">
-                                                                        <Badge
-                                                                            className={getPriorityColor(notification.priority)}>
-                                                                            {notification.priority}
-                                                                        </Badge>
-                                                                        {notification.unread && (
-                                                                            <div
-                                                                                className="h-2 w-2 bg-blue-600 rounded-full"/>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                                <p className="text-sm text-muted-foreground">
-                                                                    {notification.message}
-                                                                </p>
-                                                                <div className="flex items-center justify-between">
-                                                                    <p className="text-xs text-muted-foreground">
-                                                                        {formatTime(notification.time)}
-                                                                    </p>
-                                                                    <div className="flex space-x-1">
-                                                                        {notification.unread && (
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                size="sm"
-                                                                                onClick={() => markAsRead(notification.id)}
-                                                                            >
-                                                                                <Check className="h-4 w-4"/>
-                                                                            </Button>
-                                                                        )}
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            onClick={() => deleteNotification(notification.id)}
-                                                                        >
-                                                                            <Trash2 className="h-4 w-4"/>
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                <CardContent className="p-6">
+                    <div className="space-y-3">
+                        {filteredNotifications.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                No notifications found
+                            </div>
+                        ) : (
+                            filteredNotifications.map((notification) => {
+                                const Icon = getIcon(notification.type);
+                                return (
+                                    <Card
+                                        key={notification.id}
+                                        className={`transition-colors ${
+                                            notification.unread ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800" : ""
+                                        }`}
+                                    >
+                                        <CardContent className="p-4">
+                                            <div className="flex items-start space-x-3">
+                                                <Icon className="h-5 w-5 mt-1 text-blue-600 dark:text-blue-400"/>
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <h3 className="font-medium text-foreground">
+                                                            {notification.title}
+                                                        </h3>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Badge
+                                                                className={getPriorityColor(notification.priority)}>
+                                                                {notification.priority}
+                                                            </Badge>
+                                                            {notification.unread && (
+                                                                <div
+                                                                    className="h-2 w-2 bg-blue-600 dark:bg-blue-400 rounded-full"/>
+                                                            )}
                                                         </div>
-                                                    </CardContent>
-                                                </Card>
-                                            );
-                                        })
-                                    )}
-                                </div>
-                            </TabsContent>
-                        </Tabs>
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {notification.message}
+                                                    </p>
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {formatTime(notification.time)}
+                                                        </p>
+                                                        <div className="flex space-x-1">
+                                                            {notification.unread && (
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => markAsRead(notification.id)}
+                                                                >
+                                                                    <Check className="h-4 w-4"/>
+                                                                </Button>
+                                                            )}
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => deleteNotification(notification.id)}
+                                                            >
+                                                                <Trash2 className="h-4 w-4"/>
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })
+                        )}
                     </div>
                 </CardContent>
             </Card>
