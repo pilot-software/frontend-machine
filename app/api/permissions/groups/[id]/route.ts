@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://localhost:8080';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
     const authHeader = request.headers.get('authorization');
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${params.id}`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${id}`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader || '',
@@ -32,12 +33,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
     const authHeader = request.headers.get('authorization');
     const body = await request.json();
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${params.id}`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': authHeader || '',
@@ -64,11 +66,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
     const authHeader = request.headers.get('authorization');
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${params.id}`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': authHeader || '',

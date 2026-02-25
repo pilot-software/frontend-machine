@@ -11,6 +11,7 @@ import {Textarea} from '@/components/ui/textarea';
 import {Switch} from '@/components/ui/switch';
 import {ArrowLeft, Save, User, Mail, Phone, Lock, Briefcase, Building2, MapPin, Calendar, Shield, UserCircle2, CheckCircle2} from 'lucide-react';
 import {api} from '@/lib/api';
+import {departmentService, ApiDepartment} from '@/lib/services/department';
 
 const ROLES = [
   { value: 'ADMIN', label: 'Administrator', icon: Shield, color: 'text-purple-600' },
@@ -21,11 +22,11 @@ const ROLES = [
   { value: 'TECHNICIAN', label: 'Technician', icon: Briefcase, color: 'text-teal-600' },
   { value: 'FINANCE', label: 'Finance', icon: Briefcase, color: 'text-indigo-600' }
 ];
-const DEPARTMENTS = ['Emergency', 'Cardiology', 'Pediatrics', 'Surgery', 'Orthopedics', 'Neurology', 'Radiology', 'Laboratory', 'Pharmacy', 'General'];
 const GENDERS = ['Male', 'Female', 'Other'];
 
 export default function CreateUserPage() {
     const router = useRouter();
+    const [departments, setDepartments] = useState<ApiDepartment[]>([]);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -48,11 +49,27 @@ export default function CreateUserPage() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    React.useEffect(() => {
+        const loadDepartments = async () => {
+            try {
+                const data = await departmentService.getDepartments();
+                setDepartments(data);
+            } catch (error) {
+                console.error('Failed to load departments:', error);
+            }
+        };
+        loadDepartments();
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await api.post('/api/users', formData);
+            const payload = {
+                ...formData,
+                department: { id: formData.department }
+            };
+            await api.post('/api/users', payload);
             router.push('/users');
         } catch (error) {
             console.error('Failed to create user:', error);
@@ -176,7 +193,7 @@ export default function CreateUserPage() {
                                 </Label>
                                 <Select value={formData.department} onValueChange={(value) => setFormData({...formData, department: value})} required>
                                     <SelectTrigger><SelectValue placeholder="Select department"/></SelectTrigger>
-                                    <SelectContent>{DEPARTMENTS.map(dept => <SelectItem key={dept} value={dept}>{dept}</SelectItem>)}</SelectContent>
+                                    <SelectContent>{departments.map(dept => <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>)}</SelectContent>
                                 </Select>
                             </div>
                         </div>

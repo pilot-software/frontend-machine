@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://localhost:8080';
 
-export async function POST(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function POST(request: NextRequest, context: { params: Promise<{ userId: string }> }) {
   try {
+    const { userId } = await context.params;
     const authHeader = request.headers.get('authorization');
     const body = await request.json();
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/users/${params.userId}/groups`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/users/${userId}/groups`, {
       method: 'POST',
       headers: {
         'Authorization': authHeader || '',

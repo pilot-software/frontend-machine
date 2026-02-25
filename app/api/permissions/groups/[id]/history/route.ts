@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PERMISSION_SERVICE_URL = process.env.PERMISSION_SERVICE_URL || 'http://localhost:8080';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
     const authHeader = request.headers.get('authorization');
     
-    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${params.id}/history`, {
+    const response = await fetch(`${PERMISSION_SERVICE_URL}/api/permissions/groups/${id}/history`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader || '',

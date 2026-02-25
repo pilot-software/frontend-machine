@@ -18,6 +18,7 @@ import {
   AlertTriangle, Clock, Filter, Download, Upload, Palette, Bell, Database, Lock, User
 } from 'lucide-react';
 import { StatsCard } from '@/components/ui/stats-card';
+import { EnterprisePageHeader } from '@/components/shared/EnterprisePageHeader';
 import { permissionService } from '@/lib/services/permission';
 import { useAuth } from '@/components/providers/AuthContext';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
@@ -143,7 +144,7 @@ export default function PermissionsPage() {
       });
       if (response.ok) {
         const data = await response.json();
-        setPermissionCatalog(data);
+        // Data is already in Redux store via fetchOrganizationPermissions
       }
     } catch (error) {
       console.error('Failed to load permission catalog:', error);
@@ -286,8 +287,9 @@ export default function PermissionsPage() {
       // Map permission codes to organization permission IDs
       const orgPermissionIds = newGroup.permissions.map(permCode => {
         const orgPerm = organizationPermissions.find(p => p.permissionCode === permCode);
-        console.log(`Mapping ${permCode} to ID:`, orgPerm?.orgPermissionId);
-        return orgPerm?.orgPermissionId;
+        const id = (orgPerm as any)?.id || (orgPerm as any)?.orgPermissionId;
+        console.log(`Mapping ${permCode} to ID:`, id);
+        return id;
       }).filter(id => id !== undefined);
 
       console.log('Final org permission IDs:', orgPermissionIds);
@@ -448,7 +450,7 @@ export default function PermissionsPage() {
   const getFilteredCatalogPermissions = () => {
     if (catalogFilter === 'assigned') {
       return allCatalogPermissions.filter(catalogPerm => 
-        organizationPermissions.find(orgPerm => orgPerm.rootPermissionId === catalogPerm.rootPermissionId)
+        organizationPermissions.find(orgPerm => (orgPerm as any).rootPermissionId === catalogPerm.rootPermissionId)
       );
     } else if (catalogFilter === 'unassigned') {
       return unassignedPermissions;
@@ -457,7 +459,7 @@ export default function PermissionsPage() {
   };
 
   const filteredCatalogPermissions = getFilteredCatalogPermissions();
-  const groupedFilteredCatalogPermissions = filteredCatalogPermissions.reduce((acc, perm) => {
+  const groupedFilteredCatalogPermissions = filteredCatalogPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
@@ -466,10 +468,10 @@ export default function PermissionsPage() {
 
   // Get unassigned permissions for catalog
   const unassignedPermissions = allCatalogPermissions.filter(catalogPerm => 
-    !organizationPermissions.find(orgPerm => orgPerm.rootPermissionId === catalogPerm.rootPermissionId)
+    !organizationPermissions.find(orgPerm => (orgPerm as any).rootPermissionId === catalogPerm.rootPermissionId)
   );
 
-  const groupedUnassignedPermissions = unassignedPermissions.reduce((acc, perm) => {
+  const groupedUnassignedPermissions = unassignedPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
@@ -485,19 +487,19 @@ export default function PermissionsPage() {
     g.groupName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const groupedPermissions = organizationPermissions.reduce((acc, perm) => {
+  const groupedPermissions = organizationPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
     return acc;
-  }, {} as Record<string, OrganizationPermission[]>);
+  }, {} as Record<string, any[]>);
 
-  const groupedCatalogPermissions = organizationPermissions.reduce((acc, perm) => {
+  const groupedCatalogPermissions = organizationPermissions.reduce((acc: Record<string, any[]>, perm) => {
     const category = perm.permissionCode.split('_')[0] || 'GENERAL';
     if (!acc[category]) acc[category] = [];
     acc[category].push(perm);
     return acc;
-  }, {} as Record<string, OrganizationPermission[]>);
+  }, {} as Record<string, any[]>);
 
   const sections = [
     { id: "overview" as PermissionSection, label: "Overview", icon: Eye },
@@ -510,42 +512,47 @@ export default function PermissionsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Permissions Management</h2>
-          <p className="text-muted-foreground mt-2">Manage system permissions, roles, and user access control</p>
-        </div>
-        <Button onClick={() => setShowCreateGroup(true)} size="lg">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Group
-        </Button>
-      </div>
+      <EnterprisePageHeader
+        icon={Shield}
+        title="Permissions Management"
+        description="Manage system permissions, roles, and user access control"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Permissions" },
+        ]}
+        actions={
+          <Button onClick={() => setShowCreateGroup(true)} size="lg">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Group
+          </Button>
+        }
+      />
 
       {/* Horizontal Tabs */}
-      <div className="border-b border-border bg-card rounded-lg">
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide p-1">
-          {sections.map((section) => {
-            const Icon = section.icon;
-            return (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-md transition-all whitespace-nowrap text-sm font-medium ${
-                  activeSection === section.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{section.label}</span>
-              </button>
-            );
-          })}
+      <div className="w-full">
+        <div className="border-b -mx-6 px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${
+                    activeSection === section.id
+                      ? "border-primary text-primary font-medium"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{section.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div>
+        <div className="pt-6">
         {/* Overview */}
         {activeSection === "overview" && (
           <div className="space-y-6">
@@ -709,13 +716,13 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+                <div className="relative w-full sm:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search permissions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9"
                   />
                 </div>
                 <Select value={catalogFilter} onValueChange={(value: 'all' | 'assigned' | 'unassigned') => setCatalogFilter(value)}>
@@ -735,39 +742,31 @@ export default function PermissionsPage() {
                   <div key={category} className="space-y-3">
                     <h4 className="font-medium text-sm">{category.replace('_', ' ')}</h4>
                     <div className="space-y-2">
-                      {permissions.filter(p => 
+                      {(permissions as any[]).filter(p => 
                         p.permissionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         p.permissionCode.toLowerCase().includes(searchTerm.toLowerCase())
-                      ).map((permission, index) => {
-                        const isAssigned = organizationPermissions.find(op => op.rootPermissionId === permission.rootPermissionId);
-                        return (
-                          <div key={`${category}-${permission.rootPermissionId || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{permission.permissionName}</p>
-                              <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <Badge variant={isAssigned ? "default" : "outline"}>
-                                {isAssigned ? "Assigned" : "Available"}
-                              </Badge>
-                              {!isAssigned && (
-                                <Button 
-                                  variant="default" 
-                                  size="sm"
-                                  onClick={() => {
-                                    console.log('Full permission object:', JSON.stringify(permission, null, 2));
-                                    console.log('rootPermissionId:', permission.rootPermissionId);
-                                    console.log('typeof rootPermissionId:', typeof permission.rootPermissionId);
-                                    assignPermissionToOrg(permission.rootPermissionId);
-                                  }}
-                                >
-                                  Assign
-                                </Button>
-                              )}
-                            </div>
+                      ).map((permission, index) => (
+                        <div key={`${category}-${(permission as any).rootPermissionId || permission.permissionCode || index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{permission.permissionName}</p>
+                            <p className="text-xs text-muted-foreground">{permission.permissionCode}</p>
                           </div>
-                        );
-                      })}
+                          <div className="flex gap-2">
+                            <Badge variant={organizationPermissions.find(op => (op as any).rootPermissionId === (permission as any).rootPermissionId) ? "default" : "outline"}>
+                              {organizationPermissions.find(op => (op as any).rootPermissionId === (permission as any).rootPermissionId) ? "Assigned" : "Available"}
+                            </Badge>
+                            {!organizationPermissions.find(op => (op as any).rootPermissionId === (permission as any).rootPermissionId) && (
+                              <Button 
+                                variant="default" 
+                                size="sm"
+                                onClick={() => assignPermissionToOrg((permission as any).rootPermissionId)}
+                              >
+                                Assign
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -788,13 +787,13 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+                <div className="relative w-full sm:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search groups..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9"
                   />
                 </div>
                 <Button onClick={() => setShowCreateGroup(true)} className="w-full sm:w-auto">
@@ -832,7 +831,7 @@ export default function PermissionsPage() {
                       <p className="text-xs font-medium text-muted-foreground mb-2">Permissions:</p>
                       <div className="flex flex-wrap gap-1">
                         {group.permissions && group.permissions.length > 0 ? (
-                          group.permissions.slice(0, 3).map((permission, index) => {
+                          group.permissions.slice(0, 3).map((permission: any, index) => {
                             // Handle both string and object formats
                             const permCode = typeof permission === 'string' ? permission : permission.permissionCode;
                             const permName = typeof permission === 'string' 
@@ -984,13 +983,13 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1">
+                <div className="relative w-full sm:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search audit logs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -1053,13 +1052,13 @@ export default function PermissionsPage() {
               <CardDescription>Manage permissions assigned to your organization and their status</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="relative">
+              <div className="relative w-full sm:w-96">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search permissions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-9"
                 />
               </div>
 
@@ -1098,9 +1097,8 @@ export default function PermissionsPage() {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
-
-      {/* Create Group Modal */}
       <Dialog open={showCreateGroup} onOpenChange={setShowCreateGroup}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -1137,7 +1135,6 @@ export default function PermissionsPage() {
                         <Checkbox
                           id={`category-${category}`}
                           checked={permissions.length > 0 && permissions.every(p => newGroup.permissions.includes(p.permissionCode))}
-                          indeterminate={permissions.some(p => newGroup.permissions.includes(p.permissionCode)) && !permissions.every(p => newGroup.permissions.includes(p.permissionCode))}
                           onCheckedChange={(checked) => {
                             const categoryPermissionCodes = permissions.map(p => p.permissionCode);
                             if (checked) {

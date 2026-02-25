@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import { Activity, AlertTriangle, Droplets, Eye, Heart, Plus, Stethoscope, TestTube, Thermometer, TrendingUp, TrendingDown, FileText, Calendar, User, Clock, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -145,45 +146,66 @@ export function ClinicalInterface() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold">Clinical Interface</h2>
-          <p className="text-muted-foreground mt-1">Patient clinical data, vitals, and medical records</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsOrderLabOpen(true)}><TestTube className="h-4 w-4 mr-2" />Order Labs</Button>
-          <Button size="sm" onClick={() => setIsNewAssessmentOpen(true)}><Plus className="h-4 w-4 mr-2" />New Assessment</Button>
-        </div>
-      </div>
+      <EnterprisePageHeader
+        icon={Stethoscope}
+        title="Clinical Interface"
+        description="Patient clinical data, vitals, and medical records"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/en/dashboard" },
+          { label: "Clinical" },
+        ]}
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setIsOrderLabOpen(true)}><TestTube className="h-4 w-4 mr-2" />Order Labs</Button>
+            <Button size="sm" onClick={() => setIsNewAssessmentOpen(true)}><Plus className="h-4 w-4 mr-2" />New Assessment</Button>
+          </div>
+        }
+      />
 
       <StatsCardGrid>
-        {stats.map((stat, idx) => (
-          <StatsCard key={idx} {...stat} />
-        ))}
+        {stats.map((stat, idx) => {
+          let metricsData = [
+            { label: "Admitted", value: "45" },
+            { label: "Discharged", value: "12" },
+          ];
+          if (idx === 1) metricsData = [{ label: "ICU", value: "3" }, { label: "ER", value: "5" }];
+          if (idx === 2) metricsData = [{ label: "Urgent", value: "8" }, { label: "Routine", value: "15" }];
+          if (idx === 3) metricsData = [{ label: "Completed", value: "8" }, { label: "Scheduled", value: "4" }];
+          
+          return (
+            <StatsCard key={idx} {...stat} metrics={metricsData} />
+          );
+        })}
       </StatsCardGrid>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="hidden md:block">
-          <TabsList>
-            <TabsTrigger value="vitals">Vital Signs</TabsTrigger>
-            <TabsTrigger value="labs">Lab Results</TabsTrigger>
-            <TabsTrigger value="procedures">Procedures</TabsTrigger>
-            <TabsTrigger value="assessment">Assessment</TabsTrigger>
-          </TabsList>
-        </div>
-        <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="vitals">Vital Signs</SelectItem>
-              <SelectItem value="labs">Lab Results</SelectItem>
-              <SelectItem value="procedures">Procedures</SelectItem>
-              <SelectItem value="assessment">Assessment</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="w-full">
+        <div className="border-b -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            <button onClick={() => setActiveTab('vitals')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'vitals' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <Activity className="h-4 w-4" />
+              <span className="hidden sm:inline">Vital Signs</span>
+              <span className="sm:hidden">Vitals</span>
+            </button>
+            <button onClick={() => setActiveTab('labs')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'labs' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <TestTube className="h-4 w-4" />
+              <span className="hidden sm:inline">Lab Results</span>
+              <span className="sm:hidden">Labs</span>
+            </button>
+            <button onClick={() => setActiveTab('procedures')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'procedures' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <Stethoscope className="h-4 w-4" />
+              <span className="hidden sm:inline">Procedures</span>
+              <span className="sm:hidden">Proc</span>
+            </button>
+            <button onClick={() => setActiveTab('assessment')} className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 transition-colors whitespace-nowrap text-sm ${activeTab === 'assessment' ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'}`}>
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Assessment</span>
+              <span className="sm:hidden">Assess</span>
+            </button>
+          </div>
         </div>
 
-        <TabsContent value="vitals" className="space-y-6">
+        <div className={activeTab === 'vitals' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -290,9 +312,10 @@ export function ClinicalInterface() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="labs" className="space-y-6">
+        <div className={activeTab === 'labs' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -360,9 +383,10 @@ export function ClinicalInterface() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="procedures" className="space-y-6">
+        <div className={activeTab === 'procedures' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -428,9 +452,10 @@ export function ClinicalInterface() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="assessment">
+        <div className={activeTab === 'assessment' ? 'space-y-6' : 'hidden'}>
+          <div className="pt-6" />
           <Card>
             <CardHeader>
               <CardTitle>Clinical Assessment</CardTitle>
@@ -444,8 +469,8 @@ export function ClinicalInterface() {
               <Button><FileText className="h-4 w-4 mr-2" />Save Assessment</Button>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
 
       <DetailModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} item={selectedItem} type={modalType} />
       <OrderLabModal isOpen={isOrderLabOpen} onClose={() => setIsOrderLabOpen(false)} />

@@ -46,7 +46,9 @@ export const handleApiResponse = async (response: Response) => {
     if (response.status === 401) {
         if (typeof window !== 'undefined') {
             localStorage.removeItem('auth_token');
-            window.location.href = '/login';
+            const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(\/|$)/);
+            const localePrefix = localeMatch ? `/${localeMatch[1]}` : '/en';
+            window.location.href = `${localePrefix}/login`;
         }
         throw new Error('Authentication required');
     }

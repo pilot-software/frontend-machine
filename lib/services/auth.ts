@@ -12,6 +12,25 @@ export interface LoginResponse {
     organizationId?: string;
 }
 
+export interface ForgotPasswordRequest {
+    email: string;
+    organizationId: string;
+}
+
+export interface ForgotPasswordResponse {
+    token: string;
+}
+
+export interface ResetPasswordRequest {
+    token: string;
+    newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+    success: boolean;
+    message?: string;
+}
+
 export class AuthService {
     async login(credentials: LoginRequest): Promise<LoginResponse> {
         const baseUrl = await this.getBaseUrl('/api/auth/login');
@@ -33,6 +52,28 @@ export class AuthService {
                 ...(token && { Authorization: `Bearer ${token}` })
             }
         });
+        return response.json();
+    }
+
+    async forgotPassword(email: string, organizationId: string): Promise<ForgotPasswordResponse> {
+        const baseUrl = await this.getBaseUrl('/api/auth/forgot-password');
+        const response = await fetch(`${baseUrl}/api/auth/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, organizationId })
+        });
+        if (!response.ok) throw new Error('Failed to send reset link');
+        return response.json();
+    }
+
+    async confirmResetPassword(token: string, newPassword: string): Promise<ResetPasswordResponse> {
+        const baseUrl = await this.getBaseUrl('/api/auth/reset-password');
+        const response = await fetch(`${baseUrl}/api/auth/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, newPassword })
+        });
+        if (!response.ok) throw new Error('Failed to reset password');
         return response.json();
     }
 

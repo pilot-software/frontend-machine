@@ -3,7 +3,7 @@
 import { useAuth } from "@/components/providers/AuthContext";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@/lib/constants";
+import { useLocale } from "next-intl";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,10 +13,11 @@ interface AuthGuardProps {
 export function AuthGuard({ children, requiredPermissions }: AuthGuardProps) {
   const { user, isLoading, hasAnyPermission } = useAuth();
   const router = useRouter();
+  const locale = useLocale();
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push(ROUTES.LOGIN);
+      router.push(`/${locale}/login`);
       return;
     }
 
@@ -26,11 +27,11 @@ export function AuthGuard({ children, requiredPermissions }: AuthGuardProps) {
       
       if (!hasAnyPermission(requiredPermissions)) {
         console.log("Access denied: insufficient permissions");
-        router.push(ROUTES.DASHBOARD);
+        router.push(`/${locale}/dashboard`);
         return;
       }
     }
-  }, [user, isLoading, requiredPermissions, hasAnyPermission, router]);
+  }, [user, isLoading, requiredPermissions, hasAnyPermission, router, locale]);
 
   if (isLoading) {
     return (

@@ -339,11 +339,11 @@ export function AppointmentSystemModern() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      scheduled: "bg-blue-500/10 text-blue-700",
-      confirmed: "bg-green-500/10 text-green-700",
-      "in-progress": "bg-orange-500/10 text-orange-700",
-      completed: "bg-emerald-500/10 text-emerald-700",
-      cancelled: "bg-destructive/10 text-destructive",
+      scheduled: "bg-blue-500/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400",
+      confirmed: "bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-400",
+      "in-progress": "bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400",
+      completed: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400",
+      cancelled: "bg-destructive/10 text-destructive dark:bg-red-500/20 dark:text-red-400",
     };
     return colors[status] || "bg-muted text-muted-foreground";
   };
@@ -428,24 +428,40 @@ export function AppointmentSystemModern() {
           value={stats.total}
           icon={CalendarIcon}
           variant="primary"
+          metrics={[
+            { label: "Confirmed", value: stats.total - stats.pending },
+            { label: "Pending", value: stats.pending },
+          ]}
         />
         <EnterpriseStatsCard
           title={t("completed")}
           value={stats.completed}
           icon={CheckCircle2}
           variant="success"
+          metrics={[
+            { label: "Success Rate", value: `${Math.round((stats.completed / stats.total) * 100)}%` },
+            { label: "Avg Duration", value: "45 min" },
+          ]}
         />
         <EnterpriseStatsCard
           title={t("inProgress")}
           value={stats.inProgress}
           icon={Activity}
           variant="warning"
+          metrics={[
+            { label: "Avg Wait", value: "12 min" },
+            { label: "Next", value: "2:30 PM" },
+          ]}
         />
         <EnterpriseStatsCard
           title={t("pending")}
           value={stats.pending}
           icon={Clock}
           variant="default"
+          metrics={[
+            { label: "Urgent", value: "3" },
+            { label: "Scheduled", value: stats.pending - 3 },
+          ]}
         />
       </div>
 
@@ -623,11 +639,7 @@ export function AppointmentSystemModern() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => {
-                            setModalMode("edit");
-                            setSelectedAppointment(apt);
-                            setIsModalOpen(true);
-                          }}
+                          onClick={() => router.push(`/appointments/add?id=${apt.id}`)}
                           disabled={isCancelled}
                         >
                           <Edit className="h-4 w-4" />
@@ -933,6 +945,102 @@ export function AppointmentSystemModern() {
               Delete
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto dark:bg-[#262626]">
+          <DialogHeader>
+            <DialogTitle>Appointment Details</DialogTitle>
+          </DialogHeader>
+          {selectedAppointment && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Appointment ID</label>
+                  <p className="text-sm font-mono">{selectedAppointment.id}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Status</label>
+                  <p className="text-sm">
+                    <Badge className={getStatusColor(selectedAppointment.status)}>
+                      {selectedAppointment.status}
+                    </Badge>
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Patient Name</label>
+                  <p className="text-sm">{selectedAppointment.patientName}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Patient Phone</label>
+                  <p className="text-sm font-mono">{selectedAppointment.patientPhone || '-'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Doctor</label>
+                  <p className="text-sm">{selectedAppointment.doctorName}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Department</label>
+                  <p className="text-sm">{selectedAppointment.department || '-'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Date</label>
+                  <p className="text-sm">{format(selectedAppointment.date, "EEEE, MMMM d, yyyy")}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Time</label>
+                  <p className="text-sm">{selectedAppointment.time} ({selectedAppointment.duration} minutes)</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Type</label>
+                  <p className="text-sm">
+                    <Badge variant="outline">{selectedAppointment.type}</Badge>
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Priority</label>
+                  <p className="text-sm">
+                    <Badge className={getPriorityColor(selectedAppointment.priority)}>
+                      {selectedAppointment.priority}
+                    </Badge>
+                  </p>
+                </div>
+                {selectedAppointment.roomNumber && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Room Number</label>
+                    <p className="text-sm">{selectedAppointment.roomNumber}</p>
+                  </div>
+                )}
+              </div>
+              {selectedAppointment.reason && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Reason for Visit</label>
+                  <p className="text-sm mt-1">{selectedAppointment.reason}</p>
+                </div>
+              )}
+              {selectedAppointment.notes && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Additional Notes</label>
+                  <pre className="text-xs bg-muted dark:bg-[#1a1a1a] p-3 rounded mt-1 overflow-auto">{selectedAppointment.notes}</pre>
+                </div>
+              )}
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                  Close
+                </Button>
+                {selectedAppointment.status !== 'cancelled' && (
+                  <Button onClick={() => {
+                    setIsModalOpen(false);
+                    router.push(`/appointments/add?id=${selectedAppointment.id}`);
+                  }}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

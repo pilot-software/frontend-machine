@@ -1,4 +1,4 @@
-import {Permission} from '../services/permission';
+import { Permission } from '../services/permission';
 import {
     Activity,
     BarChart3,
@@ -30,16 +30,16 @@ export interface PermissionConfig {
 export class PermissionStrategy {
     static getMenuItems(userPermissions: Permission[]): MenuItem[] {
         if (!Array.isArray(userPermissions)) {
-            return [{icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'}];
+            return [{ icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW' }];
         }
 
         const permissionNames = userPermissions.map(p => p.name).filter(Boolean);
         const menuItems: MenuItem[] = [];
 
-        menuItems.push({icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW'});
+        menuItems.push({ icon: Activity, label: "dashboard", path: "/dashboard", permission: 'DASHBOARD_VIEW' });
 
         if (permissionNames.some(p => p.includes('_PATIENT'))) {
-            menuItems.push({icon: User, label: "patients", path: "/patients", permission: 'VIEW_PATIENT'});
+            menuItems.push({ icon: User, label: "patients", path: "/patients", permission: 'VIEW_PATIENT' });
         }
 
         if (permissionNames.some(p => p.includes('_APPOINTMENT'))) {
@@ -49,7 +49,7 @@ export class PermissionStrategy {
                 path: "/appointments",
                 permission: 'VIEW_APPOINTMENT'
             });
-            
+
             // Add availability management for doctors, admins, and receptionists
             if (permissionNames.some(p => p.includes('CREATE_APPOINTMENT') || p.includes('MANAGE_SCHEDULE'))) {
                 menuItems.push({
@@ -89,28 +89,28 @@ export class PermissionStrategy {
         }
 
         if (permissionNames.some(p => p.includes('_USER'))) {
-            menuItems.push({icon: Users, label: "userManagement", path: "/users", permission: 'VIEW_USER'});
+            menuItems.push({ icon: Users, label: "userManagement", path: "/users", permission: 'VIEW_USER' });
         }
 
         if (permissionNames.some(p => p.includes('_LAB'))) {
-            menuItems.push({icon: Bed, label: "bedManagement", path: "/beds", permission: 'VIEW_LAB_RESULTS'});
+            menuItems.push({ icon: Bed, label: "bedManagement", path: "/beds", permission: 'VIEW_LAB_RESULTS' });
         }
 
         // Admin-specific menu items
         if (permissionNames.includes('VIEW_ANALYTICS')) {
-            menuItems.push({icon: Activity, label: "analytics", path: "/analytics", permission: 'VIEW_ANALYTICS'});
+            menuItems.push({ icon: Activity, label: "analytics", path: "/analytics", permission: 'VIEW_ANALYTICS' });
         }
 
         if (permissionNames.includes('VIEW_SECURITY_LOGS')) {
-            menuItems.push({icon: Lock, label: "security", path: "/security", permission: 'VIEW_SECURITY_LOGS'});
+            menuItems.push({ icon: Lock, label: "systemLogs", path: "/system-logs", permission: 'VIEW_SECURITY_LOGS' });
         }
 
         if (permissionNames.includes('MANAGE_PERMISSIONS')) {
-            menuItems.push({icon: Shield, label: "permissions", path: "/permissions", permission: 'MANAGE_PERMISSIONS'});
+            menuItems.push({ icon: Shield, label: "permissions", path: "/permissions", permission: 'MANAGE_PERMISSIONS' });
         }
 
         if (permissionNames.includes('MANAGE_SETTINGS')) {
-            menuItems.push({icon: Settings, label: "settings", path: "/settings", permission: 'MANAGE_SETTINGS'});
+            menuItems.push({ icon: Settings, label: "settings", path: "/settings", permission: 'MANAGE_SETTINGS' });
         }
 
         return menuItems;

@@ -420,15 +420,15 @@ export default function AddPrescriptionPage() {
                       <Label className="text-xs font-medium">Dosage</Label>
                       <Input 
                         placeholder="500mg" 
-                        value={currentMedicine.dosage || ''}
-                        onChange={(e) => setCurrentMedicine({...currentMedicine, dosage: e.target.value})}
+                        value={(currentMedicine as SelectedMedicine).dosage || ''}
+                        onChange={(e) => setCurrentMedicine({...currentMedicine, dosage: e.target.value} as any)}
                       />
                     </div>
                     <div>
                       <Label className="text-xs font-medium">Frequency</Label>
                       <Select 
-                        value={currentMedicine.frequency}
-                        onValueChange={(v) => setCurrentMedicine({...currentMedicine, frequency: v})}
+                        value={(currentMedicine as SelectedMedicine).frequency || ''}
+                        onValueChange={(v) => setCurrentMedicine({...currentMedicine, frequency: v} as any)}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select" />
@@ -444,8 +444,8 @@ export default function AddPrescriptionPage() {
                       <Label className="text-xs font-medium">Duration</Label>
                       <Input 
                         placeholder="7 days" 
-                        value={currentMedicine.duration || ''}
-                        onChange={(e) => setCurrentMedicine({...currentMedicine, duration: e.target.value})}
+                        value={(currentMedicine as SelectedMedicine).duration || ''}
+                        onChange={(e) => setCurrentMedicine({...currentMedicine, duration: e.target.value} as any)}
                       />
                     </div>
                     <div>
@@ -453,8 +453,8 @@ export default function AddPrescriptionPage() {
                       <Input 
                         type="number" 
                         placeholder="30" 
-                        value={currentMedicine.quantity || ''}
-                        onChange={(e) => setCurrentMedicine({...currentMedicine, quantity: parseInt(e.target.value)})}
+                        value={(currentMedicine as SelectedMedicine).quantity || ''}
+                        onChange={(e) => setCurrentMedicine({...currentMedicine, quantity: parseInt(e.target.value)} as any)}
                       />
                     </div>
                   </div>
@@ -462,8 +462,8 @@ export default function AddPrescriptionPage() {
                     <Label className="text-xs font-medium">Special Instructions</Label>
                     <Textarea 
                       placeholder="Take after meals" 
-                      value={currentMedicine.instructions || ''}
-                      onChange={(e) => setCurrentMedicine({...currentMedicine, instructions: e.target.value})}
+                      value={(currentMedicine as SelectedMedicine).instructions || ''}
+                      onChange={(e) => setCurrentMedicine({...currentMedicine, instructions: e.target.value} as any)}
                     />
                   </div>
                   <Button onClick={saveMedicine} className="w-full">

@@ -150,7 +150,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                             {mode === 'billing' ? (
                                 <>
                                     <div>
-                                        <Label htmlFor="patient">Patient *</Label>
+                                        <Label htmlFor="patient">Patient <span className="text-black">*</span></Label>
                                         <Select
                                             value={billingData.patientId}
                                             onValueChange={(value) => handleBillingChange('patientId', value)}
@@ -171,7 +171,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="amount">Amount *</Label>
+                                            <Label htmlFor="amount">Amount <span className="text-black">*</span></Label>
                                             <Input
                                                 id="amount"
                                                 type="number"
@@ -202,7 +202,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="description">Description *</Label>
+                                        <Label htmlFor="description">Description <span className="text-black">*</span></Label>
                                         <Textarea
                                             id="description"
                                             value={billingData.description}
@@ -215,7 +215,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                                 <>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="billingId">Billing ID *</Label>
+                                            <Label htmlFor="billingId">Billing ID <span className="text-black">*</span></Label>
                                             <Input
                                                 id="billingId"
                                                 type="number"
@@ -226,7 +226,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="patient">Patient *</Label>
+                                            <Label htmlFor="patient">Patient <span className="text-black">*</span></Label>
                                             <Select
                                                 value={paymentData.patientId}
                                                 onValueChange={(value) => handlePaymentChange('patientId', value)}
@@ -248,7 +248,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="paymentAmount">Payment Amount *</Label>
+                                            <Label htmlFor="paymentAmount">Payment Amount <span className="text-black">*</span></Label>
                                             <Input
                                                 id="paymentAmount"
                                                 type="number"
@@ -259,7 +259,7 @@ export function BillingFormModal({isOpen, onClose, mode, patientId, billingId}: 
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="paymentMethod">Payment Method *</Label>
+                                            <Label htmlFor="paymentMethod">Payment Method <span className="text-black">*</span></Label>
                                             <Select
                                                 value={paymentData.paymentMethod}
                                                 onValueChange={(value) => handlePaymentChange('paymentMethod', value)}

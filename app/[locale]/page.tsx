@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { AuthProvider, useAuth } from "@/components/providers/AuthContext";
+import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 
@@ -24,9 +24,5 @@ function AuthFlowManager() {
 }
 
 export default function HomePage() {
-  return (
-    <AuthProvider>
-      <AuthFlowManager />
-    </AuthProvider>
-  );
+  return <AuthFlowManager />;
 }

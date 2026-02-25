@@ -7,6 +7,7 @@ import { patientService, ApiPatient } from "@/lib/services/patient";
 import { AuthGuard } from "@/components/shared/guards/AuthGuard";
 import { useAlert } from "@/components/AlertProvider";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { EnterprisePageHeader } from "@/components/shared/EnterprisePageHeader";
 import { ViewToggle } from "@/components/shared/ViewToggle";
 import { SearchFilter } from "@/components/shared/SearchFilter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -224,14 +225,17 @@ export default function BedManagementPage() {
       requiredPermissions={['VIEW_LAB_RESULTS', 'CREATE_LAB_ORDER', 'UPDATE_LAB_RESULTS']}
     >
       <div className="space-y-6">
-        <PageHeader
+        <EnterprisePageHeader
+          icon={Bed}
           title="Bed Management"
           description="Monitor and manage hospital bed availability"
-          action={
+          breadcrumbs={[
+            { label: "Dashboard", href: "/en/dashboard" },
+            { label: "Bed Management" },
+          ]}
+          actions={
             <div className="flex gap-2">
-              <Button
-                onClick={() => setIsAddBedOpen(true)}
-              >
+              <Button onClick={() => setIsAddBedOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Bed
               </Button>
