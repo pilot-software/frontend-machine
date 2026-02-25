@@ -72,7 +72,11 @@ export function ApiErrorFallback({error, resetError}: { error: Error; resetError
                     <h1 className="text-2xl font-bold text-red-600 mb-4">Authentication Required</h1>
                     <p className="text-gray-600 mb-4">Please log in to access this page.</p>
                     <button
-                        onClick={() => window.location.href = '/login'}
+                        onClick={() => {
+                            const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(\/|$)/);
+                            const localePrefix = localeMatch ? `/${localeMatch[1]}` : '/en';
+                            window.location.href = `${localePrefix}/login`;
+                        }}
                         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                         Go to Login

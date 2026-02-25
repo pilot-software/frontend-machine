@@ -176,7 +176,9 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         setPermissions([]);
         clearUserSession();
         if (typeof window !== "undefined") {
-            window.location.href = "/login";
+            const localeMatch = window.location.pathname.match(/^\/([a-z]{2})(\/|$)/);
+            const localePrefix = localeMatch ? `/${localeMatch[1]}` : '/en';
+            window.location.href = `${localePrefix}/login`;
         }
     };
 

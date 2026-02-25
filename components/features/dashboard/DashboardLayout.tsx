@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useFeatures, useText } from "@/lib/useFeatures";
 import { getBranding } from "@/lib/runtimeConfig";
@@ -67,6 +67,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const branding = getBranding();
   const router = useRouter();
   const pathname = usePathname();
+  const locale = useLocale();
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [scrollY, setScrollY] = useState(0);
@@ -104,9 +105,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [isResizing]);
 
   if (!user) {
-    router.replace(ROUTES.LOGIN);
+    router.replace(`/${locale}/login`);
     return null;
   }
+
+  const withLocale = (path: string) => `/${locale}${path}`;
 
   const menuItems = PermissionStrategy.getMenuItems(permissions);
 
@@ -153,7 +156,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               }`}
             onClick={() => {
-              router.push(item.path);
+              router.push(withLocale(item.path));
               setSidebarOpen(false);
             }}
           >
@@ -209,7 +212,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Sheet>
             )}
 
-            <div className="hidden md:flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(ROUTES.DASHBOARD)}>
+            <div className="hidden md:flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(withLocale(ROUTES.DASHBOARD))}>
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
                 <Stethoscope className="h-5 w-5 text-primary-foreground" />
               </div>
@@ -272,7 +275,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      router.push(ROUTES.SETTINGS);
+                      router.push(withLocale(ROUTES.SETTINGS));
                       setIsProfileOpen(false);
                     }}
                     className="flex-shrink-0 hover:bg-purple-100 dark:hover:bg-purple-900/30"
@@ -300,14 +303,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 {/* Menu Items */}
                 <div className="py-2">
                   <DropdownMenuItem onClick={() => {
-                    router.push(ROUTES.PROFILE);
+                    router.push(withLocale(ROUTES.PROFILE));
                     setIsProfileOpen(false);
                   }} className="hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
                     <User className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
                     {t("profile")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => {
-                    router.push(ROUTES.HELP);
+                    router.push(withLocale(ROUTES.HELP));
                     setIsProfileOpen(false);
                   }} className="hover:bg-green-100 dark:hover:bg-green-900/30 transition-all duration-200 cursor-pointer group mx-2 rounded">
                     <HelpCircle className="h-4 w-4 mr-2 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" />
@@ -386,7 +389,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Button
                       key={item.path}
                       variant="ghost"
-                      onClick={() => router.push(item.path)}
+                      onClick={() => router.push(withLocale(item.path))}
                       className={`w-full h-11 rounded-lg border-l-4 transition-all duration-200 ${
                         showText ? 'justify-start gap-3' : 'justify-center px-0'
                       } ${

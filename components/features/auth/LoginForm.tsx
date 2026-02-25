@@ -31,6 +31,7 @@ const floatingStyles = `
 `;
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,7 +65,6 @@ import {
   getBranding,
 } from "@/lib/runtimeConfig";
 import hospitalFlags from "@/config/hospital-flags.json";
-import { ROUTES } from "@/lib/constants";
 
 interface LoginFormProps {
   onForgotPassword: () => void;
@@ -90,6 +90,7 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       "Comprehensive patient care with advanced medical technology",
   });
   const router = useRouter();
+  const locale = useLocale();
 
   const handleConfigChange = (value: string) => {
     const configType = value as HospitalType;
@@ -131,9 +132,9 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
 
   useEffect(() => {
     if (user) {
-      router.replace(ROUTES.DASHBOARD);
+      router.replace(`/${locale}/dashboard`);
     }
-  }, [user, router]);
+  }, [user, router, locale]);
 
   if (user) {
     return null;

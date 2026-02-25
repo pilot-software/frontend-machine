@@ -1,5 +1,5 @@
 // Main component
-export { ClinicalInterfaceEnhanced } from './ClinicalInterfaceEnhanced';
+export { ClinicalInterface } from './ClinicalInterface';
 
 // Types
 export * from './types/clinical.types';
