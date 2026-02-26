@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {useTranslations} from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/components/providers/AuthContext';
 import { PermissionStrategy } from '@/lib/strategies/permission.strategy';
 import { useRouter } from 'next/navigation';
+import { DraggableQuickActions } from './DraggableQuickActions';
 import {
   Bed,
   Activity,
@@ -18,6 +19,9 @@ import {
   Pill,
   TestTube,
   UserPlus,
+  GripVertical,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 
 interface AdminDashboardWidgetsProps {
@@ -37,111 +41,167 @@ export function AdminDashboardWidgets({
   const t = useTranslations('common');
   const { permissions } = useAuth();
   const router = useRouter();
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [cardsOrder, setCardsOrder] = useState<string[]>([]);
+  const [cardSizes, setCardSizes] = useState<Record<string, number>>({});
+
   const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
   const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
   const erStatus = { waiting: 12, inTreatment: 8, avgWait: "18 min" };
   const staff = { doctors: 45, nurses: 120, technicians: 35, onDuty: 200 };
 
-  const handleQuickAction = (action: string) => {
-    if (action === "Add Patients" && onAddPatient) {
-      onAddPatient();
-      return;
+  useEffect(() => {
+    const saved = localStorage.getItem('cardsOrder');
+    if (saved) {
+      setCardsOrder(JSON.parse(saved));
+    } else {
+      setCardsOrder(['bedOccupancy', 'emergencyRoom', 'staffAvailability', 'financial', 'admissions', 'diagnostics', 'inventory']);
     }
-    if (action === "Schedule Appointments" && onAddAppointment) {
-      onAddAppointment();
-      return;
+    
+    const savedSizes = localStorage.getItem('cardSizes');
+    if (savedSizes) {
+      setCardSizes(JSON.parse(savedSizes));
     }
-    if (action === "New Prescriptions" && onAddPrescription) {
-      onAddPrescription();
-      return;
-    }
+  }, []);
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
-  return (
-    <div className="space-y-4">
-      {/* Quick Actions */}
-      {enabledWidgets.includes('quickActions') && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" />
-              {t('quickActions')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                className="flex-1 min-w-[90px] h-14 flex flex-col items-center justify-center gap-1 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-200 dark:hover:border-blue-800 transition-all"
-                onClick={onAddPatient}
-              >
-                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
-                  <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <span className="text-xs font-medium">{t('addPatient')}</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 min-w-[90px] h-14 flex flex-col items-center justify-center gap-1 hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-200 dark:hover:border-purple-800 transition-all"
-                onClick={onAddAppointment}
-              >
-                <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950 flex items-center justify-center">
-                  <Calendar className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                </div>
-                <span className="text-xs font-medium">{t('appointment')}</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 min-w-[90px] h-14 flex flex-col items-center justify-center gap-1 hover:bg-green-50 dark:hover:bg-green-950 hover:border-green-200 dark:hover:border-green-800 transition-all"
-                onClick={onAddPrescription}
-              >
-                <div className="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-950 flex items-center justify-center">
-                  <Pill className="h-4 w-4 text-green-600 dark:text-green-400" />
-                </div>
-                <span className="text-xs font-medium">{t('prescription')}</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 min-w-[90px] h-14 flex flex-col items-center justify-center gap-1 hover:bg-orange-50 dark:hover:bg-orange-950 hover:border-orange-200 dark:hover:border-orange-800 transition-all"
-                onClick={() => router.push('/en/clinical')}
-              >
-                <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950 flex items-center justify-center">
-                  <TestTube className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                </div>
-                <span className="text-xs font-medium">{t('labOrders')}</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 min-w-[90px] h-14 flex flex-col items-center justify-center gap-1 hover:bg-pink-50 dark:hover:bg-pink-950 hover:border-pink-200 dark:hover:border-pink-800 transition-all"
-                onClick={() => router.push('/en/reports')}
-              >
-                <div className="w-8 h-8 rounded-lg bg-pink-50 dark:bg-pink-950 flex items-center justify-center">
-                  <FileText className="h-4 w-4 text-pink-600 dark:text-pink-400" />
-                </div>
-                <span className="text-xs font-medium">{t('reports')}</span>
-              </Button>
-              {(PermissionStrategy.hasAnyPermission(permissions, ['BEDS_VIEW', 'BEDS_MANAGE', 'SYSTEM_HOSPITAL_SETTINGS', 'USERS_MANAGE_PERMISSIONS']) || 
-                permissions.some(p => p?.name?.includes('BED') || p?.name?.includes('BEDS'))) && (
-                <Button
-                  variant="outline"
-                  className="flex-1 min-w-[90px] h-14 flex flex-col items-center justify-center gap-1 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all"
-                  onClick={() => window.location.href = '/en/beds'}
-                >
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center">
-                    <Bed className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <span className="text-xs font-medium">{t('beds')}</span>
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+  const handleDragOver = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    setDragOverId(id);
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Bed Occupancy */}
-        {enabledWidgets.includes('bedOccupancy') && (
-          <Card>
+  const handleDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+    if (!draggedId || draggedId === targetId) {
+      setDraggedId(null);
+      setDragOverId(null);
+      return;
+    }
+
+    const draggedIndex = cardsOrder.indexOf(draggedId);
+    const targetIndex = cardsOrder.indexOf(targetId);
+
+    const newOrder = [...cardsOrder];
+    const [draggedItem] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedItem);
+
+    setCardsOrder(newOrder);
+    localStorage.setItem('cardsOrder', JSON.stringify(newOrder));
+
+    setDraggedId(null);
+    setDragOverId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedId(null);
+    setDragOverId(null);
+  };
+
+  const quickActions = [
+    {
+      id: 'addPatient',
+      label: t('addPatient'),
+      icon: <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
+      color: 'bg-blue-50 dark:bg-blue-950',
+      hoverColor: 'hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-200 dark:hover:border-blue-800',
+      onClick: onAddPatient || (() => {}),
+    },
+    {
+      id: 'appointment',
+      label: t('appointment'),
+      icon: <Calendar className="h-4 w-4 text-purple-600 dark:text-purple-400" />,
+      color: 'bg-purple-50 dark:bg-purple-950',
+      hoverColor: 'hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-200 dark:hover:border-purple-800',
+      onClick: onAddAppointment || (() => {}),
+    },
+    {
+      id: 'prescription',
+      label: t('prescription'),
+      icon: <Pill className="h-4 w-4 text-green-600 dark:text-green-400" />,
+      color: 'bg-green-50 dark:bg-green-950',
+      hoverColor: 'hover:bg-green-50 dark:hover:bg-green-950 hover:border-green-200 dark:hover:border-green-800',
+      onClick: onAddPrescription || (() => {}),
+    },
+    {
+      id: 'labOrders',
+      label: t('labOrders'),
+      icon: <TestTube className="h-4 w-4 text-orange-600 dark:text-orange-400" />,
+      color: 'bg-orange-50 dark:bg-orange-950',
+      hoverColor: 'hover:bg-orange-50 dark:hover:bg-orange-950 hover:border-orange-200 dark:hover:border-orange-800',
+      onClick: () => router.push('/en/clinical'),
+    },
+    {
+      id: 'reports',
+      label: t('reports'),
+      icon: <FileText className="h-4 w-4 text-pink-600 dark:text-pink-400" />,
+      color: 'bg-pink-50 dark:bg-pink-950',
+      hoverColor: 'hover:bg-pink-50 dark:hover:bg-pink-950 hover:border-pink-200 dark:hover:border-pink-800',
+      onClick: () => router.push('/en/reports'),
+    },
+    ...(PermissionStrategy.hasAnyPermission(permissions, ['BEDS_VIEW', 'BEDS_MANAGE', 'SYSTEM_HOSPITAL_SETTINGS', 'USERS_MANAGE_PERMISSIONS']) || 
+      permissions.some(p => p?.name?.includes('BED') || p?.name?.includes('BEDS'))
+      ? [{
+          id: 'beds',
+          label: t('beds'),
+          icon: <Bed className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />,
+          color: 'bg-indigo-50 dark:bg-indigo-950',
+          hoverColor: 'hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:border-indigo-200 dark:hover:border-indigo-800',
+          onClick: () => window.location.href = '/en/beds',
+        }]
+      : []),
+  ];
+
+  const toggleCardSize = (cardId: string) => {
+    const newSizes = { ...cardSizes };
+    newSizes[cardId] = (newSizes[cardId] || 1) === 1 ? 2 : 1;
+    setCardSizes(newSizes);
+    localStorage.setItem('cardSizes', JSON.stringify(newSizes));
+  };
+
+  const getCardColSpan = (cardId: string): string => {
+    const size = cardSizes[cardId] || 1;
+    return size === 2 ? 'md:col-span-2 lg:col-span-2' : 'md:col-span-1 lg:col-span-1';
+  };
+
+  const renderCard = (cardId: string) => {
+    const size = cardSizes[cardId] || 1;
+
+    return (
+      <div
+        key={cardId}
+        draggable
+        onDragStart={(e) => handleDragStart(e, cardId)}
+        onDragOver={(e) => handleDragOver(e, cardId)}
+        onDragLeave={() => setDragOverId(null)}
+        onDrop={(e) => handleDrop(e, cardId)}
+        onDragEnd={handleDragEnd}
+        className={`relative transition-all cursor-move group ${
+          draggedId === cardId ? 'opacity-50' : ''
+        } ${
+          dragOverId === cardId ? 'scale-105 ring-2 ring-primary' : ''
+        } ${getCardColSpan(cardId)}`}
+      >
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-1">
+          <button
+            onClick={() => toggleCardSize(cardId)}
+            className="p-1 hover:bg-muted rounded"
+          >
+            {size === 1 ? (
+              <Maximize2 className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Minimize2 className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+
+        {cardId === 'bedOccupancy' && (
+          <Card className="h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <Bed className="h-4 w-4 text-primary" />
@@ -177,9 +237,8 @@ export function AdminDashboardWidgets({
           </Card>
         )}
 
-        {/* Emergency Room Status */}
-        {enabledWidgets.includes('emergencyRoom') && (
-          <Card>
+        {cardId === 'emergencyRoom' && (
+          <Card className="h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
@@ -203,9 +262,8 @@ export function AdminDashboardWidgets({
           </Card>
         )}
 
-        {/* Staff Availability */}
-        {enabledWidgets.includes('staffAvailability') && (
-          <Card>
+        {cardId === 'staffAvailability' && (
+          <Card className="h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <UserCheck className="h-4 w-4 text-green-600 dark:text-green-400" />
@@ -235,9 +293,8 @@ export function AdminDashboardWidgets({
           </Card>
         )}
 
-        {/* Financial Metrics */}
-        {enabledWidgets.includes('financial') && (
-          <Card>
+        {cardId === 'financial' && (
+          <Card className="h-full">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -266,104 +323,117 @@ export function AdminDashboardWidgets({
             </CardContent>
           </Card>
         )}
+
+        {cardId === 'admissions' && (
+          <Card className="h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                {t('patientAdmissions')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('todayAdmissions')}</span>
+                <span className="font-semibold text-blue-600">24</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('weeklyAdmissions')}</span>
+                <span className="font-semibold">156</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('avgLengthOfStay')}</span>
+                <span className="font-semibold">4.2 {t('days')}</span>
+              </div>
+              <div className="pt-3 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">{t('readmissionRate')}</span>
+                  <Badge variant="secondary">8.5%</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {cardId === 'diagnostics' && (
+          <Card className="h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                {t('labDiagnostics')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('pendingTests')}</span>
+                <Badge variant="destructive">34</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('completedToday')}</span>
+                <span className="font-semibold text-green-600">89</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('avgTurnaroundTime')}</span>
+                <span className="font-semibold">2.5 {t('hours')}</span>
+              </div>
+              <div className="pt-3 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">{t('abnormalResults')}</span>
+                  <Badge>12</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {cardId === 'inventory' && (
+          <Card className="h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Pill className="h-4 w-4 text-green-600 dark:text-green-400" />
+                {t('medicationInventory')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('lowStockItems')}</span>
+                <Badge variant="destructive">7</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('outOfStock')}</span>
+                <Badge variant="secondary">2</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">{t('totalMedicines')}</span>
+                <span className="font-semibold">1,245</span>
+              </div>
+              <div className="pt-3 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">{t('inventoryValue')}</span>
+                  <span className="font-bold text-emerald-600">$234,500</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
+    );
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Patient Admissions */}
-      {enabledWidgets.includes('admissions') && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              {t('patientAdmissions')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('todayAdmissions')}</span>
-              <span className="font-semibold text-blue-600">24</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('weeklyAdmissions')}</span>
-              <span className="font-semibold">156</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('avgLengthOfStay')}</span>
-              <span className="font-semibold">4.2 {t('days')}</span>
-            </div>
-            <div className="pt-3 border-t">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{t('readmissionRate')}</span>
-                <Badge variant="secondary">8.5%</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+  const sortedCards = cardsOrder.filter((id) => enabledWidgets.includes(id));
+
+  return (
+    <div className="space-y-4">
+      {/* Quick Actions */}
+      {enabledWidgets.includes('quickActions') && (
+        <DraggableQuickActions
+          actions={quickActions}
+          onReorder={() => {}}
+        />
       )}
 
-      {/* Lab & Diagnostics */}
-      {enabledWidgets.includes('diagnostics') && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <TestTube className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              {t('labDiagnostics')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('pendingTests')}</span>
-              <Badge variant="destructive">34</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('completedToday')}</span>
-              <span className="font-semibold text-green-600">89</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('avgTurnaroundTime')}</span>
-              <span className="font-semibold">2.5 {t('hours')}</span>
-            </div>
-            <div className="pt-3 border-t">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{t('abnormalResults')}</span>
-                <Badge>12</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Medication Inventory */}
-      {enabledWidgets.includes('inventory') && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Pill className="h-4 w-4 text-green-600 dark:text-green-400" />
-              {t('medicationInventory')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('lowStockItems')}</span>
-              <Badge variant="destructive">7</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('outOfStock')}</span>
-              <Badge variant="secondary">2</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm">{t('totalMedicines')}</span>
-              <span className="font-semibold">1,245</span>
-            </div>
-            <div className="pt-3 border-t">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{t('inventoryValue')}</span>
-                <span className="font-bold text-emerald-600">$234,500</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sortedCards.map((cardId) => renderCard(cardId))}
       </div>
     </div>
   );
