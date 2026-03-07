@@ -294,7 +294,11 @@ export function PatientDataTable({
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 hover:bg-muted"
-                title="Prescriptions"
+                onClick={() => {
+                  const locale = window.location.pathname.split("/")[1] || "en";
+                  window.location.href = `/${locale}/prescriptions/add?patientId=${patient.id}`;
+                }}
+                title="Create Prescription"
               >
                 <Pill className="h-4 w-4 text-purple-600" />
               </Button>
