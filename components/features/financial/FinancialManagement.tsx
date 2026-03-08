@@ -142,19 +142,24 @@ export function FinancialManagement() {
     statusCode,
     loading,
   } = useApi();
+  const {
+    execute: fetchFinanceOverview,
+    data: financeData,
+  } = useApi();
   const hasFetched = useRef(false);
 
   useEffect(() => {
     if (!hasFetched.current && !statusCode) {
       hasFetched.current = true;
       fetchBilling(() => billingService.getBillingRecords());
+      fetchFinanceOverview(() => billingService.getFinanceOverview());
     }
-  }, [fetchBilling, statusCode]);
+  }, [fetchBilling, fetchFinanceOverview, statusCode]);
 
   const financialStats = [
     {
       label: "Total Revenue",
-      value: "$45,230",
+      value: `$${(financeData?.totalRevenue || 0).toLocaleString()}`,
       change: "+12%",
       icon: DollarSign,
       color: "text-green-600",
@@ -162,7 +167,7 @@ export function FinancialManagement() {
     },
     {
       label: "Outstanding Bills",
-      value: "$12,450",
+      value: `$${(financeData?.totalPending || 0).toLocaleString()}`,
       change: "-5%",
       icon: FileText,
       color: "text-orange-600",
@@ -170,16 +175,16 @@ export function FinancialManagement() {
     },
     {
       label: "Collected Today",
-      value: "$3,200",
+      value: `$${(financeData?.totalCollected || 0).toLocaleString()}`,
       change: "+18%",
       icon: CreditCard,
       color: "text-blue-600",
       trend: "up",
     },
     {
-      label: "Insurance Claims",
-      value: "$28,900",
-      change: "+8%",
+      label: "Total Bills",
+      value: `${financeData?.totalBills || 0}`,
+      change: `${financeData?.paidBills || 0} paid`,
       icon: Receipt,
       color: "text-purple-600",
       trend: "up",
@@ -234,121 +239,20 @@ export function FinancialManagement() {
   };
 
   const billingList = billingData?.data || billingData || [];
-  const sampleBills: Bill[] = [
-    {
-      id: "INV-2024-001",
-      patientName: "John Smith",
-      caseNumber: "CS-2024-1234",
-      amount: 2850.00,
-      status: "paid",
-      dateIssued: "2024-07-15",
-      dueDate: "2024-08-15",
-      services: ["General Consultation", "Blood Test", "X-Ray"],
-      insurance: "Blue Cross Blue Shield",
-      patientResponsibility: 285.00,
-    },
-    {
-      id: "INV-2024-002",
-      patientName: "Sarah Wilson",
-      caseNumber: "CS-2024-1235",
-      amount: 5600.00,
-      status: "pending",
-      dateIssued: "2024-07-18",
-      dueDate: "2024-08-18",
-      services: ["Surgery - Appendectomy", "Anesthesia", "Post-op Care"],
-      insurance: "United Healthcare",
-      patientResponsibility: 1120.00,
-    },
-    {
-      id: "INV-2024-003",
-      patientName: "Emma Davis",
-      caseNumber: "CS-2024-1236",
-      amount: 1250.00,
-      status: "overdue",
-      dateIssued: "2024-06-20",
-      dueDate: "2024-07-20",
-      services: ["Physical Therapy - 5 sessions"],
-      insurance: "Aetna",
-      patientResponsibility: 250.00,
-    },
-    {
-      id: "INV-2024-004",
-      patientName: "Michael Brown",
-      caseNumber: "CS-2024-1237",
-      amount: 3400.00,
-      status: "partial",
-      dateIssued: "2024-07-22",
-      dueDate: "2024-08-22",
-      services: ["MRI Scan", "Specialist Consultation", "Lab Tests"],
-      insurance: "Cigna",
-      patientResponsibility: 680.00,
-    },
-    {
-      id: "INV-2024-005",
-      patientName: "Lisa Anderson",
-      caseNumber: "CS-2024-1238",
-      amount: 890.00,
-      status: "paid",
-      dateIssued: "2024-07-25",
-      dueDate: "2024-08-25",
-      services: ["Dental Cleaning", "Cavity Filling"],
-      insurance: "Delta Dental",
-      patientResponsibility: 178.00,
-    },
-    {
-      id: "INV-2024-006",
-      patientName: "David Martinez",
-      caseNumber: "CS-2024-1239",
-      amount: 7800.00,
-      status: "pending",
-      dateIssued: "2024-07-26",
-      dueDate: "2024-08-26",
-      services: ["Emergency Room Visit", "CT Scan", "Overnight Stay"],
-      insurance: "Medicare",
-      patientResponsibility: 1560.00,
-    },
-    {
-      id: "INV-2024-007",
-      patientName: "Jennifer Lee",
-      caseNumber: "CS-2024-1240",
-      amount: 450.00,
-      status: "paid",
-      dateIssued: "2024-07-28",
-      dueDate: "2024-08-28",
-      services: ["Annual Checkup", "Vaccination"],
-      insurance: "Humana",
-      patientResponsibility: 90.00,
-    },
-    {
-      id: "INV-2024-008",
-      patientName: "Robert Taylor",
-      caseNumber: "CS-2024-1241",
-      amount: 2100.00,
-      status: "overdue",
-      dateIssued: "2024-06-15",
-      dueDate: "2024-07-15",
-      services: ["Cardiology Consultation", "ECG", "Stress Test"],
-      insurance: "Kaiser Permanente",
-      patientResponsibility: 420.00,
-    },
-  ];
-  
-  const mockBills = billingList.length > 0 
-    ? (Array.isArray(billingList) ? billingList : []).map(
-        (bill: any) => ({
-          id: bill.id,
-          patientName: "Patient Name",
-          caseNumber: bill.patientId,
-          amount: bill.amount,
-          status: bill.status.toLowerCase(),
-          dateIssued: bill.billingDate,
-          dueDate: bill.dueDate,
-          services: [bill.serviceDescription],
-          insurance: "Insurance Provider",
-          patientResponsibility: bill.amountDue,
-        })
-      )
-    : sampleBills;
+  const mockBills = Array.isArray(billingList) && billingList.length > 0
+    ? billingList.map((bill: any) => ({
+        id: bill.billNumber || bill.id,
+        patientName: bill.patientId,
+        caseNumber: bill.billNumber,
+        amount: bill.totalAmount,
+        status: bill.status.toLowerCase(),
+        dateIssued: bill.billDate?.split('T')[0] || bill.createdAt?.split('T')[0],
+        dueDate: bill.dueDate?.split('T')[0],
+        services: bill.items?.map((item: any) => item.itemName) || [bill.description],
+        insurance: "Insurance Provider",
+        patientResponsibility: bill.balanceAmount,
+      }))
+    : [];
 
   const filteredBills = mockBills.filter((bill: any) => {
     const matchesSearch =
@@ -491,7 +395,7 @@ export function FinancialManagement() {
         <StatsCardGrid>
           <StatsCard
             title="Total Revenue"
-            value={45230}
+            value={financeData?.totalRevenue || 0}
             icon={DollarSign}
             color="text-green-600"
             bgGradient="from-green-500 to-green-600"
@@ -500,16 +404,16 @@ export function FinancialManagement() {
           />
           <StatsCard
             title="Outstanding Bills"
-            value={12450}
+            value={financeData?.totalPending || 0}
             icon={FileText}
             color="text-orange-600"
             bgGradient="from-orange-500 to-orange-600"
-            change="-5%"
+            change={`${financeData?.pendingBills || 0} bills`}
             trend="down"
           />
           <StatsCard
             title="Collected Today"
-            value={3200}
+            value={financeData?.totalCollected || 0}
             icon={CreditCard}
             color="text-blue-600"
             bgGradient="from-blue-500 to-blue-600"
@@ -517,12 +421,12 @@ export function FinancialManagement() {
             trend="up"
           />
           <StatsCard
-            title="Insurance Claims"
-            value={28900}
+            title="Total Bills"
+            value={financeData?.totalBills || 0}
             icon={Receipt}
             color="text-purple-600"
             bgGradient="from-purple-500 to-purple-600"
-            change="+8%"
+            change={`${financeData?.paidBills || 0} paid`}
             trend="up"
           />
         </StatsCardGrid>

@@ -128,7 +128,29 @@ export class DashboardService {
         }
     }
 
-    async exportDashboardData(branchId?: string, format: 'pdf' | 'excel' = 'pdf'): Promise<Blob> {
+    async getFinanceOverview(branchId?: string): Promise<{
+    totalRevenue: number;
+    totalCollected: number;
+    totalPending: number;
+    totalBills: number;
+    paidBills: number;
+    pendingBills: number;
+  }> {
+    try {
+      return await api.get(`/api/finance/overview${branchId ? `?branchId=${branchId}` : ''}`);
+    } catch (error) {
+      return {
+        totalRevenue: 0,
+        totalCollected: 0,
+        totalPending: 0,
+        totalBills: 0,
+        paidBills: 0,
+        pendingBills: 0
+      };
+    }
+  }
+
+  async exportDashboardData(branchId?: string, format: 'pdf' | 'excel' = 'pdf'): Promise<Blob> {
         const response = await fetch(
             `${this.getBaseUrl()}/api/ops/dashboard/export?format=${format}${branchId ? `&branchId=${branchId}` : ''}`,
             {

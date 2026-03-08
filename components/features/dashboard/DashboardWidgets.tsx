@@ -13,6 +13,7 @@ import {
   openPrescriptionModal,
 } from "@/lib/store/slices/modalSlice";
 import { ROLES } from "@/lib/constants";
+import { useAppData } from "@/lib/hooks/useAppData";
 
 export function DashboardWidgets() {
   const t = useTranslations('common');
@@ -20,6 +21,7 @@ export function DashboardWidgets() {
   const { user } = useAuth();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { stats } = useAppData();
   
   const [enabledWidgets, setEnabledWidgets] = useState<string[]>([]);
 
@@ -77,6 +79,7 @@ export function DashboardWidgets() {
           onAddAppointment={handleAddAppointment}
           onAddPrescription={handleAddPrescription}
           enabledWidgets={enabledWidgets}
+          stats={stats}
         />
       </div>
     );
@@ -107,6 +110,7 @@ export function DashboardWidgets() {
         onAddAppointment={handleAddAppointment}
         onAddPrescription={handleAddPrescription}
         enabledWidgets={enabledWidgets}
+        stats={stats}
       />
     </div>
   );

@@ -172,9 +172,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* Header */}
       <header
-        className="fixed top-0 z-50 border-b border-border/50 w-full transition-all duration-300 bg-card shadow-md"
+        className="fixed top-0 z-50 border-b w-full transition-all duration-300 bg-card/95 backdrop-blur-md border-border/50 shadow-sm"
       >
-        <div className="flex items-center justify-between px-6 h-16 bg-card shadow-sm">
+        <div className="flex items-center justify-between px-6 h-16">
           {/* Left: Menu + Logo */}
           <div className="flex items-center gap-4">
             {isMobile && (
@@ -213,7 +213,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             )}
 
             <div className="hidden md:flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(withLocale(ROUTES.DASHBOARD))}>
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary via-primary to-blue-600 flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-105">
                 <Stethoscope className="h-5 w-5 text-primary-foreground" />
               </div>
               <div className="min-w-0 hidden lg:block">
@@ -368,14 +368,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         <aside 
-          className="hidden md:block fixed left-0 top-14 bottom-0 bg-card border-r border-border"
+          className="hidden md:block fixed left-0 top-14 bottom-0 bg-gradient-to-b from-card via-card to-card/95 border-r border-border/50 backdrop-blur-sm"
           style={{ width: `${sidebarWidth}px` }}
         >
           <div 
-            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-slate-300 active:bg-slate-400 dark:hover:bg-slate-700 dark:active:bg-slate-600 transition-colors group"
+            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/30 active:bg-primary/50 transition-colors group"
             onMouseDown={handleMouseDown}
           >
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-slate-200 group-hover:bg-slate-400 dark:bg-slate-800 dark:group-hover:bg-slate-600 rounded-full transition-colors" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-border group-hover:bg-primary/40 rounded-full transition-colors" />
           </div>
           <div className="flex h-full flex-col">
             <nav className="flex-1 overflow-y-auto p-3 space-y-1 mt-4">
@@ -390,16 +390,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       key={item.path}
                       variant="ghost"
                       onClick={() => router.push(withLocale(item.path))}
-                      className={`w-full h-11 rounded-lg border-l-4 transition-all duration-200 ${
+                      className={`w-full h-11 rounded-lg border-l-4 transition-all duration-300 group ${
                         showText ? 'justify-start gap-3' : 'justify-center px-0'
                       } ${
                         isActive
-                          ? "bg-primary text-primary-foreground font-semibold border-primary"
-                          : "border-transparent text-foreground hover:border-primary/45 hover:bg-primary/10 hover:text-primary"
+                          ? "bg-gradient-to-r from-primary/20 to-primary/10 !text-black dark:!text-white font-semibold border-primary shadow-sm scale-[1.02]"
+                          : "border-transparent !text-black dark:!text-white hover:border-primary/50 hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 hover:scale-[1.02] hover:shadow-md"
                       }`}
                     >
-                      <ItemIcon className={`h-4 w-4 ${showText ? '' : ''}`} />
-                      {showText && <span className="truncate text-sm">{t(item.label)}</span>}
+                      <ItemIcon className={`h-4 w-4 transition-transform duration-300 ${
+                        isActive ? 'scale-110' : 'group-hover:scale-110 group-hover:rotate-3'
+                      }`} />
+                      {showText && <span className="truncate text-sm font-medium">{t(item.label)}</span>}
                     </Button>
                   );
 

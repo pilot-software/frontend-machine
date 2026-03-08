@@ -306,16 +306,16 @@ export function HealthcareDashboard() {
                       <div className="text-2xl font-bold">{statsData?.totalPatients || 0}</div>
                       <div className="space-y-1 text-xs">
                         <div className="flex justify-between">
-                          <span>Active:</span>
-                          <span className="font-bold text-green-600">{Math.floor((statsData?.totalPatients || 0) * 0.8)}</span>
+                          <span>Active Admissions:</span>
+                          <span className="font-bold text-green-600">{statsData?.patientAdmissions?.totalActiveAdmissions || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Inactive:</span>
-                          <span className="font-bold text-orange-600">{Math.floor((statsData?.totalPatients || 0) * 0.2)}</span>
+                          <span>New This Month:</span>
+                          <span className="font-bold text-blue-600">{statsData?.newPatientsThisMonth || 0}</span>
                         </div>
                         <div className="flex justify-between pt-1 border-t">
-                          <span>New:</span>
-                          <span className="font-bold text-blue-600">{Math.floor((statsData?.totalPatients || 0) * 0.15)}</span>
+                          <span>Avg Stay:</span>
+                          <span className="font-bold text-purple-600">{statsData?.patientAdmissions?.avgLengthOfStay?.toFixed(1) || 0} days</span>
                         </div>
                       </div>
                     </div>
@@ -326,19 +326,19 @@ export function HealthcareDashboard() {
                         <Clock className="h-5 w-5 text-green-600" />
                         <span className="text-xs font-semibold text-muted-foreground">{t('appointmentsToday')}</span>
                       </div>
-                      <div className="text-2xl font-bold">{statsData?.todayAppointments || 0}</div>
+                      <div className="text-2xl font-bold">{statsData?.appointmentStats?.todayAppointments || 0}</div>
                       <div className="space-y-1 text-xs">
                         <div className="flex justify-between">
-                          <span>Completed:</span>
-                          <span className="font-bold text-green-600">{Math.floor((statsData?.todayAppointments || 0) * 0.6)}</span>
+                          <span>Confirmed:</span>
+                          <span className="font-bold text-green-600">{statsData?.appointmentStats?.confirmedAppointments || 0}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Pending:</span>
-                          <span className="font-bold text-yellow-600">{Math.floor((statsData?.todayAppointments || 0) * 0.4)}</span>
+                          <span className="font-bold text-yellow-600">{statsData?.appointmentStats?.pendingAppointments || 0}</span>
                         </div>
                         <div className="flex justify-between pt-1 border-t">
                           <span>Cancelled:</span>
-                          <span className="font-bold text-red-600">{Math.floor((statsData?.todayAppointments || 0) * 0.05)}</span>
+                          <span className="font-bold text-red-600">{statsData?.appointmentStats?.cancelledAppointments || 0}</span>
                         </div>
                       </div>
                     </div>
@@ -347,21 +347,21 @@ export function HealthcareDashboard() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-purple-600" />
-                        <span className="text-xs font-semibold text-muted-foreground">{t('activeDoctors')}</span>
+                        <span className="text-xs font-semibold text-muted-foreground">{t('medicalStaff')}</span>
                       </div>
-                      <div className="text-2xl font-bold">{statsData?.totalDoctors || 0}</div>
+                      <div className="text-2xl font-bold">{statsData?.staffAvailability?.onDutyStaff || 0}</div>
                       <div className="space-y-1 text-xs">
                         <div className="flex justify-between">
-                          <span>Available:</span>
-                          <span className="font-bold text-green-600">{Math.floor((statsData?.totalDoctors || 0) * 0.7)}</span>
+                          <span>Doctors:</span>
+                          <span className="font-bold text-green-600">{statsData?.staffAvailability?.availableDoctors || 0}/{statsData?.staffAvailability?.totalDoctors || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Busy:</span>
-                          <span className="font-bold text-orange-600">{Math.floor((statsData?.totalDoctors || 0) * 0.3)}</span>
+                          <span>Nurses:</span>
+                          <span className="font-bold text-blue-600">{statsData?.staffAvailability?.availableNurses || 0}/{statsData?.staffAvailability?.totalNurses || 0}</span>
                         </div>
                         <div className="flex justify-between pt-1 border-t">
                           <span>Off-duty:</span>
-                          <span className="font-bold text-gray-600">{Math.floor((statsData?.totalDoctors || 0) * 0.1)}</span>
+                          <span className="font-bold text-gray-600">{statsData?.staffAvailability?.offDutyStaff || 0}</span>
                         </div>
                       </div>
                     </div>
@@ -370,21 +370,21 @@ export function HealthcareDashboard() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-emerald-600" />
-                        <span className="text-xs font-semibold text-muted-foreground">{t('monthlyRevenue')}</span>
+                        <span className="text-xs font-semibold text-muted-foreground">{t('financialOverview')}</span>
                       </div>
-                      <div className="text-2xl font-bold">${statsData?.revenue?.monthly || 0}</div>
+                      <div className="text-2xl font-bold">${statsData?.financialOverview?.monthlyRevenue?.toLocaleString() || 0}</div>
                       <div className="space-y-1 text-xs">
                         <div className="flex justify-between">
-                          <span>Collected:</span>
-                          <span className="font-bold text-green-600">${Math.floor((statsData?.revenue?.monthly || 0) * 0.85)}</span>
+                          <span>Total Revenue:</span>
+                          <span className="font-bold text-green-600">${statsData?.financialOverview?.totalRevenue?.toLocaleString() || 0}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Pending:</span>
-                          <span className="font-bold text-yellow-600">${Math.floor((statsData?.revenue?.monthly || 0) * 0.15)}</span>
+                          <span className="font-bold text-yellow-600">${statsData?.financialOverview?.pendingPayments?.toLocaleString() || 0}</span>
                         </div>
                         <div className="flex justify-between pt-1 border-t">
-                          <span>Overdue:</span>
-                          <span className="font-bold text-red-600">${Math.floor((statsData?.revenue?.monthly || 0) * 0.05)}</span>
+                          <span>Collected Today:</span>
+                          <span className="font-bold text-blue-600">${statsData?.financialOverview?.collectedToday?.toLocaleString() || 0}</span>
                         </div>
                       </div>
                     </div>
