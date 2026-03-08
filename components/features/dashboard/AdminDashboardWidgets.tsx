@@ -30,6 +30,7 @@ interface AdminDashboardWidgetsProps {
   onAddAppointment?: () => void;
   onAddPrescription?: () => void;
   enabledWidgets?: string[];
+  stats?: any;
 }
 
 export function AdminDashboardWidgets({
@@ -37,6 +38,7 @@ export function AdminDashboardWidgets({
   onAddAppointment,
   onAddPrescription,
   enabledWidgets = ['quickActions', 'bedOccupancy', 'emergencyRoom', 'staffAvailability', 'financial', 'admissions', 'diagnostics', 'inventory'],
+  stats,
 }: AdminDashboardWidgetsProps) {
   const t = useTranslations('common');
   const { permissions } = useAuth();
@@ -46,10 +48,25 @@ export function AdminDashboardWidgets({
   const [cardsOrder, setCardsOrder] = useState<string[]>([]);
   const [cardSizes, setCardSizes] = useState<Record<string, number>>({});
 
-  const bedOccupancy = { total: 250, occupied: 198, available: 52, rate: 79 };
-  const icuStatus = { total: 30, occupied: 24, available: 6, rate: 80 };
+  const bedOccupancy = {
+    total: stats?.bedOccupancy?.totalBeds || 0,
+    occupied: stats?.bedOccupancy?.occupiedBeds || 0,
+    available: stats?.bedOccupancy?.availableBeds || 0,
+    rate: Math.round(stats?.bedOccupancy?.occupancyRate || 0),
+  };
+  const icuStatus = {
+    total: stats?.bedOccupancy?.icuBeds || 0,
+    occupied: stats?.bedOccupancy?.icuOccupied || 0,
+    available: (stats?.bedOccupancy?.icuBeds || 0) - (stats?.bedOccupancy?.icuOccupied || 0),
+    rate: stats?.bedOccupancy?.icuBeds ? Math.round((stats.bedOccupancy.icuOccupied / stats.bedOccupancy.icuBeds) * 100) : 0,
+  };
   const erStatus = { waiting: 12, inTreatment: 8, avgWait: "18 min" };
-  const staff = { doctors: 45, nurses: 120, technicians: 35, onDuty: 200 };
+  const staff = {
+    doctors: stats?.staffAvailability?.availableDoctors || 0,
+    nurses: stats?.staffAvailability?.availableNurses || 0,
+    technicians: 0,
+    onDuty: stats?.staffAvailability?.onDutyStaff || 0,
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('cardsOrder');
@@ -303,21 +320,21 @@ export function AdminDashboardWidgets({
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('todaysBilling')}</span>
-                <span className="font-semibold text-green-600">$45,230</span>
+                <span className="text-sm">{t('totalRevenue')}</span>
+                <span className="font-semibold text-green-600">${stats?.financialOverview?.totalRevenue?.toLocaleString() || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('outstandingClaims')}</span>
-                <span className="font-semibold text-orange-600">$12,450</span>
+                <span className="text-sm">{t('totalCollected')}</span>
+                <span className="font-semibold text-emerald-600">${stats?.financialOverview?.totalCollected?.toLocaleString() || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('insuranceApprovals')}</span>
-                <Badge variant="secondary">23 {t('pending')}</Badge>
+                <span className="text-sm">{t('totalPending')}</span>
+                <span className="font-semibold text-orange-600">${stats?.financialOverview?.totalPending?.toLocaleString() || 0}</span>
               </div>
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">{t('monthlyRevenue')}</span>
-                  <span className="font-bold text-emerald-600">$342,100</span>
+                  <span className="text-sm font-medium">{t('totalBills')}</span>
+                  <Badge variant="secondary">{stats?.financialOverview?.totalBills || 0}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -329,26 +346,26 @@ export function AdminDashboardWidgets({
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                {t('patientAdmissions')}
+                {t('patientAppointments')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('todayAdmissions')}</span>
-                <span className="font-semibold text-blue-600">24</span>
+                <span className="text-sm">{t('todayAppointments')}</span>
+                <span className="font-semibold text-blue-600">{stats?.appointmentStats?.todayAppointments || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('weeklyAdmissions')}</span>
-                <span className="font-semibold">156</span>
+                <span className="text-sm">{t('weeklyAppointments')}</span>
+                <span className="font-semibold">{stats?.appointmentStats?.weeklyAppointments || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('avgLengthOfStay')}</span>
-                <span className="font-semibold">4.2 {t('days')}</span>
+                <span className="text-sm">{t('confirmedAppointments')}</span>
+                <span className="font-semibold text-green-600">{stats?.appointmentStats?.confirmedAppointments || 0}</span>
               </div>
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">{t('readmissionRate')}</span>
-                  <Badge variant="secondary">8.5%</Badge>
+                  <span className="text-sm font-medium">{t('pendingAppointments')}</span>
+                  <Badge variant="secondary">{stats?.appointmentStats?.pendingAppointments || 0}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -366,20 +383,20 @@ export function AdminDashboardWidgets({
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm">{t('pendingTests')}</span>
-                <Badge variant="destructive">34</Badge>
+                <Badge variant="destructive">{stats?.labDiagnostics?.pendingTests || 0}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">{t('completedToday')}</span>
-                <span className="font-semibold text-green-600">89</span>
+                <span className="font-semibold text-green-600">{stats?.labDiagnostics?.todayTests || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t('avgTurnaroundTime')}</span>
-                <span className="font-semibold">2.5 {t('hours')}</span>
+                <span className="text-sm">{t('totalTests')}</span>
+                <span className="font-semibold">{stats?.labDiagnostics?.totalTests || 0}</span>
               </div>
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">{t('abnormalResults')}</span>
-                  <Badge>12</Badge>
+                  <Badge>{stats?.labDiagnostics?.abnormalResults || 0}</Badge>
                 </div>
               </div>
             </CardContent>

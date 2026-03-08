@@ -891,6 +891,16 @@
     "lowStockItems": "Low Stock Items",
     "outOfStock": "Out of Stock",
     "totalMedicines": "Total Medicines",
-    "inventoryValue": "Inventory Value"
+    "inventoryValue": "Inventory Value",
+    "patientAppointments": "Patient Appointments",
+    "todayAppointments": "Today's Appointments",
+    "weeklyAppointments": "Weekly Appointments",
+    "confirmedAppointments": "Confirmed Appointments",
+    "pendingAppointments": "Pending Appointments",
+    "totalTests": "Total Tests",
+    "totalRevenue": "Total Revenue",
+    "totalCollected": "Total Collected",
+    "totalPending": "Total Pending",
+    "totalBills": "Total Bills"
   }
 }
