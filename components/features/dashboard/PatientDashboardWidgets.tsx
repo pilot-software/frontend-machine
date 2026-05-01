@@ -24,10 +24,17 @@ import {
   Droplet,
   Thermometer,
   Wind,
+  Lightbulb,
+  Target,
+  MessageCircle,
+  CreditCard,
+  Zap,
+  X,
 } from "lucide-react";
 
 export function PatientDashboardWidgets() {
   const t = useTranslations("common");
+  const [showWelcome, setShowWelcome] = React.useState(true);
 
   const healthSummary = {
     bloodPressure: { systolic: 120, diastolic: 80, status: "Normal" },
@@ -64,26 +71,31 @@ export function PatientDashboardWidgets() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <Card className="bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/5 border-blue-500/20">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">Welcome Back! 👋</h2>
-              <p className="text-muted-foreground">Here's your health overview for today</p>
+      {showWelcome && (
+        <Card className="bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/5 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-blue-950/20 border-blue-500/20 dark:border-blue-900/40 relative">
+          <Button size="icon" variant="ghost" onClick={() => setShowWelcome(false)} className="absolute top-2 right-2 h-8 w-8">
+            <X className="h-4 w-4" />
+          </Button>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Welcome Back! 👋</h2>
+                <p className="text-muted-foreground">Here's your health overview for today</p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="gap-2">
+                  <Phone className="h-4 w-4" />
+                  Call Doctor
+                </Button>
+                <Button size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700">
+                  <Video className="h-4 w-4" />
+                  Video Visit
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="gap-2">
-                <Phone className="h-4 w-4" />
-                Call Doctor
-              </Button>
-              <Button size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700">
-                <Video className="h-4 w-4" />
-                Video Visit
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Health Vitals Summary */}
       <div>
@@ -337,6 +349,198 @@ export function PatientDashboardWidgets() {
                 <p className="font-semibold text-sm">Pay Bills</p>
                 <p className="text-xs text-muted-foreground">View & pay invoices</p>
               </div>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Health Goals */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Target className="h-5 w-5 text-blue-600" />
+          Health Goals
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-semibold text-sm">Weight Loss</p>
+                <Badge variant="secondary" className="bg-blue-500/10 text-blue-700">65%</Badge>
+              </div>
+              <Progress value={65} className="h-2 mb-2" />
+              <p className="text-xs text-muted-foreground">Goal: 160 lbs • Current: 165 lbs</p>
+              <p className="text-xs text-green-600 mt-2">5 lbs to go</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-semibold text-sm">Exercise</p>
+                <Badge variant="secondary" className="bg-green-500/10 text-green-700">80%</Badge>
+              </div>
+              <Progress value={80} className="h-2 mb-2" />
+              <p className="text-xs text-muted-foreground">Goal: 150 min/week • Done: 120 min</p>
+              <p className="text-xs text-green-600 mt-2">30 min remaining</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-semibold text-sm">Water Intake</p>
+                <Badge variant="secondary" className="bg-cyan-500/10 text-cyan-700">90%</Badge>
+              </div>
+              <Progress value={90} className="h-2 mb-2" />
+              <p className="text-xs text-muted-foreground">Goal: 8 glasses • Done: 7 glasses</p>
+              <p className="text-xs text-green-600 mt-2">1 glass to go</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Health Tips & Education */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Lightbulb className="h-5 w-5 text-amber-600" />
+          Health Tips
+        </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 border-amber-500/20 hover:shadow-lg transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex gap-3">
+                <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                  <Zap className="h-5 w-5 text-amber-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm mb-1">Stay Hydrated</p>
+                  <p className="text-xs text-muted-foreground mb-3">Drinking enough water helps maintain healthy blood pressure and improves circulation.</p>
+                  <Button size="sm" variant="outline" className="text-xs h-7">Learn More</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 border-green-500/20 hover:shadow-lg transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex gap-3">
+                <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                  <Activity className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm mb-1">Regular Exercise</p>
+                  <p className="text-xs text-muted-foreground mb-3">30 minutes of moderate activity daily can reduce cardiovascular risks significantly.</p>
+                  <Button size="sm" variant="outline" className="text-xs h-7">View Exercises</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Medication Adherence */}
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Pill className="h-5 w-5 text-purple-600" />
+              Medication Adherence
+            </span>
+            <Badge variant="secondary" className="bg-green-500/10 text-green-700">92%</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold">This Week</p>
+                <p className="text-xs text-muted-foreground">13 of 14 doses taken</p>
+              </div>
+              <Progress value={92} className="h-2" />
+            </div>
+            <div className="grid grid-cols-7 gap-2">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
+                <div key={day} className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">{day}</p>
+                  <div className={`h-8 rounded-lg flex items-center justify-center text-xs font-semibold ${
+                    idx < 6 ? 'bg-green-500/20 text-green-700' : 'bg-gray-200 text-gray-600'
+                  }`}>
+                    {idx < 6 ? '✓' : '-'}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground text-center mt-3">Great job! Keep taking your medications on time.</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Messages from Doctor */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-blue-600" />
+                Messages
+              </span>
+              <Badge variant="outline" className="bg-blue-500/10 text-blue-700">2 New</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+              <div className="flex items-start justify-between mb-2">
+                <p className="font-semibold text-sm">Dr. Sarah Johnson</p>
+                <p className="text-xs text-muted-foreground">2h ago</p>
+              </div>
+              <p className="text-sm text-muted-foreground line-clamp-2">Your recent blood work looks great! Keep up the good work with your exercise routine.</p>
+            </div>
+            <div className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+              <div className="flex items-start justify-between mb-2">
+                <p className="font-semibold text-sm">Dr. Mike Chen</p>
+                <p className="text-xs text-muted-foreground">1d ago</p>
+              </div>
+              <p className="text-sm text-muted-foreground line-clamp-2">Please schedule your follow-up appointment for next month.</p>
+            </div>
+            <Button variant="outline" className="w-full gap-2">
+              <MessageSquare className="h-4 w-4" />
+              View All Messages
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Billing & Insurance */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-green-600" />
+                Billing Summary
+              </span>
+              <Badge variant="outline">$0 Due</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="p-3 border rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold">Last Visit</p>
+                <p className="text-sm text-muted-foreground">Jan 15, 2025</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">Amount: $150</p>
+                <Badge variant="secondary" className="bg-green-500/10 text-green-700">Paid</Badge>
+              </div>
+            </div>
+            <div className="p-3 border rounded-lg bg-blue-500/5">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold">Insurance Coverage</p>
+                <Badge variant="outline">Active</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">Plan: Premium Health Plus • Deductible: $500</p>
+            </div>
+            <Button variant="outline" className="w-full gap-2">
+              <Download className="h-4 w-4" />
+              View Invoices
             </Button>
           </CardContent>
         </Card>

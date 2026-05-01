@@ -10,3 +10,4 @@ export { DashboardSearch } from './DashboardSearch';
 export { DashboardTabs } from './DashboardTabs';
 export { DoctorFormModal } from '@/components/features/dashboard/DoctorFormModal';
 export { DoctorTable } from './DoctorTable';
+export { DraggableQuickActions } from './DraggableQuickActions';

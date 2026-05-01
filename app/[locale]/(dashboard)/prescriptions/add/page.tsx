@@ -2,585 +2,685 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Save, AlertTriangle, Search, X, Plus } from 'lucide-react';
-import { terminologyService, ICDCode, Drug, Procedure } from '@/lib/services/terminology';
-import { prescriptionService } from '@/lib/services/prescription';
 import { Badge } from '@/components/ui/badge';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
+import { AlertTriangle, Plus, X, Save, Sparkles, AlertCircle, CheckCircle2, Info, Trash2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useAppData } from '@/lib/hooks/useAppData';
+import { ResponsiveGrid } from '@/components/ui/responsive-grid';
 
-interface SelectedCondition extends ICDCode {
+// Types
+interface Medication {
   id: string;
+  drugName: string;
+  genericName: string;
+  strength: string;
+  dosageForm: string;
+  dose: string;
+  frequency: string;
+  route: string;
+  duration: string;
+  instructions: string;
 }
 
-interface SelectedMedicine extends Drug {
-  dosage?: string;
-  frequency?: string;
-  duration?: string;
-  quantity?: number;
-  instructions?: string;
+interface Vital {
+  bp: string;
+  pulse: string;
+  temp: string;
+  spo2: string;
+  weight: string;
+  height: string;
 }
 
-export default function AddPrescriptionPage() {
-  const t = useTranslations('common');
+interface AIInsight {
+  differentialDiagnosis: Array<{ condition: string; probability: number; icd10: string }>;
+  redFlags: Array<{ alert: string; severity: 'critical' | 'high' | 'moderate' }>;
+  drugInteractions: Array<{ warning: string; drugs: string[] }>;
+  doseOptimization: Array<{ drug: string; suggestion: string }>;
+  followUpDays: number;
+  confidenceScore: number;
+}
+
+export default function ClinicalCopilotPrescription() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { patients } = useAppData();
   
-  const patientFromUrl = searchParams.get('patient');
-  const appointmentId = searchParams.get('appointmentId');
+  // Get patient ID from URL
+  const patientIdFromUrl = searchParams.get('patientId');
+  
+  // Patient Context
+  const [patientInfo, setPatientInfo] = useState({
+    name: '',
+    age: 0,
+    gender: '',
+    mrn: '',
+    allergies: [] as string[],
+    visitType: 'new' as 'new' | 'followup'
+  });
 
-  const [patientId, setPatientId] = useState('');
-  const [doctorId, setDoctorId] = useState('');
-  
-  // Conditions
-  const [conditionSearch, setConditionSearch] = useState('');
-  const [conditionResults, setConditionResults] = useState<ICDCode[]>([]);
-  const [selectedConditions, setSelectedConditions] = useState<SelectedCondition[]>([]);
-  const [conditionOpen, setConditionOpen] = useState(false);
-  
-  // Medicines
-  const [medicineSearch, setMedicineSearch] = useState('');
-  const [medicineResults, setMedicineResults] = useState<Drug[]>([]);
-  const [selectedMedicines, setSelectedMedicines] = useState<SelectedMedicine[]>([]);
-  const [medicineOpen, setMedicineOpen] = useState(false);
-  const [currentMedicine, setCurrentMedicine] = useState<Drug | null>(null);
-  
-  // Procedures
-  const [procedureSearch, setProcedureSearch] = useState('');
-  const [procedureResults, setProcedureResults] = useState<Procedure[]>([]);
-  const [selectedProcedures, setSelectedProcedures] = useState<Procedure[]>([]);
-  const [procedureOpen, setProcedureOpen] = useState(false);
+  // Load patient data from URL parameter
+  useEffect(() => {
+    if (patientIdFromUrl && patients && patients.length > 0) {
+      const patient = patients.find((p: any) => p.id === patientIdFromUrl);
+      if (patient) {
+        const allergiesArray = typeof patient.allergies === 'string' 
+          ? patient.allergies.split(',').map((a: string) => a.trim()).filter(Boolean)
+          : Array.isArray(patient.allergies) ? patient.allergies : [];
+        
+        const age = patient.age || (patient.dateOfBirth ? 
+          new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear() : 0);
 
-  useEffect(() => {
-    if (patientFromUrl) {
-      const patientMap: Record<string, string> = {
-        'John Smith': 'john-smith',
-        'Emma Wilson': 'emma-davis',
-        'Robert Brown': 'michael-johnson',
-      };
-      setPatientId(patientMap[patientFromUrl] || 'john-smith');
+        setPatientInfo({
+          name: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Unknown',
+          age,
+          gender: patient.gender || 'Unknown',
+          mrn: patient.caseNumber || patient.mrn || patient.id || 'N/A',
+          allergies: allergiesArray,
+          visitType: 'new'
+        });
+      }
     }
-  }, [patientFromUrl]);
-  
-  useEffect(() => {
-    if (conditionSearch.length >= 2) {
-      const timer = setTimeout(async () => {
-        try {
-          const results = await terminologyService.searchICD(conditionSearch);
-          setConditionResults(results);
-        } catch (error) {
-          console.error('ICD search error:', error);
-        }
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setConditionResults([]);
-    }
-  }, [conditionSearch]);
-  
-  useEffect(() => {
-    if (medicineSearch.length >= 2) {
-      const timer = setTimeout(async () => {
-        try {
-          const results = await terminologyService.searchDrugs(medicineSearch);
-          setMedicineResults(results);
-        } catch (error) {
-          console.error('Drug search error:', error);
-        }
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setMedicineResults([]);
-    }
-  }, [medicineSearch]);
-  
-  useEffect(() => {
-    if (procedureSearch.length >= 2) {
-      const timer = setTimeout(async () => {
-        try {
-          const results = await terminologyService.searchProcedures(procedureSearch);
-          setProcedureResults(results);
-        } catch (error) {
-          console.error('Procedure search error:', error);
-        }
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setProcedureResults([]);
-    }
-  }, [procedureSearch]);
+  }, [patientIdFromUrl, patients]);
 
-  const addCondition = (condition: ICDCode) => {
-    if (!selectedConditions.find(c => c.code === condition.code)) {
-      setSelectedConditions([...selectedConditions, { ...condition, id: crypto.randomUUID() }]);
-    }
-    setConditionOpen(false);
-    setConditionSearch('');
-  };
-  
-  const removeCondition = (id: string) => {
-    setSelectedConditions(selectedConditions.filter(c => c.id !== id));
-  };
-  
-  const addMedicine = (drug: Drug) => {
-    setCurrentMedicine(drug);
-    setMedicineOpen(false);
-  };
-  
-  const saveMedicine = () => {
-    if (currentMedicine) {
-      setSelectedMedicines([...selectedMedicines, currentMedicine as SelectedMedicine]);
-      setCurrentMedicine(null);
-      setMedicineSearch('');
-    }
-  };
-  
-  const removeMedicine = (id: number) => {
-    setSelectedMedicines(selectedMedicines.filter(m => m.id !== id));
-  };
-  
-  const addProcedure = (procedure: Procedure) => {
-    if (!selectedProcedures.find(p => p.package_code === procedure.package_code)) {
-      setSelectedProcedures([...selectedProcedures, procedure]);
-    }
-    setProcedureOpen(false);
-    setProcedureSearch('');
-  };
-  
-  const removeProcedure = (code: string) => {
-    setSelectedProcedures(selectedProcedures.filter(p => p.package_code !== code));
+  // Clinical Data
+  const [chiefComplaint, setChiefComplaint] = useState('');
+  const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [vitals, setVitals] = useState<Vital>({
+    bp: '', pulse: '', temp: '', spo2: '', weight: '', height: ''
+  });
+  const [primaryDiagnosis, setPrimaryDiagnosis] = useState('');
+  const [icd10Code, setIcd10Code] = useState('');
+  const [secondaryDiagnosis, setSecondaryDiagnosis] = useState<string[]>([]);
+  const [medications, setMedications] = useState<Medication[]>([]);
+  const [investigations, setInvestigations] = useState('');
+  const [followUpPlan, setFollowUpPlan] = useState('');
+
+  // AI State
+  const [aiInsights, setAiInsights] = useState<AIInsight | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [criticalAlertsAcknowledged, setCriticalAlertsAcknowledged] = useState(false);
+
+  // Add empty medication row
+  const addMedication = () => {
+    setMedications([...medications, {
+      id: crypto.randomUUID(),
+      drugName: '',
+      genericName: '',
+      strength: '',
+      dosageForm: 'Tablet',
+      dose: '',
+      frequency: '',
+      route: 'Oral',
+      duration: '',
+      instructions: ''
+    }]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!patientId || !doctorId) {
-      alert('Please select patient and doctor');
+  const removeMedication = (id: string) => {
+    setMedications(medications.filter(m => m.id !== id));
+  };
+
+  const updateMedication = (id: string, field: keyof Medication, value: string) => {
+    setMedications(medications.map(m => m.id === id ? { ...m, [field]: value } : m));
+  };
+
+  // Trigger AI Analysis
+  const analyzeWithAI = async () => {
+    setAiLoading(true);
+    // Mock AI response - replace with actual API
+    setTimeout(() => {
+      setAiInsights({
+        differentialDiagnosis: [
+          { condition: 'Acute Bronchitis', probability: 78, icd10: 'J20.9' },
+          { condition: 'Pneumonia', probability: 15, icd10: 'J18.9' },
+          { condition: 'Asthma Exacerbation', probability: 7, icd10: 'J45.901' }
+        ],
+        redFlags: [
+          { alert: 'Patient has documented Penicillin allergy', severity: 'critical' },
+          { alert: 'SpO2 < 92% - Consider oxygen therapy', severity: 'high' }
+        ],
+        drugInteractions: [],
+        doseOptimization: [
+          { drug: 'Azithromycin', suggestion: 'Consider renal dose adjustment if eGFR < 30' }
+        ],
+        followUpDays: 3,
+        confidenceScore: 85
+      });
+      setAiLoading(false);
+    }, 1500);
+  };
+
+  const handleSubmit = () => {
+    if (aiInsights?.redFlags.some(f => f.severity === 'critical') && !criticalAlertsAcknowledged) {
+      alert('Please acknowledge critical alerts before submitting');
       return;
     }
-    
-    if (selectedConditions.length === 0) {
-      alert('Please add at least one condition');
-      return;
-    }
-    
-    if (selectedMedicines.length === 0) {
-      alert('Please add at least one medicine');
-      return;
-    }
-    
-    setIsSubmitting(true);
-
-    try {
-      const prescriptionData = {
-        patientId,
-        doctorId,
-        conditions: selectedConditions.map(c => ({
-          code: c.code,
-          title: c.title,
-          system: c.system,
-        })),
-        medicines: selectedMedicines.map(m => ({
-          drugId: m.id,
-          brandName: m.brand_name,
-          genericName: m.generic_name,
-          dosage: m.dosage,
-          frequency: m.frequency,
-          duration: m.duration,
-          quantity: m.quantity,
-          instructions: m.instructions,
-        })),
-        procedures: selectedProcedures.map(p => ({
-          code: p.package_code,
-          name: p.package_name,
-          specialty: p.specialty,
-        })),
-      };
-      
-      console.log('Creating Prescription:', prescriptionData);
-      await prescriptionService.createPrescriptionWithTerminology(prescriptionData);
-      alert('Prescription created successfully');
-      router.push('/en/prescriptions');
-    } catch (error) {
-      console.error('Failed to save prescription:', error);
-      alert(`Failed to save prescription: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Submit prescription
+    console.log('Submitting prescription...');
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-foreground">Create New Prescription</h2>
+          <h1 className="text-3xl font-bold">Clinical Prescription</h1>
           <p className="text-muted-foreground mt-1">
-            {patientFromUrl ? `Write a prescription for ${patientFromUrl}` : 'Write a new prescription for a patient'}
-            {appointmentId && <span className="text-xs ml-2 text-blue-600">(From Appointment #{appointmentId})</span>}
+            {patientInfo.name ? `For ${patientInfo.name}` : 'AI-Assisted Clinical Decision Support'}
           </p>
         </div>
-        <div className="flex space-x-2 w-full sm:w-auto">
-          <Button type="submit" disabled={isSubmitting} onClick={handleSubmit} className="flex-1 sm:flex-none">
-            {isSubmitting ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Create Prescription
-              </>
-            )}
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={analyzeWithAI} disabled={aiLoading}>
+            <Sparkles className="h-4 w-4 mr-2" />
+            {aiLoading ? 'Analyzing...' : 'AI Analyze'}
+          </Button>
+          <Button onClick={handleSubmit}>
+            <Save className="h-4 w-4 mr-2" />
+            Save Prescription
           </Button>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Prescription Information</CardTitle>
-            <CardDescription>Complete prescription details and medication information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="patient">Patient *</Label>
-                <Select value={patientId} onValueChange={setPatientId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select patient" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="john-smith">John Smith (HC001234)</SelectItem>
-                    <SelectItem value="emma-davis">Emma Davis (HC001235)</SelectItem>
-                    <SelectItem value="michael-johnson">Michael Johnson (HC001236)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="prescribing-doctor">Prescribing Doctor *</Label>
-                <Select value={doctorId} onValueChange={setDoctorId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select doctor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dr-johnson">Dr. Sarah Johnson</SelectItem>
-                    <SelectItem value="dr-chen">Dr. Michael Chen</SelectItem>
-                    <SelectItem value="dr-rodriguez">Dr. Emily Rodriguez</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            {/* Conditions */}
-            <div className="space-y-3">
-              <div>
-                <Label className="text-sm font-medium">Medical Conditions (ICD-10/11) *</Label>
-                <p className="text-xs text-muted-foreground mt-1">Search and add patient diagnoses</p>
-              </div>
-              <Popover open={conditionOpen} onOpenChange={setConditionOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start h-10 text-sm">
-                    <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Search conditions (e.g., fever, cough, diabetes...)</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[600px] p-0" align="start" sideOffset={4}>
-                  <Command shouldFilter={false}>
-                    <CommandInput 
-                      placeholder="Search ICD codes..." 
-                      value={conditionSearch}
-                      onValueChange={setConditionSearch}
-                    />
-                    <CommandList>
-                      <CommandEmpty>
-                        {conditionSearch.length >= 2 ? 'No conditions found.' : 'Type at least 2 characters...'}
-                      </CommandEmpty>
-                      <CommandGroup>
-                        {conditionResults.length > 0 ? (
-                          conditionResults.map((condition) => (
-                            <CommandItem
-                              key={condition.code}
-                              onSelect={() => addCondition(condition)}
-                              className="cursor-pointer"
-                            >
-                              <div className="flex items-start justify-between w-full py-1">
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">{condition.title}</p>
-                                  <p className="text-xs text-muted-foreground mt-0.5">
-                                    Code: {condition.code} • System: {condition.system.toUpperCase()}
-                                  </p>
-                                </div>
-                              </div>
-                            </CommandItem>
-                          ))
-                        ) : conditionSearch.length >= 2 ? (
-                          <div className="p-2 text-sm text-muted-foreground">Searching...</div>
-                        ) : null}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              
-              {selectedConditions.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground">Selected Conditions ({selectedConditions.length})</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedConditions.map((condition) => (
-                      <Badge key={condition.id} variant="secondary" className="gap-2 py-1.5 px-3">
-                        <span className="font-medium">{condition.title}</span>
-                        <span className="text-xs opacity-70">({condition.code})</span>
-                        <X 
-                          className="h-3.5 w-3.5 cursor-pointer hover:text-destructive transition-colors" 
-                          onClick={() => removeCondition(condition.id)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
+      <div className="space-y-4">
+        {patientInfo.name ? (
+          <Card className="mb-4">
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Patient Name</p>
+                  <p className="font-semibold">{patientInfo.name}</p>
                 </div>
-              )}
-            </div>
-
-            {/* Medicines */}
-            <div className="space-y-3">
-              <div>
-                <Label className="text-sm font-medium">Medicines *</Label>
-                <p className="text-xs text-muted-foreground mt-1">Search and configure medications</p>
+                <div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">MRN</p>
+                  <p className="font-semibold">{patientInfo.mrn}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Age / Gender</p>
+                  <p className="font-semibold">{patientInfo.age}Y / {patientInfo.gender}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Visit Type</p>
+                  <Select value={patientInfo.visitType} onValueChange={(v: any) => setPatientInfo({...patientInfo, visitType: v})}>
+                    <SelectTrigger className="h-8 w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New Visit</SelectItem>
+                      <SelectItem value="followup">Follow-up</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Date & Time</p>
+                  <p className="font-semibold text-sm">{new Date().toLocaleString('en-IN')}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Allergies</p>
+                  {patientInfo.allergies.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {patientInfo.allergies.map(a => (
+                        <Badge key={a} variant="destructive" className="text-xs">{a}</Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">None</p>
+                  )}
+                </div>
               </div>
-              <Popover open={medicineOpen} onOpenChange={setMedicineOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start h-10 text-sm">
-                    <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Search medicines (e.g., Crocin, Azithromycin...)</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[600px] p-0" align="start" sideOffset={4}>
-                  <Command shouldFilter={false}>
-                    <CommandInput 
-                      placeholder="Search drugs..." 
-                      value={medicineSearch}
-                      onValueChange={setMedicineSearch}
-                    />
-                    <CommandList>
-                      <CommandEmpty>
-                        {medicineSearch.length >= 2 ? 'No medicines found.' : 'Type at least 2 characters...'}
-                      </CommandEmpty>
-                      <CommandGroup>
-                        {medicineResults.length > 0 ? (
-                          medicineResults.map((drug) => (
-                            <CommandItem
-                              key={drug.id}
-                              onSelect={() => addMedicine(drug)}
-                              className="cursor-pointer"
-                            >
-                              <div className="flex items-start justify-between w-full py-1">
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">{drug.brand_name}</p>
-                                  <p className="text-xs text-muted-foreground mt-0.5">
-                                    {drug.generic_name} {drug.strength && `• ${drug.strength}`} {drug.manufacturer && `• ${drug.manufacturer}`}
-                                  </p>
-                                </div>
-                                {drug.mrp && (
-                                  <span className="text-xs font-medium text-green-600">₹{drug.mrp}</span>
-                                )}
-                              </div>
-                            </CommandItem>
-                          ))
-                        ) : medicineSearch.length >= 2 ? (
-                          <div className="p-2 text-sm text-muted-foreground">Searching...</div>
-                        ) : null}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              
-              {currentMedicine && (
-                <div className="border-2 border-primary/20 rounded-lg p-4 space-y-4 bg-primary/5">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold text-base">{currentMedicine.brand_name}</p>
-                      <p className="text-sm text-muted-foreground">{currentMedicine.generic_name} • {currentMedicine.strength}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentMedicine(null)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-xs font-medium">Dosage</Label>
-                      <Input 
-                        placeholder="500mg" 
-                        value={(currentMedicine as SelectedMedicine).dosage || ''}
-                        onChange={(e) => setCurrentMedicine({...currentMedicine, dosage: e.target.value} as any)}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs font-medium">Frequency</Label>
-                      <Select 
-                        value={(currentMedicine as SelectedMedicine).frequency || ''}
-                        onValueChange={(v) => setCurrentMedicine({...currentMedicine, frequency: v} as any)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="once-daily">Once daily</SelectItem>
-                          <SelectItem value="twice-daily">Twice daily</SelectItem>
-                          <SelectItem value="thrice-daily">Thrice daily</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-xs font-medium">Duration</Label>
-                      <Input 
-                        placeholder="7 days" 
-                        value={(currentMedicine as SelectedMedicine).duration || ''}
-                        onChange={(e) => setCurrentMedicine({...currentMedicine, duration: e.target.value} as any)}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs font-medium">Quantity</Label>
-                      <Input 
-                        type="number" 
-                        placeholder="30" 
-                        value={(currentMedicine as SelectedMedicine).quantity || ''}
-                        onChange={(e) => setCurrentMedicine({...currentMedicine, quantity: parseInt(e.target.value)} as any)}
-                      />
-                    </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="mb-4">
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div>
+                  <Label className="text-xs">Patient Name *</Label>
+                  <Input 
+                    placeholder="Enter name"
+                    value={patientInfo.name}
+                    onChange={(e) => setPatientInfo({...patientInfo, name: e.target.value})}
+                    className="h-9"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">MRN</Label>
+                  <Input 
+                    placeholder="MRN"
+                    value={patientInfo.mrn}
+                    onChange={(e) => setPatientInfo({...patientInfo, mrn: e.target.value})}
+                    className="h-9"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Age *</Label>
+                  <Input 
+                    type="number"
+                    placeholder="Age"
+                    value={patientInfo.age || ''}
+                    onChange={(e) => setPatientInfo({...patientInfo, age: parseInt(e.target.value) || 0})}
+                    className="h-9"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Gender *</Label>
+                  <Select value={patientInfo.gender} onValueChange={(v) => setPatientInfo({...patientInfo, gender: v})}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Visit Type</Label>
+                  <Select value={patientInfo.visitType} onValueChange={(v: any) => setPatientInfo({...patientInfo, visitType: v})}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New Visit</SelectItem>
+                      <SelectItem value="followup">Follow-up</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Allergies</Label>
+                  <Input 
+                    placeholder="e.g., Penicillin"
+                    value={patientInfo.allergies.join(', ')}
+                    onChange={(e) => setPatientInfo({...patientInfo, allergies: e.target.value.split(',').map(a => a.trim()).filter(Boolean)})}
+                    className="h-9"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Left Column - Clinical Workflow */}
+          <div className="lg:col-span-8 space-y-4">
+            
+            {/* Chief Complaint */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Chief Complaint</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Input 
+                  placeholder="e.g., Fever and cough for 3 days"
+                  value={chiefComplaint}
+                  onChange={(e) => setChiefComplaint(e.target.value)}
+                  className="h-9"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Vitals */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Vitals</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveGrid cols={6}>
+                  <div>
+                    <Label className="text-xs">BP (mmHg)</Label>
+                    <Input placeholder="120/80" value={vitals.bp} onChange={(e) => setVitals({...vitals, bp: e.target.value})} className="h-8 text-sm" />
                   </div>
                   <div>
-                    <Label className="text-xs font-medium">Special Instructions</Label>
-                    <Textarea 
-                      placeholder="Take after meals" 
-                      value={(currentMedicine as SelectedMedicine).instructions || ''}
-                      onChange={(e) => setCurrentMedicine({...currentMedicine, instructions: e.target.value} as any)}
+                    <Label className="text-xs">Pulse (bpm)</Label>
+                    <Input placeholder="72" value={vitals.pulse} onChange={(e) => setVitals({...vitals, pulse: e.target.value})} className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Temp (°F)</Label>
+                    <Input placeholder="98.6" value={vitals.temp} onChange={(e) => setVitals({...vitals, temp: e.target.value})} className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">SpO2 (%)</Label>
+                    <Input placeholder="98" value={vitals.spo2} onChange={(e) => setVitals({...vitals, spo2: e.target.value})} className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Weight (kg)</Label>
+                    <Input placeholder="70" value={vitals.weight} onChange={(e) => setVitals({...vitals, weight: e.target.value})} className="h-8 text-sm" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Height (cm)</Label>
+                    <Input placeholder="170" value={vitals.height} onChange={(e) => setVitals({...vitals, height: e.target.value})} className="h-8 text-sm" />
+                  </div>
+                </ResponsiveGrid>
+              </CardContent>
+            </Card>
+
+            {/* Diagnosis */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Diagnosis</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Primary Diagnosis</Label>
+                    <Input 
+                      placeholder="Enter diagnosis"
+                      value={primaryDiagnosis}
+                      onChange={(e) => setPrimaryDiagnosis(e.target.value)}
+                      className="h-9"
                     />
                   </div>
-                  <Button onClick={saveMedicine} className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add to Prescription
+                  <div>
+                    <Label className="text-xs">ICD-10 Code</Label>
+                    <Input 
+                      placeholder="e.g., J20.9"
+                      value={icd10Code}
+                      onChange={(e) => setIcd10Code(e.target.value)}
+                      className="h-9"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Medications Table */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Medications</CardTitle>
+                  <Button size="sm" variant="outline" onClick={addMedication}>
+                    <Plus className="h-3.5 w-3.5 mr-1" />
+                    Add Drug
                   </Button>
                 </div>
-              )}
-              
-              {selectedMedicines.length > 0 && (
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground">Prescribed Medicines ({selectedMedicines.length})</p>
-                  <div className="space-y-2">
-                    {selectedMedicines.map((medicine, index) => (
-                      <div key={medicine.id} className="flex items-start gap-3 p-4 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <p className="font-semibold text-sm">{medicine.brand_name}</p>
-                          <p className="text-xs text-muted-foreground">{medicine.generic_name}</p>
-                          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs mt-2">
-                            <span className="font-medium">💊 {medicine.dosage}</span>
-                            <span>⏰ {medicine.frequency}</span>
-                            <span>📅 {medicine.duration}</span>
-                            <span>📦 Qty: {medicine.quantity}</span>
+                  {medications.length === 0 ? (
+                    <div className="text-center py-8 text-sm text-slate-500">
+                      No medications added. Click "Add Drug" to start.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {medications.map((med, idx) => (
+                        <div key={med.id} className="border rounded-lg p-3 bg-slate-50 dark:bg-slate-900">
+                          <div className="flex items-start justify-between mb-2">
+                            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Drug #{idx + 1}</span>
+                            <Button size="sm" variant="ghost" onClick={() => removeMedication(med.id)} className="h-6 w-6 p-0">
+                              <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                            </Button>
                           </div>
-                          {medicine.instructions && (
-                            <p className="text-xs text-muted-foreground mt-2 italic">📝 {medicine.instructions}</p>
+                          <ResponsiveGrid cols={4}>
+                            <div>
+                              <Label className="text-xs">Drug Name *</Label>
+                              <Input 
+                                placeholder="Search drug"
+                                value={med.drugName}
+                                onChange={(e) => updateMedication(med.id, 'drugName', e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Strength *</Label>
+                              <Input 
+                                placeholder="500mg"
+                                value={med.strength}
+                                onChange={(e) => updateMedication(med.id, 'strength', e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Form</Label>
+                              <Select value={med.dosageForm} onValueChange={(v) => updateMedication(med.id, 'dosageForm', v)}>
+                                <SelectTrigger className="h-8 text-sm">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Tablet">Tablet</SelectItem>
+                                  <SelectItem value="Capsule">Capsule</SelectItem>
+                                  <SelectItem value="Syrup">Syrup</SelectItem>
+                                  <SelectItem value="Injection">Injection</SelectItem>
+                                  <SelectItem value="Cream">Cream</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Dose *</Label>
+                              <Input 
+                                placeholder="1"
+                                value={med.dose}
+                                onChange={(e) => updateMedication(med.id, 'dose', e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Frequency *</Label>
+                              <Select value={med.frequency} onValueChange={(v) => updateMedication(med.id, 'frequency', v)}>
+                                <SelectTrigger className="h-8 text-sm">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="OD">Once Daily (OD)</SelectItem>
+                                  <SelectItem value="BD">Twice Daily (BD)</SelectItem>
+                                  <SelectItem value="TDS">Thrice Daily (TDS)</SelectItem>
+                                  <SelectItem value="QID">Four Times (QID)</SelectItem>
+                                  <SelectItem value="SOS">SOS</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Route</Label>
+                              <Select value={med.route} onValueChange={(v) => updateMedication(med.id, 'route', v)}>
+                                <SelectTrigger className="h-8 text-sm">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Oral">Oral</SelectItem>
+                                  <SelectItem value="IV">IV</SelectItem>
+                                  <SelectItem value="IM">IM</SelectItem>
+                                  <SelectItem value="SC">SC</SelectItem>
+                                  <SelectItem value="Topical">Topical</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Duration *</Label>
+                              <Input 
+                                placeholder="7 days"
+                                value={med.duration}
+                                onChange={(e) => updateMedication(med.id, 'duration', e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Instructions</Label>
+                              <Input 
+                                placeholder="After food"
+                                value={med.instructions}
+                                onChange={(e) => updateMedication(med.id, 'instructions', e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </ResponsiveGrid>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Investigations */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Investigations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Textarea 
+                  placeholder="e.g., CBC, Chest X-ray, Blood culture"
+                  value={investigations}
+                  onChange={(e) => setInvestigations(e.target.value)}
+                  className="resize-none h-20"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Follow-up Plan */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Follow-up Plan</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Textarea 
+                  placeholder="e.g., Review after 3 days, Return if fever persists"
+                  value={followUpPlan}
+                  onChange={(e) => setFollowUpPlan(e.target.value)}
+                  className="resize-none h-20"
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - AI Copilot Panel */}
+          <div className="lg:col-span-4">
+            <div className="lg:sticky lg:top-24 space-y-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-blue-600" />
+                    <CardTitle className="text-base">AI Clinical Copilot</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-4">
+                  
+                  {!aiInsights ? (
+                    <div className="text-center py-8">
+                      <Sparkles className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                        Enter clinical data and click "AI Analyze" to get intelligent insights
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* AI Confidence Score */}
+                      <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <span className="text-sm font-medium">AI Confidence</span>
+                        <Badge variant="secondary" className="text-sm">{aiInsights.confidenceScore}%</Badge>
+                      </div>
+
+                      {/* Red Flags */}
+                      {aiInsights.redFlags.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-red-600" />
+                            Critical Alerts
+                          </h4>
+                          {aiInsights.redFlags.map((flag, idx) => (
+                            <Alert key={idx} variant="destructive" className="py-2">
+                              <AlertDescription className="text-xs">{flag.alert}</AlertDescription>
+                            </Alert>
+                          ))}
+                          {aiInsights.redFlags.some(f => f.severity === 'critical') && (
+                            <div className="flex items-center gap-2 pt-2">
+                              <Checkbox 
+                                id="acknowledge"
+                                checked={criticalAlertsAcknowledged}
+                                onCheckedChange={(checked) => setCriticalAlertsAcknowledged(checked as boolean)}
+                              />
+                              <label htmlFor="acknowledge" className="text-xs font-medium cursor-pointer">
+                                I acknowledge these critical alerts
+                              </label>
+                            </div>
                           )}
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => removeMedicine(medicine.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Procedures */}
-            <div className="space-y-3">
-              <div>
-                <Label className="text-sm font-medium">Procedures (Optional)</Label>
-                <p className="text-xs text-muted-foreground mt-1">Add AB-HBP procedures if applicable</p>
-              </div>
-              <Popover open={procedureOpen} onOpenChange={setProcedureOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start h-10 text-sm">
-                    <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Search procedures...</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[600px] p-0" align="start" sideOffset={4}>
-                  <Command shouldFilter={false}>
-                    <CommandInput 
-                      placeholder="Search procedures..." 
-                      value={procedureSearch}
-                      onValueChange={setProcedureSearch}
-                    />
-                    <CommandList>
-                      <CommandEmpty>
-                        {procedureSearch.length >= 2 ? 'No procedures found.' : 'Type at least 2 characters...'}
-                      </CommandEmpty>
-                      <CommandGroup>
-                        {procedureResults.length > 0 ? (
-                          procedureResults.map((procedure) => (
-                            <CommandItem
-                              key={procedure.package_code}
-                              onSelect={() => addProcedure(procedure)}
-                            >
-                              <div className="flex flex-col w-full">
-                                <span className="font-medium">{procedure.package_name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {procedure.package_code} {procedure.specialty && `- ${procedure.specialty}`}
-                                </span>
+                      )}
+
+                      {/* Differential Diagnosis */}
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-semibold">Differential Diagnosis</h4>
+                        <div className="space-y-2">
+                          {aiInsights.differentialDiagnosis.map((dx, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 bg-muted rounded">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">{dx.condition}</p>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">{dx.icd10}</p>
                               </div>
-                            </CommandItem>
-                          ))
-                        ) : procedureSearch.length >= 2 ? (
-                          <div className="p-2 text-sm text-muted-foreground">Searching...</div>
-                        ) : null}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              
-              {selectedProcedures.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground">Selected Procedures ({selectedProcedures.length})</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProcedures.map((procedure) => (
-                      <Badge key={procedure.package_code} variant="outline" className="gap-2 py-1.5 px-3">
-                        <span className="font-medium">{procedure.package_name}</span>
-                        {procedure.specialty && <span className="text-xs opacity-70">• {procedure.specialty}</span>}
-                        <X 
-                          className="h-3.5 w-3.5 cursor-pointer hover:text-destructive transition-colors" 
-                          onClick={() => removeProcedure(procedure.package_code)}
-                        />
-                      </Badge>
-                    ))}
+                              <Badge variant={idx === 0 ? "default" : "secondary"} className="text-xs">
+                                {dx.probability}%
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Dose Optimization */}
+                      {aiInsights.doseOptimization.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Info className="h-4 w-4 text-blue-600" />
+                            Dose Optimization
+                          </h4>
+                          {aiInsights.doseOptimization.map((opt, idx) => (
+                            <Alert key={idx} className="py-2">
+                              <AlertDescription className="text-xs">
+                                <span className="font-medium">{opt.drug}:</span> {opt.suggestion}
+                              </AlertDescription>
+                            </Alert>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Follow-up Recommendation */}
+                      <div className="p-3 bg-muted rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <span className="text-sm font-semibold">Follow-up Recommendation</span>
+                        </div>
+                        <p className="text-sm text-slate-700 dark:text-slate-300">
+                          Review patient in {aiInsights.followUpDays} days
+                        </p>
+                      </div>
+
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Info className="h-3.5 w-3.5 mr-2" />
+                        Explain AI Reasoning
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Doctor Info */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Prescriber Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Doctor Name</p>
+                    <p className="font-medium">Dr. Sarah Johnson</p>
                   </div>
-                </div>
-              )}
+                  <div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Registration No.</p>
+                    <p className="font-medium">MCI-12345-2020</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Specialization</p>
+                    <p className="font-medium">General Medicine</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-
-
-      </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
